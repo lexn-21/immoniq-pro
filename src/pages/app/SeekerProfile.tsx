@@ -191,6 +191,39 @@ const SeekerProfile = () => {
         </div>
       </Card>
 
+      <Card className="p-6 glass space-y-4 border-violet-500/20">
+        <div className="flex items-center justify-between">
+          <h2 className="font-bold flex items-center gap-2">🎓 Studenten-Profil</h2>
+          <label className="flex items-center gap-2 text-sm">
+            <Switch checked={form.is_student} onCheckedChange={(v) => setForm({ ...form, is_student: v })} /> Ich bin Student/in
+          </label>
+        </div>
+        {form.is_student && (
+          <div className="grid grid-cols-2 gap-3">
+            <div><Label>Hochschule</Label>
+              <Input value={form.university} onChange={(e) => setForm({ ...form, university: e.target.value })} /></div>
+            <div><Label>Studiengang</Label>
+              <Input value={form.study_program} onChange={(e) => setForm({ ...form, study_program: e.target.value })} /></div>
+            <div><Label>Semester</Label>
+              <Input type="number" value={form.study_semester} onChange={(e) => setForm({ ...form, study_semester: e.target.value })} /></div>
+            <div><Label>BAföG (€/Mo)</Label>
+              <Input type="number" value={form.bafoeg_amount} onChange={(e) => setForm({ ...form, bafoeg_amount: e.target.value })} /></div>
+            <div className="col-span-2 pt-2 border-t">
+              <p className="text-xs font-semibold mb-2 text-muted-foreground">Bürgschaft (z. B. Eltern)</p>
+            </div>
+            <div><Label>Name Bürge</Label>
+              <Input value={form.guarantor_name} onChange={(e) => setForm({ ...form, guarantor_name: e.target.value })} /></div>
+            <div><Label>Verhältnis</Label>
+              <Input value={form.guarantor_relation} onChange={(e) => setForm({ ...form, guarantor_relation: e.target.value })} placeholder="Vater, Mutter…" /></div>
+            <div className="col-span-2"><Label>Netto-Einkommen Bürge (€/Mo)</Label>
+              <Input type="number" value={form.guarantor_income} onChange={(e) => setForm({ ...form, guarantor_income: e.target.value })} /></div>
+            <p className="col-span-2 text-[11px] text-muted-foreground">
+              Tipp: Lade Immatrikulationsbescheinigung & Bürgschaftserklärung im Tresor hoch — Vermieter sehen so schneller deine Bonität.
+            </p>
+          </div>
+        )}
+      </Card>
+
       <div className="flex justify-end">
         <Button onClick={save} className="bg-gradient-gold text-primary-foreground shadow-gold">Profil speichern</Button>
       </div>
