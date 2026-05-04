@@ -60,6 +60,7 @@ const Pricing = lazy(() => import("./pages/Pricing"));
 const CheckoutReturn = lazy(() => import("./pages/CheckoutReturn"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
 const Install = lazy(() => import("./pages/Install"));
+const WgCasting = lazy(() => import("./pages/WgCasting"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
