@@ -52,7 +52,7 @@ const groups: NavGroup[] = [
       { to: "/markt", label: "Markt durchsuchen", icon: SearchIcon, badge: "LIVE", hint: "Inserate von Eigentümern — mit Umkreissuche" },
       { to: "/app/listings", label: "Meine Inserate", icon: Megaphone, hint: "Vermieten & verkaufen — provisionsfrei" },
       { to: "/app/applications", label: "Bewerbungen", icon: Inbox, hint: "Mit KI-Score" },
-      { to: "/app/marketplace", label: "Handwerker-Netzwerk", icon: Wrench, hint: "Verifizierte Profis in deiner PLZ" },
+      { to: "/app/marketplace", label: "Experten finden", icon: Wrench, hint: "Handwerker, Steuerberater & mehr in deiner Nähe" },
       { to: "/app/ads", label: "Werben", icon: Megaphone, badge: "€49/Wo", hint: "Eigene Anzeigen schalten" },
     ],
   },
