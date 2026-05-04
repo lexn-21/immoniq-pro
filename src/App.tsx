@@ -25,6 +25,7 @@ const Payments = lazy(() => import("./pages/app/Payments"));
 const Expenses = lazy(() => import("./pages/app/Expenses"));
 const TaxBridge = lazy(() => import("./pages/app/TaxBridge"));
 const Dunning = lazy(() => import("./pages/app/Dunning"));
+const Nebenkosten = lazy(() => import("./pages/app/Nebenkosten"));
 const Settings = lazy(() => import("./pages/app/Settings"));
 const Onboarding = lazy(() => import("./pages/app/Onboarding"));
 const Advisor = lazy(() => import("./pages/app/Advisor"));
@@ -118,6 +119,7 @@ const App = () => (
                 <Route path="payments" element={<Payments />} />
                 <Route path="expenses" element={<Expenses />} />
                 <Route path="dunning" element={<Dunning />} />
+                <Route path="nebenkosten" element={<Nebenkosten />} />
                 <Route path="tax" element={<TaxBridge />} />
                 <Route path="advisor" element={<Advisor />} />
                 <Route path="vault" element={<Vault />} />

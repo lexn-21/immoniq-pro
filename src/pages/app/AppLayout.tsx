@@ -42,6 +42,7 @@ const groups: NavGroup[] = [
       { to: "/app/tenants", label: "Mieter", icon: Users, hint: "Mit Verträgen" },
       { to: "/app/payments", label: "Einnahmen", icon: Wallet },
       { to: "/app/expenses", label: "Ausgaben", icon: Receipt, hint: "Belege scannen" },
+      { to: "/app/nebenkosten", label: "Nebenkosten", icon: Calculator, badge: "NEU", hint: "NK-Abrechnung pro Mieter — BetrKV-konform" },
       { to: "/app/templates", label: "Vorlagen", icon: FileText, hint: "Verträge & Schreiben" },
     ],
   },
