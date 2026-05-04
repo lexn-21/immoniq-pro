@@ -106,11 +106,16 @@ const Marketplace = () => {
   return (
     <div className="space-y-6">
       <header className="space-y-2">
-        <h1 className="text-2xl md:text-3xl font-bold">Handwerker & Steuerberater finden</h1>
+        <h1 className="text-2xl md:text-3xl font-bold">Experten finden</h1>
         <p className="text-sm text-muted-foreground max-w-2xl">
-          Echte Anbieter aus deiner Region — mit Bewertungen, Telefon, Website, Öffnungszeiten.
-          Powered by Google Maps.
+          Steuerberater, Handwerker & Service-Profis aus deiner Region — mit Bewertungen,
+          Telefon, Website und Öffnungszeiten. Powered by Google Maps.
         </p>
+        <div className="flex flex-wrap gap-3 text-[11px] text-muted-foreground pt-1">
+          <span className="inline-flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-violet-500" /> Berater (Steuer/Recht)</span>
+          <span className="inline-flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-primary" /> Handwerk</span>
+          <span className="inline-flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-emerald-500" /> Service</span>
+        </div>
       </header>
 
       <Card className="p-4 md:p-5">
