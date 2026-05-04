@@ -70,7 +70,9 @@ const Listings = () => {
                     <Badge variant={l.status === "published" ? "default" : "secondary"} className="text-[10px]">
                       {l.status === "published" ? "Live" : l.status === "draft" ? "Entwurf" : l.status === "paused" ? "Pausiert" : "Geschlossen"}
                     </Badge>
-                    <Badge variant="outline" className="text-[10px]">{l.kind === "rent" ? "Miete" : "Kauf"}</Badge>
+                    <Badge variant="outline" className={`text-[10px] ${l.kind === "wg_room" ? "border-violet-500/40 text-violet-600 dark:text-violet-300" : ""}`}>
+                      {l.kind === "rent" ? "Miete" : l.kind === "sale" ? "Kauf" : "WG-Zimmer"}
+                    </Badge>
                   </div>
                   <h3 className="font-bold truncate">{l.title}</h3>
                   <p className="text-xs text-muted-foreground truncate">
