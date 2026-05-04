@@ -23,26 +23,31 @@ export type Provider = {
 
 export async function searchProviders(
   category: string,
-  zip: string,
+  query: string,
   radiusKm = 15,
-): Promise<{ providers: Provider[]; source: "google" | "osm" | "cache"; warning?: string }> {
+): Promise<{ providers: Provider[]; source: "google" | "osm" | "cache"; warning?: string; centerLabel?: string }> {
   const { data, error } = await supabase.functions.invoke("places-search", {
-    body: { category, zip, radius: radiusKm },
+    body: { category, query, radius: radiusKm },
   });
 
   if (!error && data?.places) {
     const providers: Provider[] = (data.places as any[]).map((p) => ({ ...p, source: "google" }));
-    return { providers, source: data.source ?? "google" };
+    return { providers, source: data.source ?? "google", centerLabel: data?.center?.label };
   }
 
-  // Fallback OSM
+  // Fallback OSM nur wenn PLZ
+  const isZip = /^\d{5}$/.test(query.trim());
   const fallbackWarning =
     error?.message?.includes("Tageslimit")
       ? "Tageslimit der Premium-Suche erreicht — zeige OpenStreetMap-Ergebnisse als Backup."
       : "Premium-Suche nicht verfügbar — zeige OpenStreetMap-Ergebnisse als Backup.";
 
+  if (!isZip) {
+    throw new Error(error?.message ?? "Suche fehlgeschlagen");
+  }
+
   try {
-    const osm: OsmPlace[] = await searchOsm(category, zip, radiusKm);
+    const osm: OsmPlace[] = await searchOsm(category, query, radiusKm);
     const providers: Provider[] = osm.map((p) => ({
       id: String(p.id),
       name: p.name,
