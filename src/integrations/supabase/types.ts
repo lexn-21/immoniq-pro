@@ -635,6 +635,9 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          nka_distribution_key: string | null
+          nka_eligible: boolean
+          nka_period_id: string | null
           property_id: string | null
           receipt_path: string | null
           spent_on: string
@@ -652,6 +655,9 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          nka_distribution_key?: string | null
+          nka_eligible?: boolean
+          nka_period_id?: string | null
           property_id?: string | null
           receipt_path?: string | null
           spent_on: string
@@ -669,6 +675,9 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          nka_distribution_key?: string | null
+          nka_eligible?: boolean
+          nka_period_id?: string | null
           property_id?: string | null
           receipt_path?: string | null
           spent_on?: string
@@ -939,6 +948,181 @@ export type Database = {
           vacancy_rate?: number | null
           yield_factor?: number
           zip?: string
+        }
+        Relationships: []
+      }
+      nka_cost_categories: {
+        Row: {
+          betrkv_ref: string | null
+          code: string
+          default_distribution_key: string
+          id: string
+          label: string
+          sort_order: number
+        }
+        Insert: {
+          betrkv_ref?: string | null
+          code: string
+          default_distribution_key?: string
+          id?: string
+          label: string
+          sort_order?: number
+        }
+        Update: {
+          betrkv_ref?: string | null
+          code?: string
+          default_distribution_key?: string
+          id?: string
+          label?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      nka_cost_items: {
+        Row: {
+          amount: number
+          category_code: string
+          created_at: string
+          distribution_key: string
+          id: string
+          label: string | null
+          period_id: string
+          source_expense_id: string | null
+          umlagefaehig: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          category_code: string
+          created_at?: string
+          distribution_key?: string
+          id?: string
+          label?: string | null
+          period_id: string
+          source_expense_id?: string | null
+          umlagefaehig?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category_code?: string
+          created_at?: string
+          distribution_key?: string
+          id?: string
+          label?: string | null
+          period_id?: string
+          source_expense_id?: string | null
+          umlagefaehig?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nka_cost_items_period_id_fkey"
+            columns: ["period_id"]
+            isOneToOne: false
+            referencedRelation: "nka_periods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      nka_distributions: {
+        Row: {
+          breakdown: Json | null
+          created_at: string
+          id: string
+          ist_summe: number
+          payment_id: string | null
+          pdf_path: string | null
+          period_id: string
+          saldo: number
+          sent_at: string | null
+          tenant_id: string
+          unit_id: string
+          updated_at: string
+          user_id: string
+          vorauszahlung_summe: number
+        }
+        Insert: {
+          breakdown?: Json | null
+          created_at?: string
+          id?: string
+          ist_summe?: number
+          payment_id?: string | null
+          pdf_path?: string | null
+          period_id: string
+          saldo?: number
+          sent_at?: string | null
+          tenant_id: string
+          unit_id: string
+          updated_at?: string
+          user_id: string
+          vorauszahlung_summe?: number
+        }
+        Update: {
+          breakdown?: Json | null
+          created_at?: string
+          id?: string
+          ist_summe?: number
+          payment_id?: string | null
+          pdf_path?: string | null
+          period_id?: string
+          saldo?: number
+          sent_at?: string | null
+          tenant_id?: string
+          unit_id?: string
+          updated_at?: string
+          user_id?: string
+          vorauszahlung_summe?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nka_distributions_period_id_fkey"
+            columns: ["period_id"]
+            isOneToOne: false
+            referencedRelation: "nka_periods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      nka_periods: {
+        Row: {
+          created_at: string
+          id: string
+          notes: string | null
+          period_end: string
+          period_start: string
+          property_id: string
+          status: string
+          updated_at: string
+          user_id: string
+          year: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          period_end: string
+          period_start: string
+          property_id: string
+          status?: string
+          updated_at?: string
+          user_id: string
+          year: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          period_end?: string
+          period_start?: string
+          property_id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+          year?: number
         }
         Relationships: []
       }
@@ -1572,9 +1756,11 @@ export type Database = {
       units: {
         Row: {
           created_at: string
+          heating_share_pct: number | null
           id: string
           label: string
           living_space: number | null
+          persons_count: number | null
           property_id: string
           rent_cold: number | null
           rooms: number | null
@@ -1584,9 +1770,11 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          heating_share_pct?: number | null
           id?: string
           label: string
           living_space?: number | null
+          persons_count?: number | null
           property_id: string
           rent_cold?: number | null
           rooms?: number | null
@@ -1596,9 +1784,11 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          heating_share_pct?: number | null
           id?: string
           label?: string
           living_space?: number | null
+          persons_count?: number | null
           property_id?: string
           rent_cold?: number | null
           rooms?: number | null
