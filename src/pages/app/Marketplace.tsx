@@ -163,20 +163,28 @@ const Marketplace = () => {
         {CATEGORIES.map((c) => {
           const Icon = c.icon;
           const isActive = activeCat === c.id;
+          const gs = GROUP_STYLE[c.group];
           return (
             <button
               key={c.id}
               onClick={() => runSearch(c.id)}
               className={`text-left p-4 rounded-lg border transition-colors ${
-                isActive ? "border-primary bg-primary/5" : "border-border hover:border-primary/40 hover:bg-accent/30"
+                isActive
+                  ? `border-current ${gs.iconBg.split(" ").find(x => x.startsWith("text-")) ?? "text-primary"} bg-current/5`
+                  : `border-border ${gs.tile}`
               }`}
             >
               <div className="flex items-start gap-3">
-                <div className="h-9 w-9 rounded-md bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                <div className={`h-9 w-9 rounded-md flex items-center justify-center shrink-0 ${gs.iconBg}`}>
                   <Icon className="h-4 w-4" />
                 </div>
-                <div className="min-w-0">
-                  <div className="font-semibold text-sm">{c.label}</div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <div className="font-semibold text-sm text-foreground">{c.label}</div>
+                    {c.group === "advisor" && (
+                      <Badge variant="outline" className={`text-[9px] px-1.5 py-0 h-4 ${gs.badge}`}>{gs.label}</Badge>
+                    )}
+                  </div>
                   <p className="text-xs text-muted-foreground mt-0.5 leading-snug line-clamp-2">{c.description}</p>
                 </div>
               </div>
@@ -186,7 +194,7 @@ const Marketplace = () => {
       </div>
 
       {activeCat && (
-        <Card className="p-5 space-y-4 border-primary/30">
+        <Card className={`p-5 space-y-4 ${activeMeta?.group === "advisor" ? "border-violet-500/40" : activeMeta?.group === "service" ? "border-emerald-500/40" : "border-primary/30"}`}>
           <div className="flex items-center gap-2 flex-wrap">
             {activeMeta && <activeMeta.icon className="h-5 w-5 text-primary" />}
             <h2 className="font-bold">{activeMeta?.label}</h2>
