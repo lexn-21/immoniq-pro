@@ -94,6 +94,8 @@ const ListingApplications = () => {
         keys={["agg_19", "bgb_535", "bgb_551"]}
       />
 
+      <AIDisclaimer />
+
 
       {apps.length === 0 ? (
         <Card className="p-10 glass text-center text-muted-foreground">Noch keine Bewerbungen.</Card>
