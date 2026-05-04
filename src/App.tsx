@@ -60,6 +60,7 @@ const Pricing = lazy(() => import("./pages/Pricing"));
 const CheckoutReturn = lazy(() => import("./pages/CheckoutReturn"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
 const Install = lazy(() => import("./pages/Install"));
+const WgCasting = lazy(() => import("./pages/WgCasting"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -85,6 +86,7 @@ const App = () => (
               <Route path="/auth" element={<Auth />} />
               <Route path="/advisor/:token" element={<AdvisorView />} />
               <Route path="/mieter/:token" element={<TenantPortal />} />
+              <Route path="/wg-casting/:token" element={<WgCasting />} />
               <Route path="/markt" element={<Markt />} />
               <Route path="/markt/vergleich" element={<MarktVergleich />} />
               <Route path="/markt/:id" element={<MarktDetail />} />
