@@ -6,10 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { eur } from "@/lib/format";
 import { toast } from "sonner";
-import { ArrowLeft, Star, X, Check, MessageSquare, ShieldCheck, Sparkles, Loader2, TrendingUp } from "lucide-react";
+import { ArrowLeft, Star, X, Check, MessageSquare, ShieldCheck, Sparkles, Loader2, TrendingUp, Users, Copy, Plus, Trash2 } from "lucide-react";
 import ChatDialog from "@/components/market/ChatDialog";
 import LegalSnippet from "@/components/LegalSnippet";
 import { AIDisclaimer } from "@/components/AIDisclaimer";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 
 const labelStatus: Record<string, string> = {
   sent: "Neu", shortlisted: "Favorit", rejected: "Abgelehnt", accepted: "Angenommen", withdrawn: "Zurückgezogen",
