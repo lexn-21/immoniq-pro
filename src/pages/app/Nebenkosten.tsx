@@ -238,13 +238,21 @@ export default function Nebenkosten() {
   const totalCosts = items.filter(i => i.umlagefaehig).reduce((s, i) => s + i.amount, 0);
 
   async function saveDistributionsAndPdf(send: boolean) {
-    if (!period || !property) return;
+    if (!period || !property) {
+      toast.error("Bitte Objekt und Periode wählen");
+      return;
+    }
+    const tenantsInResults = results.filter(r => r.tenant_id);
+    if (tenantsInResults.length === 0) {
+      toast.error("Keine Mieter zugeordnet — bitte unter 'Mieter' Mieter zu den Einheiten dieses Objekts hinzufügen.");
+      return;
+    }
     setBusy(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      for (const r of results) {
-        if (!r.tenant_id) continue;
+      const { data: { user }, error: userErr } = await supabase.auth.getUser();
+      if (userErr || !user) throw new Error("Nicht angemeldet");
+      let processed = 0;
+      for (const r of tenantsInResults) {
         const pdfBlob = renderNkaPdf({
           ownerName: profile?.display_name || "Vermieter",
           propertyName: property.name,
@@ -253,8 +261,10 @@ export default function Nebenkosten() {
           periodEnd: period.period_end,
           result: r,
         });
-        const path = `nka/${period.id}/${r.tenant_id}.pdf`;
-        await supabase.storage.from("documents").upload(path, pdfBlob, { upsert: true, contentType: "application/pdf" });
+        const path = `${user.id}/nka/${period.id}/${r.tenant_id}.pdf`;
+        const up = await supabase.storage.from("documents").upload(path, pdfBlob, { upsert: true, contentType: "application/pdf" });
+        if (up.error) throw new Error("PDF-Upload: " + up.error.message);
+
         const upsertObj: any = {
           period_id: period.id, user_id: user.id,
           tenant_id: r.tenant_id, unit_id: r.unit_id,
@@ -263,11 +273,11 @@ export default function Nebenkosten() {
           breakdown: r.breakdown as any, pdf_path: path,
         };
         if (send) upsertObj.sent_at = new Date().toISOString();
-        await supabase.from("nka_distributions").upsert(upsertObj, { onConflict: "period_id,tenant_id" });
+        const ups = await supabase.from("nka_distributions").upsert(upsertObj, { onConflict: "period_id,tenant_id" });
+        if (ups.error) throw new Error("Speichern: " + ups.error.message);
 
         if (send && r.saldo > 0.01) {
-          // Nachzahlungs-Forderung in payments anlegen
-          await supabase.from("payments").insert({
+          const ins = await supabase.from("payments").insert({
             user_id: user.id, property_id: propertyId,
             tenant_id: r.tenant_id, unit_id: r.unit_id,
             amount: r.saldo, kind: "nka_nachzahlung" as any,
@@ -275,17 +285,21 @@ export default function Nebenkosten() {
             paid_on: period.period_end,
             note: `NK-Nachzahlung ${period.year}`,
           });
+          if (ins.error) throw new Error("Forderung anlegen: " + ins.error.message);
         }
+        processed++;
       }
       if (send) {
-        await supabase.from("nka_periods").update({ status: "sent" }).eq("id", period.id);
-        toast.success("Abrechnungen erstellt, PDFs gespeichert und Forderungen angelegt");
+        const upd = await supabase.from("nka_periods").update({ status: "sent" }).eq("id", period.id);
+        if (upd.error) throw new Error("Status: " + upd.error.message);
+        toast.success(`${processed} Abrechnung(en) versendet & Forderungen angelegt`);
       } else {
-        toast.success("PDFs generiert und gespeichert");
+        toast.success(`${processed} PDF(s) generiert und gespeichert`);
       }
       await loadProperty();
     } catch (e: any) {
-      toast.error(e.message);
+      console.error("[NKA] save failed", e);
+      toast.error(e?.message || "Unbekannter Fehler beim Erstellen");
     } finally { setBusy(false); }
   }
 
