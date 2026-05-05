@@ -15,6 +15,7 @@ import { template as applicationStatus } from './application-status.tsx'
 import { template as adApproved } from './ad-approved.tsx'
 import { template as adRejected } from './ad-rejected.tsx'
 import { template as invoice } from './invoice.tsx'
+import { template as wgInvite } from './wg-invite.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'welcome': welcome,
@@ -23,4 +24,5 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'ad-approved': adApproved,
   'ad-rejected': adRejected,
   'invoice': invoice,
+  'wg-invite': wgInvite,
 }
