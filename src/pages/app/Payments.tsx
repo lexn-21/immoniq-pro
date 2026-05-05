@@ -6,10 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Wallet } from "lucide-react";
+import { Plus, Wallet, Building2 } from "lucide-react";
 import { toast } from "sonner";
 import { eur, date } from "@/lib/format";
 import { z } from "zod";
+import EmptyState from "@/components/EmptyState";
+import { ListSkeleton } from "@/components/ListSkeleton";
+import { Link } from "react-router-dom";
 
 const schema = z.object({
   property_id: z.string().uuid("Objekt wählen"),
@@ -26,18 +29,21 @@ const KIND_LABEL: Record<string, string> = {
 const Payments = () => {
   const [items, setItems] = useState<any[]>([]);
   const [properties, setProperties] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ property_id: "", paid_on: new Date().toISOString().slice(0, 10), amount: "", kind: "rent_cold", note: "" });
 
   useEffect(() => { document.title = "Zahlungen · ImmonIQ"; load(); }, []);
 
   const load = async () => {
+    setLoading(true);
     const [p, pr] = await Promise.all([
       supabase.from("payments").select("*, properties(name)").order("paid_on", { ascending: false }),
       supabase.from("properties").select("id, name").order("name"),
     ]);
     setItems(p.data ?? []);
     setProperties(pr.data ?? []);
+    setLoading(false);
   };
 
   const submit = async () => {
