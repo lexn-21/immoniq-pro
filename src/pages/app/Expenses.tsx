@@ -110,7 +110,7 @@ const Expenses = () => {
 
   return (
     <div className="space-y-6">
-      <header className="flex items-center justify-between">
+      <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h1 className="text-3xl font-bold">Belege</h1>
           <p className="text-muted-foreground text-sm mt-1">Werbungskosten und Anschaffungen — verschlüsselt abgelegt.</p>
