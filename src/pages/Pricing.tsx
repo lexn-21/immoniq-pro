@@ -18,7 +18,7 @@ const FREE_FEATURES = [
 ];
 
 const VERWALTEN_FEATURES = [
-  "Bis zu 10 vermietete Objekte",
+  "Bis zu 5 vermietete Objekte",
   "Mieter & Mietverträge verwalten",
   "Zahlungen & SEPA-Tracking",
   "Mahnwesen mit KI-Briefen",
