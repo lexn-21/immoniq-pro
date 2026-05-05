@@ -33,7 +33,7 @@ type Period = {
 };
 
 type Property = { id: string; name: string; street: string | null; zip: string | null; city: string | null };
-type Unit = { id: string; property_id: string; label: string; living_space: number | null; persons_count: number | null };
+type Unit = { id: string; property_id: string; label: string; living_space: number | null; persons_count: number | null; heating_share_pct: number | null };
 type Tenant = { id: string; full_name: string; unit_id: string | null; email: string | null };
 type CostCategory = { code: string; label: string; default_distribution_key: string; sort_order: number };
 type CostItem = NkaCostItem & { manual_shares_obj?: Record<string, number> };
@@ -72,7 +72,7 @@ export default function Nebenkosten() {
   async function loadProperty() {
     const [pds, us, ts] = await Promise.all([
       supabase.from("nka_periods").select("*").eq("property_id", propertyId).order("year", { ascending: false }),
-      supabase.from("units").select("id, property_id, label, living_space, persons_count").eq("property_id", propertyId),
+      supabase.from("units").select("id, property_id, label, living_space, persons_count, heating_share_pct").eq("property_id", propertyId),
       supabase.from("tenants").select("id, full_name, unit_id, email").eq("property_id", propertyId),
     ]);
     setPeriods(pds.data ?? []);
@@ -176,8 +176,9 @@ export default function Nebenkosten() {
       id: u.id, label: u.label,
       living_space: u.living_space ? Number(u.living_space) : 0,
       persons_count: u.persons_count ?? 1,
+      heating_share_pct: u.heating_share_pct != null ? Number(u.heating_share_pct) : null,
       tenant_id: t?.id, tenant_name: t?.full_name,
-      vorauszahlung_summe: 0, // wird unten gefüllt
+      vorauszahlung_summe: 0,
     };
   }), [units, tenants]);
 
@@ -382,17 +383,24 @@ export default function Nebenkosten() {
                         </Button>
 
                         {/* Manuelle Anteile */}
-                        {(it.distribution_key === "verbrauch_manual" || it.distribution_key === "direkt_zuordnung") && (
-                          <div className="col-span-12 grid grid-cols-2 sm:grid-cols-4 gap-2 mt-2 pl-2 border-l-2 border-primary/30">
-                            {units.map(u => (
-                              <div key={u.id}>
-                                <Label className="text-[10px]">{u.label}</Label>
-                                <Input className="h-8 text-xs" type="number" step="0.01"
-                                  value={it.manual_shares?.[u.id] ?? 0}
-                                  onChange={(e) => updateItem(it.id, { manual_shares: { ...(it.manual_shares ?? {}), [u.id]: Number(e.target.value) } })}
-                                />
-                              </div>
-                            ))}
+                        {(it.distribution_key === "verbrauch_manual" || it.distribution_key === "direkt_zuordnung" || it.distribution_key === "heizkostenv_50_50") && (
+                          <div className="col-span-12 mt-2 pl-2 border-l-2 border-primary/30">
+                            {it.distribution_key === "heizkostenv_50_50" && (
+                              <p className="text-[10px] text-muted-foreground mb-1">
+                                Verbrauchsanteil pro Einheit (50% wird automatisch nach m² verteilt). Override via heating_share_pct in der Einheit.
+                              </p>
+                            )}
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                              {units.map(u => (
+                                <div key={u.id}>
+                                  <Label className="text-[10px]">{u.label}{u.heating_share_pct != null && it.distribution_key === "heizkostenv_50_50" ? ` (${u.heating_share_pct}% fix)` : ""}</Label>
+                                  <Input className="h-8 text-xs" type="number" step="0.01"
+                                    value={it.manual_shares?.[u.id] ?? 0}
+                                    onChange={(e) => updateItem(it.id, { manual_shares: { ...(it.manual_shares ?? {}), [u.id]: Number(e.target.value) } })}
+                                  />
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         )}
                       </div>
