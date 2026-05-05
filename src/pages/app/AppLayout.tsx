@@ -1,5 +1,6 @@
 import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useSubscription } from "@/hooks/useSubscription";
 import { supabase } from "@/integrations/supabase/client";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
@@ -106,6 +107,9 @@ const QUICK_CREATE: QuickAction[] = [
 
 const AppLayout = () => {
   const { user, signOut } = useAuth();
+  const { tier, isTrial, trialDaysLeft } = useSubscription();
+  const planLabel = tier === "pro" ? (isTrial ? `Pro-Trial · ${trialDaysLeft} T.` : "Pro") :
+                    tier === "verwalten_plus" ? "Verwalten+" : "Free";
   const navigate = useNavigate();
   const location = useLocation();
   const [createOpen, setCreateOpen] = useState(false);
