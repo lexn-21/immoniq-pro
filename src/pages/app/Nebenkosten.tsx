@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Plus, Calculator, FileDown, Send, Trash2, Receipt, AlertTriangle, Info, Sparkles } from "lucide-react";
+import { Plus, Calculator, FileDown, Send, Trash2, Receipt, AlertTriangle, Info, Sparkles, X } from "lucide-react";
 import { toast } from "sonner";
 import { computeDistributions, renderNkaPdf, type NkaCostItem, type NkaUnit, type DistKey } from "@/lib/nka";
 
