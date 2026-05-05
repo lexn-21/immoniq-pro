@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { eur } from "@/lib/format";
 import { toast } from "sonner";
-import { ArrowLeft, Star, X, Check, MessageSquare, ShieldCheck, Sparkles, Loader2, TrendingUp, Users, Copy, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Star, X, Check, MessageSquare, ShieldCheck, Sparkles, Loader2, TrendingUp, Users, Copy, Plus, Trash2, Mail } from "lucide-react";
 import ChatDialog from "@/components/market/ChatDialog";
 import LegalSnippet from "@/components/LegalSnippet";
 import { AIDisclaimer } from "@/components/AIDisclaimer";
@@ -86,6 +86,32 @@ const ListingApplications = () => {
     toast.success("Link kopiert");
   };
 
+  const sendInvite = async (m: any) => {
+    if (!m.member_email) return toast.error("Keine E-Mail hinterlegt");
+    const url = `${window.location.origin}/wg-casting/${m.token}`;
+    const { data: u } = await supabase.auth.getUser();
+    const inviter = u.user?.user_metadata?.display_name || u.user?.email?.split("@")[0] || "Dein Mitbewohner";
+    try {
+      const { error } = await supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "wg-invite",
+          recipientEmail: m.member_email,
+          idempotencyKey: `wg-invite-${m.id}`,
+          templateData: {
+            member_name: m.member_name,
+            inviter_name: inviter,
+            listing_title: listing?.title,
+            vote_url: url,
+          },
+        },
+      });
+      if (error) throw error;
+      toast.success(`Einladung an ${m.member_email} verschickt`);
+    } catch (e: any) {
+      toast.error(e.message || "Versand fehlgeschlagen");
+    }
+  };
+
   const setStatus = async (appId: string, status: "sent" | "shortlisted" | "rejected" | "accepted" | "withdrawn") => {
     const { error } = await supabase.from("applications").update({ status }).eq("id", appId);
     if (error) return toast.error(error.message);
@@ -148,7 +174,12 @@ const ListingApplications = () => {
                     </div>
                     {!m.revoked && (
                       <>
-                        <Button size="sm" variant="ghost" onClick={() => copyLink(m.token)}><Copy className="h-3 w-3" /></Button>
+                        {m.member_email && (
+                          <Button size="sm" variant="ghost" onClick={() => sendInvite(m)} title="Einladung per E-Mail senden">
+                            <Mail className="h-3 w-3" />
+                          </Button>
+                        )}
+                        <Button size="sm" variant="ghost" onClick={() => copyLink(m.token)} title="Link kopieren"><Copy className="h-3 w-3" /></Button>
                         <Button size="sm" variant="ghost" onClick={() => revokeMember(m.id)} className="text-destructive"><Trash2 className="h-3 w-3" /></Button>
                       </>
                     )}

@@ -2,13 +2,14 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
-export type DistKey = "qm" | "personen" | "einheiten" | "verbrauch_manual" | "direkt_zuordnung";
+export type DistKey = "qm" | "personen" | "einheiten" | "verbrauch_manual" | "direkt_zuordnung" | "heizkostenv_50_50";
 
 export type NkaUnit = {
   id: string;
   label: string;
   living_space: number | null;
   persons_count: number | null;
+  heating_share_pct?: number | null;
   tenant_id?: string;
   tenant_name?: string;
   vorauszahlung_summe: number;
@@ -51,6 +52,14 @@ export function computeDistributions(
   const totalPersons = units.reduce((s, u) => s + (u.persons_count ?? 1), 0);
   const totalUnits = units.length;
 
+  // HeizkostenV: Total verbrauchsbasierter Anteil (von manual_shares) — Rest auf qm verteilen
+  const totalManualHeating: Record<string, number> = {};
+  for (const item of items) {
+    if (item.distribution_key === "heizkostenv_50_50") {
+      totalManualHeating[item.id] = Object.values(item.manual_shares ?? {}).reduce((s, v) => s + (v ?? 0), 0);
+    }
+  }
+
   return units.map((u) => {
     const breakdown: NkaDistributionResult["breakdown"] = [];
     let ist = 0;
@@ -72,6 +81,24 @@ export function computeDistributions(
       } else if (item.distribution_key === "direkt_zuordnung" || item.distribution_key === "verbrauch_manual") {
         share = item.manual_shares?.[u.id] ?? 0;
         basis = item.distribution_key === "verbrauch_manual" ? "Verbrauch" : "direkt";
+      } else if (item.distribution_key === "heizkostenv_50_50") {
+        // 50% nach qm, 50% nach Verbrauch (manual_shares). Override via heating_share_pct.
+        const fixedShare = item.amount * 0.5;
+        const consumptionShare = item.amount * 0.5;
+        const qm = u.living_space ?? 0;
+        const fixedPart = totalQm > 0 ? (fixedShare * qm) / totalQm : 0;
+        const totalConsumption = totalManualHeating[item.id] ?? 0;
+        const consumptionVal = item.manual_shares?.[u.id] ?? 0;
+        const consumptionPart = totalConsumption > 0 ? (consumptionShare * consumptionVal) / totalConsumption : 0;
+        let combined = fixedPart + consumptionPart;
+        // Manueller Override pro Einheit (z. B. WG-Pauschale)
+        if (u.heating_share_pct != null) {
+          combined = item.amount * (Number(u.heating_share_pct) / 100);
+          basis = `${u.heating_share_pct}% (Override)`;
+        } else {
+          basis = `50% qm + 50% Verbrauch`;
+        }
+        share = combined;
       }
       ist += share;
       breakdown.push({

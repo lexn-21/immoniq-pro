@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Plus, Calculator, FileDown, Send, Trash2, Receipt, AlertTriangle, Info } from "lucide-react";
+import { Plus, Calculator, FileDown, Send, Trash2, Receipt, AlertTriangle, Info, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { computeDistributions, renderNkaPdf, type NkaCostItem, type NkaUnit, type DistKey } from "@/lib/nka";
 
@@ -17,9 +17,10 @@ const DIST_LABELS: Record<DistKey, string> = {
   einheiten: "pro Einheit",
   verbrauch_manual: "nach Verbrauch (manuell)",
   direkt_zuordnung: "direkte Zuordnung",
+  heizkostenv_50_50: "Heizkosten 50/50 (HeizkostenV)",
 };
 
-const DIST_OPTIONS: DistKey[] = ["qm", "personen", "einheiten", "verbrauch_manual", "direkt_zuordnung"];
+const DIST_OPTIONS: DistKey[] = ["qm", "personen", "einheiten", "verbrauch_manual", "direkt_zuordnung", "heizkostenv_50_50"];
 
 type Period = {
   id: string;
@@ -32,7 +33,7 @@ type Period = {
 };
 
 type Property = { id: string; name: string; street: string | null; zip: string | null; city: string | null };
-type Unit = { id: string; property_id: string; label: string; living_space: number | null; persons_count: number | null };
+type Unit = { id: string; property_id: string; label: string; living_space: number | null; persons_count: number | null; heating_share_pct: number | null };
 type Tenant = { id: string; full_name: string; unit_id: string | null; email: string | null };
 type CostCategory = { code: string; label: string; default_distribution_key: string; sort_order: number };
 type CostItem = NkaCostItem & { manual_shares_obj?: Record<string, number> };
@@ -71,7 +72,7 @@ export default function Nebenkosten() {
   async function loadProperty() {
     const [pds, us, ts] = await Promise.all([
       supabase.from("nka_periods").select("*").eq("property_id", propertyId).order("year", { ascending: false }),
-      supabase.from("units").select("id, property_id, label, living_space, persons_count").eq("property_id", propertyId),
+      supabase.from("units").select("id, property_id, label, living_space, persons_count, heating_share_pct").eq("property_id", propertyId),
       supabase.from("tenants").select("id, full_name, unit_id, email").eq("property_id", propertyId),
     ]);
     setPeriods(pds.data ?? []);
@@ -166,6 +167,26 @@ export default function Nebenkosten() {
     setItems((prev) => prev.filter(i => i.id !== id));
   }
 
+  async function aiClassify(it: CostItem) {
+    if (!it.label && !it.amount) return toast.error("Bitte erst Bezeichnung eingeben");
+    try {
+      const { data, error } = await supabase.functions.invoke("ai-classify-expense", {
+        body: { description: it.label, vendor: null, amount: it.amount },
+      });
+      if (error) throw error;
+      const cat = costCategories.find(c => c.code === data.category_code);
+      await updateItem(it.id, {
+        category_code: data.category_code,
+        distribution_key: data.distribution_key as DistKey,
+        umlagefaehig: data.umlagefaehig,
+        label: it.label || cat?.label || data.category_code,
+      });
+      toast.success(`KI: ${cat?.label ?? data.category_code} · ${data.umlagefaehig ? "umlagefähig" : "nicht umlagefähig"}`);
+    } catch (e: any) {
+      toast.error(e.message || "KI-Klassifikation fehlgeschlagen");
+    }
+  }
+
   // Berechnung
   const period = periods.find(p => p.id === periodId);
   const property = properties.find(p => p.id === propertyId);
@@ -175,8 +196,9 @@ export default function Nebenkosten() {
       id: u.id, label: u.label,
       living_space: u.living_space ? Number(u.living_space) : 0,
       persons_count: u.persons_count ?? 1,
+      heating_share_pct: u.heating_share_pct != null ? Number(u.heating_share_pct) : null,
       tenant_id: t?.id, tenant_name: t?.full_name,
-      vorauszahlung_summe: 0, // wird unten gefüllt
+      vorauszahlung_summe: 0,
     };
   }), [units, tenants]);
 
@@ -371,27 +393,37 @@ export default function Nebenkosten() {
                         <Input className="col-span-3 h-9" value={it.label ?? ""} onChange={(e) => updateItem(it.id, { label: e.target.value })} placeholder="Bezeichnung" />
                         <Input className="col-span-2 h-9" type="number" step="0.01" value={it.amount} onChange={(e) => updateItem(it.id, { amount: Number(e.target.value) })} placeholder="Betrag €" />
                         <Select value={it.distribution_key} onValueChange={(v) => updateItem(it.id, { distribution_key: v as DistKey })}>
-                          <SelectTrigger className="col-span-3 h-9"><SelectValue /></SelectTrigger>
+                          <SelectTrigger className="col-span-2 h-9"><SelectValue /></SelectTrigger>
                           <SelectContent>
                             {DIST_OPTIONS.map(d => <SelectItem key={d} value={d}>{DIST_LABELS[d]}</SelectItem>)}
                           </SelectContent>
                         </Select>
+                        <Button variant="ghost" size="icon" className="col-span-1 h-9 text-primary" onClick={() => aiClassify(it)} title="KI-Klassifikation">
+                          <Sparkles className="h-4 w-4" />
+                        </Button>
                         <Button variant="ghost" size="icon" className="col-span-1 h-9" onClick={() => deleteItem(it.id)}>
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
 
                         {/* Manuelle Anteile */}
-                        {(it.distribution_key === "verbrauch_manual" || it.distribution_key === "direkt_zuordnung") && (
-                          <div className="col-span-12 grid grid-cols-2 sm:grid-cols-4 gap-2 mt-2 pl-2 border-l-2 border-primary/30">
-                            {units.map(u => (
-                              <div key={u.id}>
-                                <Label className="text-[10px]">{u.label}</Label>
-                                <Input className="h-8 text-xs" type="number" step="0.01"
-                                  value={it.manual_shares?.[u.id] ?? 0}
-                                  onChange={(e) => updateItem(it.id, { manual_shares: { ...(it.manual_shares ?? {}), [u.id]: Number(e.target.value) } })}
-                                />
-                              </div>
-                            ))}
+                        {(it.distribution_key === "verbrauch_manual" || it.distribution_key === "direkt_zuordnung" || it.distribution_key === "heizkostenv_50_50") && (
+                          <div className="col-span-12 mt-2 pl-2 border-l-2 border-primary/30">
+                            {it.distribution_key === "heizkostenv_50_50" && (
+                              <p className="text-[10px] text-muted-foreground mb-1">
+                                Verbrauchsanteil pro Einheit (50% wird automatisch nach m² verteilt). Override via heating_share_pct in der Einheit.
+                              </p>
+                            )}
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                              {units.map(u => (
+                                <div key={u.id}>
+                                  <Label className="text-[10px]">{u.label}{u.heating_share_pct != null && it.distribution_key === "heizkostenv_50_50" ? ` (${u.heating_share_pct}% fix)` : ""}</Label>
+                                  <Input className="h-8 text-xs" type="number" step="0.01"
+                                    value={it.manual_shares?.[u.id] ?? 0}
+                                    onChange={(e) => updateItem(it.id, { manual_shares: { ...(it.manual_shares ?? {}), [u.id]: Number(e.target.value) } })}
+                                  />
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         )}
                       </div>
