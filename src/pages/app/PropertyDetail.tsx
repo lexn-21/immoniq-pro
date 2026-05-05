@@ -133,11 +133,33 @@ const PropertyDetail = () => {
                 <h3 className="font-bold">{u.label}</h3>
                 <span className="text-sm font-semibold text-gradient-gold">{eur(Number(u.rent_cold) + Number(u.utilities))}</span>
               </div>
-              <div className="flex gap-4 text-xs text-muted-foreground flex-wrap">
+              <div className="flex gap-4 text-xs text-muted-foreground flex-wrap mb-3">
                 <span>{u.living_space ?? "—"} m²</span>
                 <span>{u.rooms ?? "—"} Zi.</span>
                 {u.persons_count != null && <span>{u.persons_count} Pers.</span>}
                 <span>Kalt {eur(u.rent_cold)} · NK {eur(u.utilities)}</span>
+              </div>
+              <div className="flex items-center gap-2 pt-2 border-t border-border/40">
+                <Label className="text-[11px] text-muted-foreground whitespace-nowrap">Heiz-Anteil (%)</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  max="100"
+                  className="h-7 text-xs w-24"
+                  defaultValue={u.heating_share_pct ?? ""}
+                  placeholder="auto"
+                  onBlur={async (e) => {
+                    const raw = e.target.value.trim();
+                    const val = raw === "" ? null : Number(raw);
+                    if (val !== null && (Number.isNaN(val) || val < 0 || val > 100)) return toast.error("0–100");
+                    const { error } = await supabase.from("units").update({ heating_share_pct: val } as any).eq("id", u.id);
+                    if (error) return toast.error(error.message);
+                    toast.success("Heizkosten-Anteil gespeichert.");
+                    load();
+                  }}
+                />
+                <span className="text-[10px] text-muted-foreground">HeizkostenV-Override</span>
               </div>
             </Card>
           ))}
