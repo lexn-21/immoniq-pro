@@ -794,6 +794,80 @@ export type Database = {
           },
         ]
       }
+      legal_sources: {
+        Row: {
+          active: boolean
+          category: string
+          created_at: string
+          id: string
+          last_checked_at: string | null
+          last_hash: string | null
+          paragraph: string
+          title: string
+          url: string
+        }
+        Insert: {
+          active?: boolean
+          category?: string
+          created_at?: string
+          id?: string
+          last_checked_at?: string | null
+          last_hash?: string | null
+          paragraph: string
+          title: string
+          url: string
+        }
+        Update: {
+          active?: boolean
+          category?: string
+          created_at?: string
+          id?: string
+          last_checked_at?: string | null
+          last_hash?: string | null
+          paragraph?: string
+          title?: string
+          url?: string
+        }
+        Relationships: []
+      }
+      legal_updates: {
+        Row: {
+          detected_at: string
+          id: string
+          impact: string | null
+          new_hash: string
+          prev_hash: string | null
+          source_id: string
+          summary: string
+        }
+        Insert: {
+          detected_at?: string
+          id?: string
+          impact?: string | null
+          new_hash: string
+          prev_hash?: string | null
+          source_id: string
+          summary: string
+        }
+        Update: {
+          detected_at?: string
+          id?: string
+          impact?: string | null
+          new_hash?: string
+          prev_hash?: string | null
+          source_id?: string
+          summary?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "legal_updates_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "legal_sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       listing_alerts: {
         Row: {
           active: boolean
