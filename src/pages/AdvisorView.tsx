@@ -30,6 +30,11 @@ const AdvisorView = () => {
   useEffect(() => {
     document.title = "Steuerberater-Ansicht · ImmonIQ";
     if (!token) { setError("Ungültiger Link"); setLoading(false); return; }
+    if (token === ADVISOR_DEMO_TOKEN) {
+      setData(advisorDemoData);
+      setLoading(false);
+      return;
+    }
     (async () => {
       const { data: payload, error: e1 } = await supabase.rpc("advisor_get_data", { _token: token });
       if (e1 || !payload) {
