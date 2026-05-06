@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { eur, pct, num } from "@/lib/format";
 import { Stagger, Item, Tappable } from "@/components/motion/Primitives";
+import { WinsWidget } from "@/components/WinsWidget";
 import { motion } from "framer-motion";
 import {
   ArrowUpRight, Building2, Wallet, Receipt, TrendingUp, Plus,
