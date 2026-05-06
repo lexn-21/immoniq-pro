@@ -36,7 +36,7 @@ const PERSONAS: Record<PersonaKey, {
     ],
     primary: { label: "Kostenlos starten", sub: "In 60 Sekunden — ohne Kreditkarte", to: "/auth", icon: Sparkles },
     secondary: { label: "Marktwert ansehen", sub: "Für deine PLZ — gratis", to: "/markt", icon: TrendingUp },
-    tertiary: { label: "Tresor-Demo öffnen", sub: "So sicher liegen deine Dokumente", to: "/auth", icon: FolderLock },
+    tertiary: { label: "Tresor-Demo öffnen", sub: "So sicher liegen deine Dokumente", to: "/auth?demo=vault", icon: FolderLock },
   },
   landlord: {
     label: "Verwalten +",
