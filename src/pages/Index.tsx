@@ -62,7 +62,7 @@ const PERSONAS: Record<PersonaKey, {
       { icon: Shield, text: "Read-only Zugang — DSGVO-konform" },
       { icon: Clock, text: "Stundensatz schonen, mehr Mandanten" },
     ],
-    primary: { label: "Demo-Mandant ansehen", sub: "Live-Beispiel ohne Anmeldung", to: "/markt", icon: Search },
+    primary: { label: "Demo-Mandant ansehen", sub: "Live-Beispiel ohne Anmeldung", to: "/advisor/demo", icon: Search },
     secondary: { label: "Berater-Konto anlegen", sub: "Kostenlos — pro Mandant abrechnen", to: "/auth", icon: UserPlus },
     tertiary: { label: "Preise & Konditionen", sub: "Faire Kanzlei-Lizenzen", to: "/pricing", icon: Receipt },
   },
