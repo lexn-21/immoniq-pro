@@ -294,6 +294,7 @@ export default function Nebenkosten() {
         const upd = await supabase.from("nka_periods").update({ status: "sent" }).eq("id", period.id);
         if (upd.error) throw new Error("Status: " + upd.error.message);
         toast.success(`${processed} Abrechnung(en) versendet & Forderungen angelegt`);
+        recordActivity("nka_done", { message: `NK-Abrechnung ${period.year} abgeschlossen — ${processed} Mieter` });
       } else {
         toast.success(`${processed} PDF(s) generiert und gespeichert`);
       }
