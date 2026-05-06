@@ -85,6 +85,7 @@ const Expenses = () => {
     const { error } = await supabase.from("expenses").insert(payload);
     if (error) return toastError(error, { onRetry: submit });
     toast.success("Beleg erfasst.");
+    recordActivity("receipts_added");
     setOpen(false);
     setFile(null);
     setForm({ property_id: "", spent_on: new Date().toISOString().slice(0, 10), amount: "", vendor: "", description: "", category: "immediate" });
