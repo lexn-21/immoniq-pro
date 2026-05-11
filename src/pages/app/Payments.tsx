@@ -62,12 +62,14 @@ const Payments = () => {
 
   const load = async () => {
     setLoading(true);
-    const [p, pr] = await Promise.all([
-      supabase.from("payments").select("*, properties(name)").order("paid_on", { ascending: false }),
+    const [p, pr, te] = await Promise.all([
+      supabase.from("payments").select("*, properties(name), tenants(full_name)").order("paid_on", { ascending: false }),
       supabase.from("properties").select("id, name").order("name"),
+      supabase.from("tenants").select("id, full_name, property_id").order("full_name"),
     ]);
     setItems(p.data ?? []);
     setProperties(pr.data ?? []);
+    setTenants(te.data ?? []);
     setLoading(false);
   };
 
