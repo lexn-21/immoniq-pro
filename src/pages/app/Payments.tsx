@@ -229,6 +229,25 @@ const Payments = () => {
                 )}
               </div>
 
+              {form.property_id && tenantsForProperty.length > 0 && (
+                <div>
+                  <Label className="text-xs">Mieter {tenantsForProperty.length > 1 ? "*" : ""}</Label>
+                  {tenantsForProperty.length === 1 ? (
+                    <div className="mt-1 px-3 py-2.5 rounded-md border bg-muted/30 text-sm flex items-center justify-between">
+                      <span className="font-medium">{tenantsForProperty[0].full_name}</span>
+                      <span className="text-[10px] text-muted-foreground">automatisch zugeordnet</span>
+                    </div>
+                  ) : (
+                    <Select value={form.tenant_id} onValueChange={(v) => setForm({ ...form, tenant_id: v })}>
+                      <SelectTrigger className="mt-1"><SelectValue placeholder="Mieter wählen…" /></SelectTrigger>
+                      <SelectContent>
+                        {tenantsForProperty.map((t: any) => <SelectItem key={t.id} value={t.id}>{t.full_name}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  )}
+                </div>
+              )}
+
               {lastForProperty && !form.amount && (
                 <button
                   type="button"
