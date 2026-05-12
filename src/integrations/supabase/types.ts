@@ -731,6 +731,7 @@ export type Database = {
           property_id: string | null
           receipt_path: string | null
           spent_on: string
+          tenant_id: string | null
           type: string | null
           unit_id: string | null
           updated_at: string
@@ -751,6 +752,7 @@ export type Database = {
           property_id?: string | null
           receipt_path?: string | null
           spent_on: string
+          tenant_id?: string | null
           type?: string | null
           unit_id?: string | null
           updated_at?: string
@@ -771,6 +773,7 @@ export type Database = {
           property_id?: string | null
           receipt_path?: string | null
           spent_on?: string
+          tenant_id?: string | null
           type?: string | null
           unit_id?: string | null
           updated_at?: string
@@ -783,6 +786,13 @@ export type Database = {
             columns: ["property_id"]
             isOneToOne: false
             referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "expenses_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
             referencedColumns: ["id"]
           },
           {
