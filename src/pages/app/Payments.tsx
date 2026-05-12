@@ -168,6 +168,9 @@ const Payments = () => {
     });
   }, [items, filter, propFilter, monthStart, yearStart]);
 
+  useEffect(() => { setVisibleCount(PAGE_SIZE); }, [filter, propFilter]);
+  const visible = useMemo(() => filtered.slice(0, visibleCount), [filtered, visibleCount]);
+
   const sumThisMonth = useMemo(
     () => items.filter(i => i.paid_on >= monthStart).reduce((s, p) => s + Number(p.amount), 0),
     [items, monthStart]
@@ -184,13 +187,13 @@ const Payments = () => {
   // Group by month
   const grouped = useMemo(() => {
     const map = new Map<string, any[]>();
-    for (const it of filtered) {
+    for (const it of visible) {
       const k = monthKey(it.paid_on);
       if (!map.has(k)) map.set(k, []);
       map.get(k)!.push(it);
     }
     return Array.from(map.entries()).sort((a, b) => b[0].localeCompare(a[0]));
-  }, [filtered]);
+  }, [visible]);
 
   const fillFromLast = () => {
     if (!lastForProperty) return;
