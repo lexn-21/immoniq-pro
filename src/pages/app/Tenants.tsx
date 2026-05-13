@@ -144,19 +144,23 @@ const Tenants = () => {
       ) : (
         <div className="grid md:grid-cols-2 gap-3">
           {tenants.map(t => (
-            <Card key={t.id} className="p-5 glass">
-              <div className="flex items-start justify-between mb-2">
-                <div>
-                  <h3 className="font-bold">{t.full_name}</h3>
-                  <p className="text-xs text-muted-foreground">{t.properties?.name}</p>
+            <Card key={t.id} className="p-5 glass hover:shadow-elevated transition-shadow">
+              <Link to={`/app/tenants/${t.id}`} className="block group">
+                <div className="flex items-start justify-between mb-2">
+                  <div>
+                    <h3 className="font-bold group-hover:text-primary transition-colors flex items-center gap-1">
+                      {t.full_name} <ChevronRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition" />
+                    </h3>
+                    <p className="text-xs text-muted-foreground">{t.properties?.name}</p>
+                  </div>
+                  {t.deposit && <span className="text-xs px-2 py-0.5 rounded-full bg-muted">Kaution {eur(t.deposit)}</span>}
                 </div>
-                {t.deposit && <span className="text-xs px-2 py-0.5 rounded-full bg-muted">Kaution {eur(t.deposit)}</span>}
-              </div>
-              <div className="space-y-1 text-xs text-muted-foreground mt-3">
-                {t.email && <p className="flex items-center gap-1.5"><Mail className="h-3 w-3" /> {t.email}</p>}
-                {t.phone && <p className="flex items-center gap-1.5"><Phone className="h-3 w-3" /> {t.phone}</p>}
-                <p>Vertrag: {date(t.lease_start)} – {t.lease_end ? date(t.lease_end) : "unbefristet"}</p>
-              </div>
+                <div className="space-y-1 text-xs text-muted-foreground mt-3">
+                  {t.email && <p className="flex items-center gap-1.5"><Mail className="h-3 w-3" /> {t.email}</p>}
+                  {t.phone && <p className="flex items-center gap-1.5"><Phone className="h-3 w-3" /> {t.phone}</p>}
+                  <p>Vertrag: {date(t.lease_start)} – {t.lease_end ? date(t.lease_end) : "unbefristet"}</p>
+                </div>
+              </Link>
               <Button variant="outline" size="sm" className="w-full mt-3" onClick={async () => {
                 const { data: auth } = await supabase.auth.getUser();
                 if (!auth.user || !t.unit_id) return;
