@@ -21,6 +21,7 @@ const Dashboard = lazy(() => import("./pages/app/Dashboard"));
 const Properties = lazy(() => import("./pages/app/Properties"));
 const PropertyDetail = lazy(() => import("./pages/app/PropertyDetail"));
 const Tenants = lazy(() => import("./pages/app/Tenants"));
+const TenantDetail = lazy(() => import("./pages/app/TenantDetail"));
 const Payments = lazy(() => import("./pages/app/Payments"));
 const Expenses = lazy(() => import("./pages/app/Expenses"));
 const TaxBridge = lazy(() => import("./pages/app/TaxBridge"));
@@ -119,6 +120,7 @@ const App = () => (
                 <Route path="properties" element={<Properties />} />
                 <Route path="properties/:id" element={<PropertyDetail />} />
                 <Route path="tenants" element={<Tenants />} />
+                <Route path="tenants/:id" element={<TenantDetail />} />
                 <Route path="payments" element={<Payments />} />
                 <Route path="expenses" element={<Expenses />} />
                 <Route path="dunning" element={<Dunning />} />
