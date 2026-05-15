@@ -10,6 +10,7 @@ import { WinsWidget } from "@/components/WinsWidget";
 import { GameDeck } from "@/components/GameDeck";
 import { LegalUpdatesWidget } from "@/components/LegalUpdatesWidget";
 import { LeitzinsWidget } from "@/components/LeitzinsWidget";
+import { TodayFeed } from "@/components/TodayFeed";
 import { motion } from "framer-motion";
 import {
   ArrowUpRight, Building2, Wallet, Receipt, TrendingUp, Plus,
@@ -178,6 +179,13 @@ const Dashboard = () => {
           </div>
         </header>
       </Item>
+
+      {/* Heute-Feed: Auto-Mietvorschläge, Überfällige, Tasks, Tipps, Wins */}
+      {!isEmpty && (
+        <Item>
+          <TodayFeed />
+        </Item>
+      )}
 
       {/* Intent-Picker — psychologisch: max 4 klare Wege */}
       <Item>
