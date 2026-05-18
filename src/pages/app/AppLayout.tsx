@@ -64,7 +64,8 @@ const groups: NavGroup[] = [
     title: "Tresor & Recht",
     subtitle: "Dokumente sicher · Gesetze parat",
     items: [
-      { to: "/app/vault", label: "Tresor", icon: Lock, badge: "AES-256", hint: "Verschlüsselte Dokumente" },
+      { to: "/app/vault", label: "Tresor (Immo)", icon: Lock, badge: "AES-256", hint: "Verschlüsselte Dokumente zu Objekten" },
+      { to: "/app/vault?scope=personal", label: "Lebensbürokratie", icon: Lock, badge: "NEU", hint: "Ausweis, Verträge, Bank, Versicherungen — alles griffbereit" },
       { to: "/app/law", label: "Rechts-Ecke", icon: Scale, hint: "BGB, WEG, HeizkostenV" },
       { to: "/app/advisor", label: "Steuerberater", icon: ShieldCheck, hint: "Sicher freigeben" },
     ],
