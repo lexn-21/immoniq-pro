@@ -64,7 +64,8 @@ const groups: NavGroup[] = [
     title: "Tresor & Recht",
     subtitle: "Dokumente sicher · Gesetze parat",
     items: [
-      { to: "/app/vault", label: "Tresor", icon: Lock, badge: "AES-256", hint: "Verschlüsselte Dokumente" },
+      { to: "/app/vault", label: "Tresor (Immo)", icon: Lock, badge: "AES-256", hint: "Verschlüsselte Dokumente zu Objekten" },
+      { to: "/app/vault?scope=personal", label: "Lebensbürokratie", icon: Lock, badge: "NEU", hint: "Ausweis, Verträge, Bank, Versicherungen — alles griffbereit" },
       { to: "/app/law", label: "Rechts-Ecke", icon: Scale, hint: "BGB, WEG, HeizkostenV" },
       { to: "/app/advisor", label: "Steuerberater", icon: ShieldCheck, hint: "Sicher freigeben" },
     ],
@@ -104,6 +105,7 @@ const QUICK_CREATE: QuickAction[] = [
   { kind: "link", to: "/app/expenses", icon: Receipt, label: "Beleg hochladen", desc: "Steuer-relevant" },
   { kind: "link", to: "/app/tenants", icon: Users, label: "Mieter hinzufügen", desc: "Mit Vertrag" },
   { kind: "link", to: "/app/vault", icon: Lock, label: "Dokument sichern", desc: "Verschlüsselt" },
+  { kind: "link", to: "/app/vault?scope=personal", icon: Lock, label: "Lebensbürokratie", desc: "Ausweis, Bank, Verträge…" },
 ];
 
 const AppLayout = () => {

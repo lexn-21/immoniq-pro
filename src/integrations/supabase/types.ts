@@ -2274,6 +2274,7 @@ export type Database = {
           original_name: string
           property_id: string | null
           retention_until: string | null
+          scope: string
           size_bytes: number
           storage_path: string
           tenant_id: string | null
@@ -2292,6 +2293,7 @@ export type Database = {
           original_name: string
           property_id?: string | null
           retention_until?: string | null
+          scope?: string
           size_bytes?: number
           storage_path: string
           tenant_id?: string | null
@@ -2310,6 +2312,7 @@ export type Database = {
           original_name?: string
           property_id?: string | null
           retention_until?: string | null
+          scope?: string
           size_bytes?: number
           storage_path?: string
           tenant_id?: string | null
@@ -2685,6 +2688,15 @@ export type Database = {
         | "protokoll"
         | "korrespondenz"
         | "sonstiges"
+        | "ausweis"
+        | "fuehrerschein"
+        | "gesundheit"
+        | "arbeit"
+        | "bank"
+        | "vertrag"
+        | "kfz"
+        | "familie"
+        | "schule"
       win_kind:
         | "tax_saved"
         | "receipts_added"
@@ -2909,6 +2921,15 @@ export const Constants = {
         "protokoll",
         "korrespondenz",
         "sonstiges",
+        "ausweis",
+        "fuehrerschein",
+        "gesundheit",
+        "arbeit",
+        "bank",
+        "vertrag",
+        "kfz",
+        "familie",
+        "schule",
       ],
       win_kind: [
         "tax_saved",

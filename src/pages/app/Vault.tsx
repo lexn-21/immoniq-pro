@@ -34,6 +34,7 @@ type VaultDoc = {
   id: string;
   property_id: string | null;
   category: string;
+  scope: "immo" | "personal";
   display_name: string;
   original_name: string;
   mime_type: string | null;
@@ -48,7 +49,9 @@ type VaultDoc = {
 
 type Property = { id: string; name: string };
 
-const CATEGORIES: { value: string; label: string; emoji: string }[] = [
+type Cat = { value: string; label: string; emoji: string };
+
+const IMMO_CATEGORIES: Cat[] = [
   { value: "kaufvertrag", label: "Kaufvertrag", emoji: "📜" },
   { value: "mietvertrag", label: "Mietvertrag", emoji: "🤝" },
   { value: "nebenkostenabrechnung", label: "Nebenkostenabrechnung", emoji: "🧾" },
@@ -62,6 +65,26 @@ const CATEGORIES: { value: string; label: string; emoji: string }[] = [
   { value: "foto", label: "Foto", emoji: "📸" },
   { value: "sonstiges", label: "Sonstiges", emoji: "📁" },
 ];
+
+const PERSONAL_CATEGORIES: Cat[] = [
+  { value: "ausweis", label: "Personalausweis / Pass", emoji: "🪪" },
+  { value: "fuehrerschein", label: "Führerschein", emoji: "🚗" },
+  { value: "mietvertrag", label: "Eigener Mietvertrag", emoji: "🤝" },
+  { value: "arbeit", label: "Arbeit & Gehalt", emoji: "💼" },
+  { value: "bank", label: "Bank & Finanzen", emoji: "🏦" },
+  { value: "versicherung", label: "Versicherungen", emoji: "🛡️" },
+  { value: "gesundheit", label: "Gesundheit", emoji: "🩺" },
+  { value: "kfz", label: "KFZ & Mobilität", emoji: "🚙" },
+  { value: "familie", label: "Familie & Urkunden", emoji: "👨‍👩‍👧" },
+  { value: "schule", label: "Schule & Zeugnisse", emoji: "🎓" },
+  { value: "steuerbescheid", label: "Steuerbescheid", emoji: "🏛️" },
+  { value: "vertrag", label: "Verträge sonstige", emoji: "📄" },
+  { value: "rechnung", label: "Rechnung / Beleg", emoji: "💶" },
+  { value: "korrespondenz", label: "Behörden / Briefe", emoji: "✉️" },
+  { value: "sonstiges", label: "Sonstiges", emoji: "📁" },
+];
+
+const CATEGORIES = [...IMMO_CATEGORIES, ...PERSONAL_CATEGORIES.filter(p => !IMMO_CATEGORIES.find(i => i.value === p.value))];
 
 const formatBytes = (n: number) => {
   if (n < 1024) return `${n} B`;
@@ -93,9 +116,11 @@ const Vault = () => {
   // Data
   const [docs, setDocs] = useState<VaultDoc[]>([]);
   const [properties, setProperties] = useState<Property[]>([]);
+  // Filter
   const [search, setSearch] = useState("");
   const [filterProp, setFilterProp] = useState<string>("all");
   const [filterCat, setFilterCat] = useState<string>("all");
+  const [scope, setScope] = useState<"immo" | "personal">("immo");
 
   // Upload dialog
   const [uploadOpen, setUploadOpen] = useState(false);
@@ -115,20 +140,34 @@ const Vault = () => {
 
   // Wenn Scanner / externer Flow eine Datei "geliefert" hat, automatisch nach Unlock speichern.
   const [searchParams, setSearchParams] = useSearchParams();
+
+  // Scope aus URL übernehmen (?scope=personal | immo)
+  useEffect(() => {
+    const s = searchParams.get("scope");
+    if (s === "personal" || s === "immo") setScope(s);
+  }, [searchParams]);
+
   useEffect(() => {
     if (unlocked && searchParams.get("ingest") === "1" && pendingIngest.has()) {
       const file = pendingIngest.take();
       if (file) {
-        // kleine Verzögerung damit Vault-Daten geladen sind
         setTimeout(() => quickSaveFile(file), 200);
       }
-      // Param wieder entfernen
       const next = new URLSearchParams(searchParams);
       next.delete("ingest");
       setSearchParams(next, { replace: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [unlocked, searchParams]);
+
+  const switchScope = (s: "immo" | "personal") => {
+    setScope(s);
+    setFilterCat("all");
+    setFilterProp("all");
+    const next = new URLSearchParams(searchParams);
+    if (s === "personal") next.set("scope", "personal"); else next.delete("scope");
+    setSearchParams(next, { replace: true });
+  };
 
   const loadSettings = async () => {
     const { data } = await supabase.from("vault_settings").select("*").maybeSingle();
@@ -305,8 +344,9 @@ const Vault = () => {
       const isImage = (f.type || "").startsWith("image/");
       const { error: dbErr } = await supabase.from("vault_documents").insert({
         user_id: user.id,
-        property_id: filterProp !== "all" ? filterProp : null,
-        category: (isImage ? "foto" : "sonstiges") as any,
+        property_id: scope === "immo" && filterProp !== "all" ? filterProp : null,
+        scope,
+        category: (isImage ? (scope === "personal" ? "sonstiges" : "foto") : "sonstiges") as any,
         display_name: niceName,
         original_name: f.name,
         mime_type: f.type || "application/octet-stream",
@@ -316,7 +356,7 @@ const Vault = () => {
         enc_salt: salt,
         notes: null,
         retention_until: null,
-      });
+      } as any);
       if (dbErr) throw dbErr;
       toast.success("Im Tresor gespeichert", { id: t });
       loadData();
@@ -365,7 +405,8 @@ const Vault = () => {
 
       const { error: dbErr } = await supabase.from("vault_documents").insert({
         user_id: user.id,
-        property_id: uploadForm.property_id || null,
+        property_id: scope === "immo" ? (uploadForm.property_id || null) : null,
+        scope,
         category: uploadForm.category as any,
         display_name: uploadForm.display_name.trim(),
         original_name: uploadFile.name,
@@ -376,7 +417,7 @@ const Vault = () => {
         enc_salt: salt,
         notes: uploadForm.notes || null,
         retention_until: uploadForm.retention_until || null,
-      });
+      } as any);
       if (dbErr) throw dbErr;
 
       toast.success("Verschlüsselt & gespeichert");
@@ -418,14 +459,17 @@ const Vault = () => {
   };
 
   // Derived
+  const activeCats = scope === "personal" ? PERSONAL_CATEGORIES : IMMO_CATEGORIES;
   const filtered = useMemo(() => {
     return docs.filter((d) => {
-      if (filterProp !== "all" && d.property_id !== filterProp) return false;
+      if ((d.scope ?? "immo") !== scope) return false;
+      if (scope === "immo" && filterProp !== "all" && d.property_id !== filterProp) return false;
       if (filterCat !== "all" && d.category !== filterCat) return false;
       if (search && !d.display_name.toLowerCase().includes(search.toLowerCase())) return false;
       return true;
     });
-  }, [docs, search, filterProp, filterCat]);
+  }, [docs, search, filterProp, filterCat, scope]);
+  const scopedDocs = useMemo(() => docs.filter((d) => (d.scope ?? "immo") === scope), [docs, scope]);
 
   const totalSize = docs.reduce((a, d) => a + d.size_bytes, 0);
 
@@ -605,8 +649,17 @@ const Vault = () => {
               <p className="text-xs text-success font-semibold uppercase tracking-wider">Tresor entsperrt</p>
             </div>
             <h1 className="text-3xl lg:text-4xl font-bold tracking-tight">
-              Dein <span className="text-gradient-gold">Eigentums-Archiv</span>
+              {scope === "personal" ? (
+                <>Deine <span className="text-gradient-gold">Lebensbürokratie</span></>
+              ) : (
+                <>Dein <span className="text-gradient-gold">Eigentums-Archiv</span></>
+              )}
             </h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              {scope === "personal"
+                ? "Personalausweis, Verträge, Bank, Versicherungen — alles griffbereit, alles verschlüsselt."
+                : "Alle Dokumente zu deinen Objekten — verschlüsselt, sortiert, in Sekunden findbar."}
+            </p>
           </div>
           <div className="flex gap-2 flex-wrap">
             <Button variant="outline" onClick={lock}><Lock className="h-4 w-4 mr-2" />Sperren</Button>
@@ -632,10 +685,38 @@ const Vault = () => {
             >
               <Camera className="h-4 w-4" /> Schnell-Scan
             </Button>
-            <Button onClick={() => setUploadOpen(true)} className="bg-gradient-gold text-primary-foreground shadow-gold">
+            <Button
+              onClick={() => {
+                setUploadForm((s) => ({ ...s, category: scope === "personal" ? "vertrag" : "sonstiges" }));
+                setUploadOpen(true);
+              }}
+              className="bg-gradient-gold text-primary-foreground shadow-gold"
+            >
               <Upload className="h-4 w-4 mr-2" />Mit Details
             </Button>
           </div>
+        </div>
+      </Item>
+
+      {/* Scope-Toggle: Immo vs. Lebensbürokratie */}
+      <Item>
+        <div className="inline-flex p-1 rounded-xl bg-muted/60 border">
+          <button
+            onClick={() => switchScope("immo")}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              scope === "immo" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            🏠 Immobilien
+          </button>
+          <button
+            onClick={() => switchScope("personal")}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              scope === "personal" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            🪪 Lebensbürokratie
+          </button>
         </div>
       </Item>
 
@@ -643,9 +724,9 @@ const Vault = () => {
       <Item>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {[
-            { icon: FileText, label: "Dokumente", value: num(docs.length) },
-            { icon: Building2, label: "Objekte", value: num(properties.length) },
-            { icon: Sparkles, label: "Speicher", value: formatBytes(totalSize) },
+            { icon: FileText, label: scope === "personal" ? "Persönlich" : "Objekt-Docs", value: num(scopedDocs.length) },
+            { icon: Building2, label: scope === "personal" ? "Lebensbereiche" : "Objekte", value: num(scope === "personal" ? PERSONAL_CATEGORIES.length : properties.length) },
+            { icon: Sparkles, label: "Speicher gesamt", value: formatBytes(totalSize) },
             { icon: ShieldCheck, label: "Verschlüsselt", value: "100 %" },
           ].map((s) => (
             <Card key={s.label} className="p-4 glass">
@@ -665,18 +746,20 @@ const Vault = () => {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Dokumente suchen…" className="pl-9" />
             </div>
-            <Select value={filterProp} onValueChange={setFilterProp}>
-              <SelectTrigger className="w-[180px]"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Alle Objekte</SelectItem>
-                {properties.map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
-              </SelectContent>
-            </Select>
+            {scope === "immo" && (
+              <Select value={filterProp} onValueChange={setFilterProp}>
+                <SelectTrigger className="w-[180px]"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Alle Objekte</SelectItem>
+                  {properties.map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            )}
             <Select value={filterCat} onValueChange={setFilterCat}>
-              <SelectTrigger className="w-[200px]"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-[220px]"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Alle Kategorien</SelectItem>
-                {CATEGORIES.map((c) => <SelectItem key={c.value} value={c.value}>{c.emoji} {c.label}</SelectItem>)}
+                {activeCats.map((c) => <SelectItem key={c.value} value={c.value}>{c.emoji} {c.label}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
@@ -716,9 +799,13 @@ const Vault = () => {
         <Item>
           <Card className="p-10 text-center glass">
             <FileText className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
-            <p className="font-medium mb-1">{docs.length === 0 ? "Tresor ist leer" : "Keine Treffer"}</p>
+            <p className="font-medium mb-1">{scopedDocs.length === 0 ? (scope === "personal" ? "Noch keine persönlichen Dokumente" : "Tresor ist leer") : "Keine Treffer"}</p>
             <p className="text-sm text-muted-foreground">
-              {docs.length === 0 ? "Lade dein erstes Dokument hoch — Kaufvertrag, Mietvertrag, Steuerbescheid." : "Filter anpassen oder neu suchen."}
+              {scopedDocs.length === 0
+                ? (scope === "personal"
+                    ? "Personalausweis, Mietvertrag, Versicherungen, Bank-Unterlagen — einmal scannen, nie wieder suchen."
+                    : "Lade dein erstes Dokument hoch — Kaufvertrag, Mietvertrag, Steuerbescheid.")
+                : "Filter anpassen oder neu suchen."}
             </p>
           </Card>
         </Item>
@@ -805,20 +892,22 @@ const Vault = () => {
               <Select value={uploadForm.category} onValueChange={(v) => setUploadForm({ ...uploadForm, category: v })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  {CATEGORIES.map((c) => <SelectItem key={c.value} value={c.value}>{c.emoji} {c.label}</SelectItem>)}
+                  {activeCats.map((c) => <SelectItem key={c.value} value={c.value}>{c.emoji} {c.label}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
-            <div>
-              <Label>Objekt (optional)</Label>
-              <Select value={uploadForm.property_id || "none"} onValueChange={(v) => setUploadForm({ ...uploadForm, property_id: v === "none" ? "" : v })}>
-                <SelectTrigger><SelectValue placeholder="Kein Objekt" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">Kein Objekt</SelectItem>
-                  {properties.map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
+            {scope === "immo" && (
+              <div>
+                <Label>Objekt (optional)</Label>
+                <Select value={uploadForm.property_id || "none"} onValueChange={(v) => setUploadForm({ ...uploadForm, property_id: v === "none" ? "" : v })}>
+                  <SelectTrigger><SelectValue placeholder="Kein Objekt" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">Kein Objekt</SelectItem>
+                    {properties.map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label>Aufbewahren bis</Label>
