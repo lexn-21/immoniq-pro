@@ -8,11 +8,13 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ExternalLink, Plus, AlertOctagon, ListChecks, CheckCircle2, CalendarClock } from "lucide-react";
+import { ExternalLink, Plus, AlertOctagon, ListChecks, CheckCircle2, CalendarClock, LayoutGrid, Rows3 } from "lucide-react";
 import { toast } from "sonner";
 import { toastError } from "@/lib/errors";
 import EmptyState from "@/components/EmptyState";
 import { ListSkeleton } from "@/components/ListSkeleton";
+import { TaskBoard, type BoardTask } from "@/components/TaskBoard";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface Task {
   id: string;
@@ -33,7 +35,17 @@ export default function Tasks() {
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
+  const [view, setView] = useState<"list" | "board">(() =>
+    (typeof window !== "undefined" && (localStorage.getItem("tasks_view") as "list" | "board")) || "list"
+  );
   const [form, setForm] = useState({ title: "", description: "", category: "", due_date: "", property_id: "", legal_ref: "", legal_url: "" });
+
+  const updateTask = async (id: string, patch: Partial<BoardTask>) => {
+    const prev = tasks;
+    setTasks((curr) => curr.map((t) => (t.id === id ? { ...t, ...patch } as Task : t)));
+    const { error } = await supabase.from("tasks").update(patch).eq("id", id);
+    if (error) { setTasks(prev); toastError(error); }
+  };
 
   const load = async () => {
     setLoading(true);
@@ -132,10 +144,23 @@ export default function Tasks() {
         />
       ) : (
         <div className="space-y-6">
-          <Section title="Überfällig" icon={AlertOctagon} tone="destructive" tasks={overdue} onToggle={toggle} propMap={propMap} />
-          <Section title="Bald fällig (30 Tage)" icon={CalendarClock} tone="default" tasks={soon} onToggle={toggle} propMap={propMap} />
-          <Section title="Später" icon={ListChecks} tone="muted" tasks={later} onToggle={toggle} propMap={propMap} />
-          <Section title="Erledigt" icon={CheckCircle2} tone="muted" tasks={done} onToggle={toggle} propMap={propMap} />
+          <Tabs value={view} onValueChange={(v) => { setView(v as any); localStorage.setItem("tasks_view", v); }}>
+            <TabsList>
+              <TabsTrigger value="list" className="gap-1.5"><Rows3 className="h-3.5 w-3.5" />Liste</TabsTrigger>
+              <TabsTrigger value="board" className="gap-1.5"><LayoutGrid className="h-3.5 w-3.5" />Board</TabsTrigger>
+            </TabsList>
+          </Tabs>
+
+          {view === "board" ? (
+            <TaskBoard tasks={tasks as BoardTask[]} propMap={propMap} onChange={updateTask} />
+          ) : (
+            <>
+              <Section title="Überfällig" icon={AlertOctagon} tone="destructive" tasks={overdue} onToggle={toggle} propMap={propMap} />
+              <Section title="Bald fällig (30 Tage)" icon={CalendarClock} tone="default" tasks={soon} onToggle={toggle} propMap={propMap} />
+              <Section title="Später" icon={ListChecks} tone="muted" tasks={later} onToggle={toggle} propMap={propMap} />
+              <Section title="Erledigt" icon={CheckCircle2} tone="muted" tasks={done} onToggle={toggle} propMap={propMap} />
+            </>
+          )}
         </div>
       )}
     </div>
