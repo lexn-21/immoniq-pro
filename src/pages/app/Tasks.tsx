@@ -144,10 +144,23 @@ export default function Tasks() {
         />
       ) : (
         <div className="space-y-6">
-          <Section title="Überfällig" icon={AlertOctagon} tone="destructive" tasks={overdue} onToggle={toggle} propMap={propMap} />
-          <Section title="Bald fällig (30 Tage)" icon={CalendarClock} tone="default" tasks={soon} onToggle={toggle} propMap={propMap} />
-          <Section title="Später" icon={ListChecks} tone="muted" tasks={later} onToggle={toggle} propMap={propMap} />
-          <Section title="Erledigt" icon={CheckCircle2} tone="muted" tasks={done} onToggle={toggle} propMap={propMap} />
+          <Tabs value={view} onValueChange={(v) => { setView(v as any); localStorage.setItem("tasks_view", v); }}>
+            <TabsList>
+              <TabsTrigger value="list" className="gap-1.5"><Rows3 className="h-3.5 w-3.5" />Liste</TabsTrigger>
+              <TabsTrigger value="board" className="gap-1.5"><LayoutGrid className="h-3.5 w-3.5" />Board</TabsTrigger>
+            </TabsList>
+          </Tabs>
+
+          {view === "board" ? (
+            <TaskBoard tasks={tasks as BoardTask[]} propMap={propMap} onChange={updateTask} />
+          ) : (
+            <>
+              <Section title="Überfällig" icon={AlertOctagon} tone="destructive" tasks={overdue} onToggle={toggle} propMap={propMap} />
+              <Section title="Bald fällig (30 Tage)" icon={CalendarClock} tone="default" tasks={soon} onToggle={toggle} propMap={propMap} />
+              <Section title="Später" icon={ListChecks} tone="muted" tasks={later} onToggle={toggle} propMap={propMap} />
+              <Section title="Erledigt" icon={CheckCircle2} tone="muted" tasks={done} onToggle={toggle} propMap={propMap} />
+            </>
+          )}
         </div>
       )}
     </div>
