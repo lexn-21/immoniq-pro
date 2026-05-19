@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { eur, pct, num } from "@/lib/format";
 import { Stagger, Item, Tappable } from "@/components/motion/Primitives";
 import { WinsWidget } from "@/components/WinsWidget";
+import { WeeklyWrapWidget } from "@/components/WeeklyWrapWidget";
 import { GameDeck } from "@/components/GameDeck";
 import { LegalUpdatesWidget } from "@/components/LegalUpdatesWidget";
 import { LeitzinsWidget } from "@/components/LeitzinsWidget";
@@ -220,6 +221,10 @@ const Dashboard = () => {
             </Tappable>
           ))}
         </div>
+      </Item>
+
+      <Item>
+        <WeeklyWrapWidget />
       </Item>
 
       <Item>
