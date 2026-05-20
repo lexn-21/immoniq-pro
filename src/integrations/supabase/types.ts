@@ -804,6 +804,78 @@ export type Database = {
           },
         ]
       }
+      land_parcels: {
+        Row: {
+          area_sqm: number | null
+          bodenrichtwert_eur_sqm: number | null
+          city: string | null
+          created_at: string
+          flur: string | null
+          flurstueck: string | null
+          gemarkung: string | null
+          id: string
+          lat: number | null
+          lease_annual_eur: number | null
+          lease_end_date: string | null
+          lease_holder: string | null
+          lease_type: Database["public"]["Enums"]["lease_type"]
+          lng: number | null
+          name: string
+          notes: string | null
+          org_unit_id: string | null
+          parcel_type: Database["public"]["Enums"]["parcel_type"]
+          updated_at: string
+          user_id: string
+          zip: string | null
+        }
+        Insert: {
+          area_sqm?: number | null
+          bodenrichtwert_eur_sqm?: number | null
+          city?: string | null
+          created_at?: string
+          flur?: string | null
+          flurstueck?: string | null
+          gemarkung?: string | null
+          id?: string
+          lat?: number | null
+          lease_annual_eur?: number | null
+          lease_end_date?: string | null
+          lease_holder?: string | null
+          lease_type?: Database["public"]["Enums"]["lease_type"]
+          lng?: number | null
+          name: string
+          notes?: string | null
+          org_unit_id?: string | null
+          parcel_type?: Database["public"]["Enums"]["parcel_type"]
+          updated_at?: string
+          user_id: string
+          zip?: string | null
+        }
+        Update: {
+          area_sqm?: number | null
+          bodenrichtwert_eur_sqm?: number | null
+          city?: string | null
+          created_at?: string
+          flur?: string | null
+          flurstueck?: string | null
+          gemarkung?: string | null
+          id?: string
+          lat?: number | null
+          lease_annual_eur?: number | null
+          lease_end_date?: string | null
+          lease_holder?: string | null
+          lease_type?: Database["public"]["Enums"]["lease_type"]
+          lng?: number | null
+          name?: string
+          notes?: string | null
+          org_unit_id?: string | null
+          parcel_type?: Database["public"]["Enums"]["parcel_type"]
+          updated_at?: string
+          user_id?: string
+          zip?: string | null
+        }
+        Relationships: []
+      }
       legal_sources: {
         Row: {
           active: boolean
@@ -1390,6 +1462,50 @@ export type Database = {
         }
         Relationships: []
       }
+      org_units: {
+        Row: {
+          contact_email: string | null
+          created_at: string
+          id: string
+          level: Database["public"]["Enums"]["org_level"]
+          name: string
+          notes: string | null
+          parent_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          contact_email?: string | null
+          created_at?: string
+          id?: string
+          level?: Database["public"]["Enums"]["org_level"]
+          name: string
+          notes?: string | null
+          parent_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          contact_email?: string | null
+          created_at?: string
+          id?: string
+          level?: Database["public"]["Enums"]["org_level"]
+          name?: string
+          notes?: string | null
+          parent_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "org_units_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "org_units"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payments: {
         Row: {
           amount: number
@@ -1525,11 +1641,15 @@ export type Database = {
           city: string | null
           cold_rent: number | null
           created_at: string
+          denkmalschutz: boolean
           deposit: number | null
+          erbpacht_ende: string | null
+          erbpacht_zins_jaehrlich: number | null
           id: string
           image_url: string | null
           name: string
           notes: string | null
+          org_unit_id: string | null
           purchase_date: string | null
           purchase_price: number | null
           rooms: number | null
@@ -1548,11 +1668,15 @@ export type Database = {
           city?: string | null
           cold_rent?: number | null
           created_at?: string
+          denkmalschutz?: boolean
           deposit?: number | null
+          erbpacht_ende?: string | null
+          erbpacht_zins_jaehrlich?: number | null
           id?: string
           image_url?: string | null
           name: string
           notes?: string | null
+          org_unit_id?: string | null
           purchase_date?: string | null
           purchase_price?: number | null
           rooms?: number | null
@@ -1571,11 +1695,15 @@ export type Database = {
           city?: string | null
           cold_rent?: number | null
           created_at?: string
+          denkmalschutz?: boolean
           deposit?: number | null
+          erbpacht_ende?: string | null
+          erbpacht_zins_jaehrlich?: number | null
           id?: string
           image_url?: string | null
           name?: string
           notes?: string | null
+          org_unit_id?: string | null
           purchase_date?: string | null
           purchase_price?: number | null
           rooms?: number | null
@@ -2046,6 +2174,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      tenant_pass: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          headline: string | null
+          id: string
+          is_public: boolean
+          landlord_ratings: Json
+          pass_code: string
+          rental_history: Json
+          updated_at: string
+          user_id: string
+          verified_income: Json
+          verified_mietschuldenfrei: Json
+          verified_schufa: Json
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          headline?: string | null
+          id?: string
+          is_public?: boolean
+          landlord_ratings?: Json
+          pass_code?: string
+          rental_history?: Json
+          updated_at?: string
+          user_id: string
+          verified_income?: Json
+          verified_mietschuldenfrei?: Json
+          verified_schufa?: Json
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          headline?: string | null
+          id?: string
+          is_public?: boolean
+          landlord_ratings?: Json
+          pass_code?: string
+          rental_history?: Json
+          updated_at?: string
+          user_id?: string
+          verified_income?: Json
+          verified_mietschuldenfrei?: Json
+          verified_schufa?: Json
+        }
+        Relationships: []
       }
       tenant_portal_links: {
         Row: {
@@ -2644,8 +2820,32 @@ export type Database = {
         | "in_progress"
         | "resolved"
         | "closed"
+      lease_type:
+        | "eigentum"
+        | "erbpacht_geber"
+        | "erbpacht_nehmer"
+        | "pacht"
+        | "miete"
+        | "sonstige"
       listing_kind: "rent" | "sale" | "wg_room"
       listing_status: "draft" | "published" | "paused" | "closed"
+      org_level:
+        | "bistum"
+        | "landeskirche"
+        | "dekanat"
+        | "gemeinde"
+        | "stiftung"
+        | "verwaltung"
+        | "sonstige"
+      parcel_type:
+        | "bauland"
+        | "bauerwartung"
+        | "acker"
+        | "wald"
+        | "wiese"
+        | "garten"
+        | "gewerbe"
+        | "sonstige"
       payment_kind:
         | "rent_cold"
         | "utilities"
@@ -2874,8 +3074,35 @@ export const Constants = {
         "resolved",
         "closed",
       ],
+      lease_type: [
+        "eigentum",
+        "erbpacht_geber",
+        "erbpacht_nehmer",
+        "pacht",
+        "miete",
+        "sonstige",
+      ],
       listing_kind: ["rent", "sale", "wg_room"],
       listing_status: ["draft", "published", "paused", "closed"],
+      org_level: [
+        "bistum",
+        "landeskirche",
+        "dekanat",
+        "gemeinde",
+        "stiftung",
+        "verwaltung",
+        "sonstige",
+      ],
+      parcel_type: [
+        "bauland",
+        "bauerwartung",
+        "acker",
+        "wald",
+        "wiese",
+        "garten",
+        "gewerbe",
+        "sonstige",
+      ],
       payment_kind: [
         "rent_cold",
         "utilities",
