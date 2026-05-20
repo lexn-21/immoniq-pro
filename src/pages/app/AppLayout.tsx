@@ -12,6 +12,7 @@ import {
   Lock, Wrench, Bell, Search, Scale,
   TrendingUp, Megaphone, Inbox,
   FileText, Plus, Home, Menu, X, CalendarCheck, Search as SearchIcon, ScanLine, PartyPopper,
+  Trees, Landmark, IdCard,
 } from "lucide-react";
 import { AskCopilot } from "@/components/AskCopilot";
 import { DocScanner } from "@/components/DocScanner";
@@ -42,10 +43,12 @@ const groups: NavGroup[] = [
     subtitle: "Dein Tagesgeschäft",
     items: [
       { to: "/app/properties", label: "Objekte", icon: Building2, hint: "Deine Immobilien" },
+      { to: "/app/parcels", label: "Grundstücke", icon: Trees, badge: "NEU", hint: "Flurstücke, Erbpacht & Bodenrichtwert" },
       { to: "/app/tenants", label: "Mieter", icon: Users, hint: "Mit Verträgen" },
       { to: "/app/payments", label: "Einnahmen", icon: Wallet },
       { to: "/app/expenses", label: "Ausgaben", icon: Receipt, hint: "Belege scannen" },
       { to: "/app/nebenkosten", label: "Nebenkosten", icon: Calculator, badge: "NEU", hint: "NK-Abrechnung pro Mieter — BetrKV-konform" },
+      { to: "/app/org", label: "Organisation", icon: Landmark, hint: "Bistum → Dekanat → Gemeinde oder Stiftung" },
       { to: "/app/templates", label: "Vorlagen", icon: FileText, hint: "Verträge & Schreiben" },
     ],
   },
@@ -77,7 +80,8 @@ const groups: NavGroup[] = [
       { to: "/app/valuation", label: "Bewertung", icon: TrendingUp, badge: "AVM", hint: "Was ist deine Immobilie wert?" },
       { to: "/app/calculator", label: "Rechner", icon: Calculator, hint: "AfA, Rendite, Tilgung" },
       { to: "/app/tax", label: "Steuer-Brücke", icon: Calculator, hint: "Anlage V Export" },
-      { to: "/app/profile-seeker", label: "Mein Mieter-Profil", icon: Inbox, hint: "Du suchst selbst?" },
+      { to: "/app/pass", label: "Mein Mieter-Pass", icon: IdCard, badge: "NEU", hint: "Persistentes Profil über alle Wohnungen" },
+      { to: "/app/profile-seeker", label: "Bewerbungs-Profil", icon: Inbox, hint: "Du suchst selbst?" },
       { to: "/app/my-applications", label: "Meine Bewerbungen", icon: FileText },
     ],
   },
