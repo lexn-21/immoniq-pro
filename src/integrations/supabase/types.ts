@@ -804,6 +804,87 @@ export type Database = {
           },
         ]
       }
+      inbox_items: {
+        Row: {
+          ai_amount: number | null
+          ai_category: string | null
+          ai_confidence: number | null
+          ai_contract_end: string | null
+          ai_due_date: string | null
+          ai_processed_at: string | null
+          ai_sender: string | null
+          ai_summary: string | null
+          attachments: Json | null
+          body_text: string | null
+          created_at: string
+          from_email: string | null
+          from_name: string | null
+          id: string
+          property_id: string | null
+          raw: Json | null
+          received_at: string
+          source: string
+          status: string
+          subject: string | null
+          task_id: string | null
+          updated_at: string
+          user_id: string
+          vault_item_id: string | null
+        }
+        Insert: {
+          ai_amount?: number | null
+          ai_category?: string | null
+          ai_confidence?: number | null
+          ai_contract_end?: string | null
+          ai_due_date?: string | null
+          ai_processed_at?: string | null
+          ai_sender?: string | null
+          ai_summary?: string | null
+          attachments?: Json | null
+          body_text?: string | null
+          created_at?: string
+          from_email?: string | null
+          from_name?: string | null
+          id?: string
+          property_id?: string | null
+          raw?: Json | null
+          received_at?: string
+          source?: string
+          status?: string
+          subject?: string | null
+          task_id?: string | null
+          updated_at?: string
+          user_id: string
+          vault_item_id?: string | null
+        }
+        Update: {
+          ai_amount?: number | null
+          ai_category?: string | null
+          ai_confidence?: number | null
+          ai_contract_end?: string | null
+          ai_due_date?: string | null
+          ai_processed_at?: string | null
+          ai_sender?: string | null
+          ai_summary?: string | null
+          attachments?: Json | null
+          body_text?: string | null
+          created_at?: string
+          from_email?: string | null
+          from_name?: string | null
+          id?: string
+          property_id?: string | null
+          raw?: Json | null
+          received_at?: string
+          source?: string
+          status?: string
+          subject?: string | null
+          task_id?: string | null
+          updated_at?: string
+          user_id?: string
+          vault_item_id?: string | null
+        }
+        Relationships: []
+      }
       land_parcels: {
         Row: {
           area_sqm: number | null
@@ -1614,6 +1695,7 @@ export type Database = {
           created_at: string
           display_name: string | null
           id: string
+          inbox_alias: string | null
           updated_at: string
           user_id: string
         }
@@ -1621,6 +1703,7 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          inbox_alias?: string | null
           updated_at?: string
           user_id: string
         }
@@ -1628,6 +1711,7 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          inbox_alias?: string | null
           updated_at?: string
           user_id?: string
         }
