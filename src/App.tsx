@@ -67,6 +67,7 @@ const LandParcels = lazy(() => import("./pages/app/LandParcels"));
 const OrgUnits = lazy(() => import("./pages/app/OrgUnits"));
 const TenantPass = lazy(() => import("./pages/app/TenantPass"));
 const SmartInbox = lazy(() => import("./pages/app/SmartInbox"));
+const PassPublic = lazy(() => import("./pages/PassPublic"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -93,6 +94,7 @@ const App = () => (
               <Route path="/advisor/:token" element={<AdvisorView />} />
               <Route path="/mieter/:token" element={<TenantPortal />} />
               <Route path="/wg-casting/:token" element={<WgCasting />} />
+              <Route path="/pass/:code" element={<PassPublic />} />
               <Route path="/markt" element={<Markt />} />
               <Route path="/markt/vergleich" element={<MarktVergleich />} />
               <Route path="/markt/:id" element={<MarktDetail />} />
