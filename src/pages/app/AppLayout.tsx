@@ -34,6 +34,7 @@ const groups: NavGroup[] = [
     title: "Überblick",
     items: [
       { to: "/app", label: "Dashboard", icon: Home, end: true, hint: "Cashflow, KPIs, Termine" },
+      { to: "/app/inbox", label: "Smart Inbox", icon: Inbox, badge: "AI", hint: "E-Mails an deine Inbox-Adresse — AI sortiert & legt Aufgaben an" },
       { to: "/app/tasks", label: "Mein Plan", icon: CalendarCheck, badge: "TO-DO", hint: "Alle Aufgaben & Fristen — nichts mehr verpassen" },
       { to: "/app/feed", label: "Community", icon: PartyPopper, badge: "NEU", hint: "Anonyme Wins & Tipps von verifizierten Eigentümern" },
     ],
