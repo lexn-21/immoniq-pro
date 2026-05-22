@@ -68,6 +68,7 @@ const OrgUnits = lazy(() => import("./pages/app/OrgUnits"));
 const TenantPass = lazy(() => import("./pages/app/TenantPass"));
 const SmartInbox = lazy(() => import("./pages/app/SmartInbox"));
 const PassPublic = lazy(() => import("./pages/PassPublic"));
+const Messenger = lazy(() => import("./pages/app/Messenger"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -154,6 +155,7 @@ const App = () => (
                 <Route path="org" element={<OrgUnits />} />
                 <Route path="pass" element={<TenantPass />} />
                 <Route path="inbox" element={<SmartInbox />} />
+                <Route path="messenger" element={<Messenger />} />
                 <Route path="ads" element={<MyAds />} />
                 <Route path="admin/ads" element={<AdminAds />} />
                 <Route path="settings" element={<Settings />} />

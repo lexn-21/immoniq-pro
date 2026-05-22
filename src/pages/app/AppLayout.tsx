@@ -12,7 +12,7 @@ import {
   Lock, Wrench, Bell, Search, Scale,
   TrendingUp, Megaphone, Inbox,
   FileText, Plus, Home, Menu, X, CalendarCheck, Search as SearchIcon, ScanLine, PartyPopper,
-  Trees, Landmark, IdCard,
+  Trees, Landmark, IdCard, MessageSquare, Sparkles, ToggleLeft, ToggleRight,
 } from "lucide-react";
 import { AskCopilot } from "@/components/AskCopilot";
 import { DocScanner } from "@/components/DocScanner";
@@ -25,17 +25,18 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
 
-type NavItem = { to: string; label: string; icon: any; end?: boolean; badge?: string; hint?: string };
-type NavGroup = { title: string; subtitle?: string; items: NavItem[] };
+type NavItem = { to: string; label: string; icon: any; end?: boolean; badge?: string; hint?: string; simple?: boolean };
+type NavGroup = { title: string; subtitle?: string; items: NavItem[]; simple?: boolean };
 
 // Reihenfolge nach Nutzungs-Frequenz: Verwalten (täglich) → Vermieten → Tresor → Tools
 const groups: NavGroup[] = [
   {
     title: "Überblick",
     items: [
-      { to: "/app", label: "Dashboard", icon: Home, end: true, hint: "Cashflow, KPIs, Termine" },
-      { to: "/app/inbox", label: "Smart Inbox", icon: Inbox, badge: "AI", hint: "E-Mails an deine Inbox-Adresse — AI sortiert & legt Aufgaben an" },
-      { to: "/app/tasks", label: "Mein Plan", icon: CalendarCheck, badge: "TO-DO", hint: "Alle Aufgaben & Fristen — nichts mehr verpassen" },
+      { to: "/app", label: "Dashboard", icon: Home, end: true, hint: "Cashflow, KPIs, Termine", simple: true },
+      { to: "/app/inbox", label: "Smart Inbox", icon: Inbox, badge: "AI", hint: "E-Mails an deine Inbox-Adresse — AI sortiert & legt Aufgaben an", simple: true },
+      { to: "/app/tasks", label: "Mein Plan", icon: CalendarCheck, badge: "TO-DO", hint: "Alle Aufgaben & Fristen — nichts mehr verpassen", simple: true },
+      { to: "/app/messenger", label: "Nachrichten", icon: MessageSquare, badge: "NEU", hint: "Chat mit Mietern, Bewerbern & Interessenten", simple: true },
       { to: "/app/feed", label: "Community", icon: PartyPopper, badge: "NEU", hint: "Anonyme Wins & Tipps von verifizierten Eigentümern" },
     ],
   },
@@ -43,14 +44,14 @@ const groups: NavGroup[] = [
     title: "Verwalten",
     subtitle: "Dein Tagesgeschäft",
     items: [
-      { to: "/app/properties", label: "Objekte", icon: Building2, hint: "Deine Immobilien" },
+      { to: "/app/properties", label: "Objekte", icon: Building2, hint: "Deine Immobilien", simple: true },
       { to: "/app/parcels", label: "Grundstücke", icon: Trees, badge: "NEU", hint: "Flurstücke, Erbpacht & Bodenrichtwert" },
-      { to: "/app/tenants", label: "Mieter", icon: Users, hint: "Mit Verträgen" },
-      { to: "/app/payments", label: "Einnahmen", icon: Wallet },
-      { to: "/app/expenses", label: "Ausgaben", icon: Receipt, hint: "Belege scannen" },
-      { to: "/app/nebenkosten", label: "Nebenkosten", icon: Calculator, badge: "NEU", hint: "NK-Abrechnung pro Mieter — BetrKV-konform" },
+      { to: "/app/tenants", label: "Mieter", icon: Users, hint: "Mit Verträgen", simple: true },
+      { to: "/app/payments", label: "Einnahmen", icon: Wallet, simple: true },
+      { to: "/app/expenses", label: "Ausgaben", icon: Receipt, hint: "Belege scannen", simple: true },
+      { to: "/app/nebenkosten", label: "Nebenkosten", icon: Calculator, badge: "NEU", hint: "NK-Abrechnung pro Mieter — BetrKV-konform", simple: true },
       { to: "/app/org", label: "Organisation", icon: Landmark, hint: "Bistum → Dekanat → Gemeinde oder Stiftung" },
-      { to: "/app/templates", label: "Vorlagen", icon: FileText, hint: "Verträge & Schreiben" },
+      { to: "/app/templates", label: "Vorlagen", icon: FileText, hint: "Verträge & Schreiben", simple: true },
     ],
   },
   {
@@ -68,8 +69,8 @@ const groups: NavGroup[] = [
     title: "Tresor & Recht",
     subtitle: "Dokumente sicher · Gesetze parat",
     items: [
-      { to: "/app/vault", label: "Tresor (Immo)", icon: Lock, badge: "AES-256", hint: "Verschlüsselte Dokumente zu Objekten" },
-      { to: "/app/vault?scope=personal", label: "Lebensbürokratie", icon: Lock, badge: "NEU", hint: "Ausweis, Verträge, Bank, Versicherungen — alles griffbereit" },
+      { to: "/app/vault", label: "Tresor (Immo)", icon: Lock, badge: "AES-256", hint: "Verschlüsselte Dokumente zu Objekten", simple: true },
+      { to: "/app/vault?scope=personal", label: "Lebensbürokratie", icon: Lock, badge: "NEU", hint: "Ausweis, Verträge, Bank, Versicherungen — alles griffbereit", simple: true },
       { to: "/app/law", label: "Rechts-Ecke", icon: Scale, hint: "BGB, WEG, HeizkostenV" },
       { to: "/app/advisor", label: "Steuerberater", icon: ShieldCheck, hint: "Sicher freigeben" },
     ],
@@ -123,6 +124,13 @@ const AppLayout = () => {
   const [createOpen, setCreateOpen] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [scannerOpen, setScannerOpen] = useState(false);
+  const [mode, setMode] = useState<"simple" | "full">(() =>
+    (typeof window !== "undefined" && (localStorage.getItem("immoniq_mode") as any)) || "full"
+  );
+  useEffect(() => { localStorage.setItem("immoniq_mode", mode); }, [mode]);
+  const visibleGroups = mode === "simple"
+    ? groups.map((g) => ({ ...g, items: g.items.filter((i) => i.simple) })).filter((g) => g.items.length > 0)
+    : groups;
   const handleSignOut = async () => { await signOut(); navigate("/", { replace: true }); };
 
   // Schließe Drawer bei Routenwechsel
@@ -173,7 +181,7 @@ const AppLayout = () => {
           </div>
 
           <nav className="flex-1 px-3 space-y-5 overflow-y-auto pb-4">
-            {groups.map((g) => (
+            {visibleGroups.map((g) => (
               <div key={g.title}>
                 <div className="px-3 mb-2">
                   <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/80">
@@ -229,6 +237,15 @@ const AppLayout = () => {
           </nav>
 
           <div className="p-4 border-t border-border/60 space-y-2">
+            <button
+              onClick={() => setMode(mode === "simple" ? "full" : "simple")}
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-muted-foreground hover:bg-muted/60 hover:text-foreground transition"
+              title="Zwischen einfachem und vollem Modus wechseln"
+            >
+              {mode === "simple" ? <ToggleLeft className="h-[18px] w-[18px]" /> : <ToggleRight className="h-[18px] w-[18px] text-primary" />}
+              <span className="flex-1 text-left">{mode === "simple" ? "Einfach-Modus" : "Profi-Modus"}</span>
+              <Sparkles className="h-3 w-3 opacity-60" />
+            </button>
             <NavLink
               to="/app/settings"
               className={({ isActive }) =>
@@ -295,7 +312,7 @@ const AppLayout = () => {
                   </Button>
                 </div>
                 <nav className="flex-1 overflow-y-auto p-3 space-y-5">
-                  {groups.map((g) => (
+                  {visibleGroups.map((g) => (
                     <div key={g.title}>
                       <p className="px-3 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/80 mb-2">{g.title}</p>
                       <div className="space-y-0.5">
