@@ -237,6 +237,15 @@ const AppLayout = () => {
           </nav>
 
           <div className="p-4 border-t border-border/60 space-y-2">
+            <button
+              onClick={() => setMode(mode === "simple" ? "full" : "simple")}
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-muted-foreground hover:bg-muted/60 hover:text-foreground transition"
+              title="Zwischen einfachem und vollem Modus wechseln"
+            >
+              {mode === "simple" ? <ToggleLeft className="h-[18px] w-[18px]" /> : <ToggleRight className="h-[18px] w-[18px] text-primary" />}
+              <span className="flex-1 text-left">{mode === "simple" ? "Einfach-Modus" : "Profi-Modus"}</span>
+              <Sparkles className="h-3 w-3 opacity-60" />
+            </button>
             <NavLink
               to="/app/settings"
               className={({ isActive }) =>
