@@ -25,8 +25,8 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
 
-type NavItem = { to: string; label: string; icon: any; end?: boolean; badge?: string; hint?: string };
-type NavGroup = { title: string; subtitle?: string; items: NavItem[] };
+type NavItem = { to: string; label: string; icon: any; end?: boolean; badge?: string; hint?: string; simple?: boolean };
+type NavGroup = { title: string; subtitle?: string; items: NavItem[]; simple?: boolean };
 
 // Reihenfolge nach Nutzungs-Frequenz: Verwalten (täglich) → Vermieten → Tresor → Tools
 const groups: NavGroup[] = [
