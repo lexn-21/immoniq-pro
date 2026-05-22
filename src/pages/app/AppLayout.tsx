@@ -181,7 +181,7 @@ const AppLayout = () => {
           </div>
 
           <nav className="flex-1 px-3 space-y-5 overflow-y-auto pb-4">
-            {groups.map((g) => (
+            {visibleGroups.map((g) => (
               <div key={g.title}>
                 <div className="px-3 mb-2">
                   <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/80">
@@ -303,7 +303,7 @@ const AppLayout = () => {
                   </Button>
                 </div>
                 <nav className="flex-1 overflow-y-auto p-3 space-y-5">
-                  {groups.map((g) => (
+                  {visibleGroups.map((g) => (
                     <div key={g.title}>
                       <p className="px-3 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/80 mb-2">{g.title}</p>
                       <div className="space-y-0.5">
