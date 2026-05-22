@@ -124,6 +124,13 @@ const AppLayout = () => {
   const [createOpen, setCreateOpen] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [scannerOpen, setScannerOpen] = useState(false);
+  const [mode, setMode] = useState<"simple" | "full">(() =>
+    (typeof window !== "undefined" && (localStorage.getItem("immoniq_mode") as any)) || "full"
+  );
+  useEffect(() => { localStorage.setItem("immoniq_mode", mode); }, [mode]);
+  const visibleGroups = mode === "simple"
+    ? groups.map((g) => ({ ...g, items: g.items.filter((i) => i.simple) })).filter((g) => g.items.length > 0)
+    : groups;
   const handleSignOut = async () => { await signOut(); navigate("/", { replace: true }); };
 
   // Schließe Drawer bei Routenwechsel
