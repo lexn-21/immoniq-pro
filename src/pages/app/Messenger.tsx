@@ -50,19 +50,26 @@ export default function Messenger() {
       // Alle Apps, wo ich beteiligt bin
       const { data: apps, error } = await supabase
         .from("applications")
-        .select("id, listing_id, owner_user_id, seeker_user_id, snapshot_profile, created_at, listings(title)")
+        .select("id, listing_id, owner_user_id, seeker_user_id, snapshot_profile, created_at")
         .or(`owner_user_id.eq.${user.id},seeker_user_id.eq.${user.id}`)
         .order("created_at", { ascending: false });
       if (error) { toastError(error); setLoading(false); return; }
 
       const appIds = (apps ?? []).map((a: any) => a.id);
-      const { data: lastMsgs } = appIds.length
-        ? await supabase
-            .from("listing_messages")
-            .select("application_id, body, created_at, sender_user_id, read_at")
-            .in("application_id", appIds)
-            .order("created_at", { ascending: false })
-        : { data: [] as any[] };
+      const listingIds = Array.from(new Set((apps ?? []).map((a: any) => a.listing_id).filter(Boolean)));
+      const [{ data: lastMsgs }, { data: listingsData }] = await Promise.all([
+        appIds.length
+          ? supabase
+              .from("listing_messages")
+              .select("application_id, body, created_at, sender_user_id, read_at")
+              .in("application_id", appIds)
+              .order("created_at", { ascending: false })
+          : Promise.resolve({ data: [] as any[] }),
+        listingIds.length
+          ? supabase.from("listings").select("id, title").in("id", listingIds as string[])
+          : Promise.resolve({ data: [] as any[] }),
+      ]);
+      const titleMap = new Map<string, string>((listingsData ?? []).map((l: any) => [l.id, l.title]));
 
       const map = new Map<string, { body: string; at: string; unread: number }>();
       (lastMsgs ?? []).forEach((m: any) => {
