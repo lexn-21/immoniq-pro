@@ -93,7 +93,7 @@ export default function Messenger() {
         return {
           application_id: a.id,
           listing_id: a.listing_id,
-          listing_title: a.listings?.title || "Inserat",
+          listing_title: titleMap.get(a.listing_id) || "Inserat",
           other_user_id: otherId,
           other_name: otherName,
           role,
