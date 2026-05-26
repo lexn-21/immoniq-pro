@@ -143,8 +143,14 @@ const App = () => (
                 <Route path="listings/new" element={<ListingEditor />} />
                 <Route path="listings/:id/edit" element={<ListingEditor />} />
                 <Route path="listings/:id/applications" element={<ListingApplications />} />
-                <Route path="profile-seeker" element={<SeekerProfile />} />
-                <Route path="applications" element={<MyApplications />} />
+                <Route path="profile" element={<Profile />} />
+                <Route path="profile-seeker" element={<Profile />} />
+                <Route path="pass" element={<Profile />} />
+                <Route path="applications" element={<Messenger />} />
+                <Route path="my-applications" element={<Messenger />} />
+                <Route path="_legacy/seeker" element={<SeekerProfile />} />
+                <Route path="_legacy/my-applications" element={<MyApplications />} />
+                <Route path="_legacy/pass" element={<TenantPass />} />
                 <Route path="marketplace" element={<Marketplace />} />
                 <Route path="calculator" element={<Calculator />} />
                 <Route path="tasks" element={<Tasks />} />
