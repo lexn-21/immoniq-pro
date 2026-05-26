@@ -11,6 +11,7 @@ import {
 import { toast } from "sonner";
 import { searchProviders, type Provider } from "@/lib/places";
 import { num } from "@/lib/format";
+import { supabase } from "@/integrations/supabase/client";
 
 type Category = {
   id: string;
