@@ -68,9 +68,11 @@ const Marketplace = () => {
   const [source, setSource] = useState<"google" | "osm" | "cache" | null>(null);
   const [warning, setWarning] = useState<string | null>(null);
   const [centerLabel, setCenterLabel] = useState<string | null>(null);
+  const [properties, setProperties] = useState<Array<{ id: string; name: string; zip: string | null; city: string | null }>>([]);
 
   useEffect(() => {
     document.title = "Experten finden · ImmonIQ";
+    supabase.from("properties").select("id,name,zip,city").then(({ data }) => setProperties(data ?? []));
   }, []);
 
   const activeMeta = useMemo(() => CATEGORIES.find((c) => c.id === activeCat), [activeCat]);
