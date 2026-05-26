@@ -79,12 +79,10 @@ const groups: NavGroup[] = [
     title: "Tools",
     subtitle: "Selten gebraucht — aber nützlich",
     items: [
+      { to: "/app/profile", label: "Mein Profil", icon: IdCard, badge: "NEU", hint: "Steckbrief, Bewerber-Daten, Vermieter-Trust — alles an einem Ort", simple: true },
       { to: "/app/valuation", label: "Bewertung", icon: TrendingUp, badge: "AVM", hint: "Was ist deine Immobilie wert?" },
       { to: "/app/calculator", label: "Rechner", icon: Calculator, hint: "AfA, Rendite, Tilgung" },
       { to: "/app/tax", label: "Steuer-Brücke", icon: Calculator, hint: "Anlage V Export" },
-      { to: "/app/pass", label: "Mein Mieter-Pass", icon: IdCard, badge: "NEU", hint: "Persistentes Profil über alle Wohnungen" },
-      { to: "/app/profile-seeker", label: "Bewerbungs-Profil", icon: Inbox, hint: "Du suchst selbst?" },
-      { to: "/app/my-applications", label: "Meine Bewerbungen", icon: FileText },
     ],
   },
 ];
