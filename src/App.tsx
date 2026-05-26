@@ -69,6 +69,7 @@ const TenantPass = lazy(() => import("./pages/app/TenantPass"));
 const SmartInbox = lazy(() => import("./pages/app/SmartInbox"));
 const PassPublic = lazy(() => import("./pages/PassPublic"));
 const Messenger = lazy(() => import("./pages/app/Messenger"));
+const Profile = lazy(() => import("./pages/app/Profile"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
