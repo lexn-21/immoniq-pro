@@ -11,6 +11,7 @@ import {
 import { toast } from "sonner";
 import { searchProviders, type Provider } from "@/lib/places";
 import { num } from "@/lib/format";
+import { supabase } from "@/integrations/supabase/client";
 
 type Category = {
   id: string;
@@ -67,9 +68,11 @@ const Marketplace = () => {
   const [source, setSource] = useState<"google" | "osm" | "cache" | null>(null);
   const [warning, setWarning] = useState<string | null>(null);
   const [centerLabel, setCenterLabel] = useState<string | null>(null);
+  const [properties, setProperties] = useState<Array<{ id: string; name: string; zip: string | null; city: string | null }>>([]);
 
   useEffect(() => {
     document.title = "Experten finden · ImmonIQ";
+    supabase.from("properties").select("id,name,zip,city").then(({ data }) => setProperties(data ?? []));
   }, []);
 
   const activeMeta = useMemo(() => CATEGORIES.find((c) => c.id === activeCat), [activeCat]);
@@ -152,6 +155,20 @@ const Marketplace = () => {
             </select>
           </div>
         </div>
+        {properties.length > 0 && (
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <span className="text-[11px] uppercase tracking-wide text-muted-foreground">Objekt wählen:</span>
+            {properties.filter(p => p.zip || p.city).slice(0, 6).map(p => (
+              <button
+                key={p.id}
+                onClick={() => setQuery(p.zip || p.city || "")}
+                className="text-[11px] px-2 py-1 rounded-full bg-muted hover:bg-primary/10 hover:text-primary transition"
+              >
+                {p.name} {p.zip ? `· ${p.zip}` : p.city ? `· ${p.city}` : ""}
+              </button>
+            ))}
+          </div>
+        )}
         {centerLabel && (
           <p className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
             <MapPin className="h-3 w-3" /> Suchgebiet: {centerLabel}
