@@ -2521,6 +2521,39 @@ export type Database = {
         }
         Relationships: []
       }
+      user_templates: {
+        Row: {
+          body_md: string
+          category: string | null
+          created_at: string
+          id: string
+          source_template_id: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          body_md?: string
+          category?: string | null
+          created_at?: string
+          id?: string
+          source_template_id?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          body_md?: string
+          category?: string | null
+          created_at?: string
+          id?: string
+          source_template_id?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       vault_documents: {
         Row: {
           category: Database["public"]["Enums"]["vault_category"]
