@@ -217,6 +217,7 @@ export default function Templates() {
                         {t.category && <Badge variant="outline" className="mt-1">{t.category}</Badge>}
                       </div>
                       <div className="flex gap-1 flex-shrink-0">
+                        <Button size="icon" variant="ghost" className="h-7 w-7" title="Auf Mieter/Objekt anwenden" onClick={() => { setApplyTemplate(t); setApplyOpen(true); }}><Wand2 className="h-3.5 w-3.5 text-primary" /></Button>
                         <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => { setEdit(t); setOpen(true); }}><Pencil className="h-3.5 w-3.5" /></Button>
                         <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => duplicate(t)}><Copy className="h-3.5 w-3.5" /></Button>
                         <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => exportTxt(t)}><Download className="h-3.5 w-3.5" /></Button>
