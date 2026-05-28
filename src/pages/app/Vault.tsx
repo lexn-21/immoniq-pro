@@ -461,15 +461,24 @@ const Vault = () => {
   // Derived
   const activeCats = scope === "personal" ? PERSONAL_CATEGORIES : IMMO_CATEGORIES;
   const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
     return docs.filter((d) => {
       if ((d.scope ?? "immo") !== scope) return false;
       if (scope === "immo" && filterProp !== "all" && d.property_id !== filterProp) return false;
       if (filterCat !== "all" && d.category !== filterCat) return false;
-      if (search && !d.display_name.toLowerCase().includes(search.toLowerCase())) return false;
+      if (q) {
+        const hay = `${d.display_name} ${d.original_name ?? ""} ${d.notes ?? ""} ${d.category ?? ""}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
       return true;
     });
   }, [docs, search, filterProp, filterCat, scope]);
   const scopedDocs = useMemo(() => docs.filter((d) => (d.scope ?? "immo") === scope), [docs, scope]);
+  const catCounts = useMemo(() => {
+    const m: Record<string, number> = {};
+    scopedDocs.forEach((d) => { m[d.category] = (m[d.category] ?? 0) + 1; });
+    return m;
+  }, [scopedDocs]);
 
   const totalSize = docs.reduce((a, d) => a + d.size_bytes, 0);
 
