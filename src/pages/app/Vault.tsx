@@ -747,6 +747,46 @@ const Vault = () => {
         </div>
       </Item>
 
+      {/* Kategorien-Übersicht — alles auf einen Blick */}
+      <Item>
+        <Card className="p-4 glass">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Kategorien</p>
+            {filterCat !== "all" && (
+              <button onClick={() => setFilterCat("all")} className="text-[11px] text-primary hover:underline">Filter zurücksetzen</button>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setFilterCat("all")}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium border transition ${
+                filterCat === "all" ? "bg-primary text-primary-foreground border-primary" : "bg-muted/40 border-border hover:bg-muted"
+              }`}
+            >
+              Alle <span className="opacity-70">· {scopedDocs.length}</span>
+            </button>
+            {activeCats.map((c) => {
+              const n = catCounts[c.value] ?? 0;
+              const active = filterCat === c.value;
+              return (
+                <button
+                  key={c.value}
+                  onClick={() => setFilterCat(active ? "all" : c.value)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium border transition ${
+                    active ? "bg-primary text-primary-foreground border-primary"
+                    : n === 0 ? "bg-muted/20 border-border/40 text-muted-foreground/60 hover:bg-muted/40"
+                    : "bg-muted/40 border-border hover:bg-muted"
+                  }`}
+                >
+                  <span className="mr-1">{c.emoji}</span>{c.label}
+                  <span className={`ml-1.5 ${active ? "opacity-80" : "opacity-60"}`}>· {n}</span>
+                </button>
+              );
+            })}
+          </div>
+        </Card>
+      </Item>
+
       {/* Filters */}
       <Item>
         <Card className="p-4 glass">
