@@ -205,17 +205,7 @@ export default function TenantDetail() {
 
         {/* Vertrag */}
         <TabsContent value="contract">
-          <Card className="p-5 glass space-y-3">
-            <h3 className="font-semibold flex items-center gap-2"><CalendarDays className="h-4 w-4" /> Vertragsdetails</h3>
-            <div className="grid sm:grid-cols-2 gap-3 text-sm">
-              <Row label="Mietbeginn" value={date(tenant.lease_start)} />
-              <Row label="Mietende" value={tenant.lease_end ? date(tenant.lease_end) : "unbefristet"} />
-              <Row label="E-Mail" value={tenant.email || "—"} icon={Mail} />
-              <Row label="Telefon" value={tenant.phone || "—"} icon={Phone} />
-              <Row label="Kaltmiete (Objekt)" value={eur(property?.cold_rent || 0)} />
-              <Row label="Nebenkosten (Objekt)" value={eur(property?.utilities || 0)} />
-            </div>
-          </Card>
+          <ContractPanel tenant={tenant} property={property} reload={load} />
         </TabsContent>
 
         {/* Zahlungen */}
