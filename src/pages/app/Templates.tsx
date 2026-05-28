@@ -232,6 +232,112 @@ export default function Templates() {
           )}
         </TabsContent>
       </Tabs>
+
+      <ApplyDialog open={applyOpen} onOpenChange={setApplyOpen} template={applyTemplate} />
     </div>
+  );
+}
+
+function ApplyDialog({ open, onOpenChange, template }: { open: boolean; onOpenChange: (v: boolean) => void; template: UserTemplate | null }) {
+  const [tenants, setTenants] = useState<any[]>([]);
+  const [properties, setProperties] = useState<any[]>([]);
+  const [tenantId, setTenantId] = useState<string>("");
+  const [propertyId, setPropertyId] = useState<string>("");
+  const [output, setOutput] = useState("");
+  const [profile, setProfile] = useState<any>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    (async () => {
+      const [t, p, prof] = await Promise.all([
+        supabase.from("tenants").select("id,full_name,email,phone,lease_start,lease_end,deposit,property_id,unit_id").order("full_name"),
+        supabase.from("properties").select("id,name,street,zip,city,cold_rent,utilities").order("name"),
+        supabase.from("profiles").select("display_name").maybeSingle(),
+      ]);
+      setTenants(t.data ?? []);
+      setProperties(p.data ?? []);
+      setProfile(prof.data);
+    })();
+  }, [open]);
+
+  useEffect(() => {
+    if (!template) { setOutput(""); return; }
+    const tenant = tenants.find(x => x.id === tenantId);
+    const prop = properties.find(x => x.id === propertyId) ?? properties.find(x => x.id === tenant?.property_id);
+    const today = new Date();
+    const fmtDate = (d: any) => d ? new Date(d).toLocaleDateString("de-DE") : "";
+    const fmtEur = (n: any) => n != null ? Number(n).toLocaleString("de-DE", { style: "currency", currency: "EUR" }) : "";
+    const vars: Record<string, string> = {
+      name: tenant?.full_name ?? "",
+      mieter: tenant?.full_name ?? "",
+      email: tenant?.email ?? "",
+      telefon: tenant?.phone ?? "",
+      mietbeginn: fmtDate(tenant?.lease_start),
+      mietende: fmtDate(tenant?.lease_end),
+      kaution: fmtEur(tenant?.deposit),
+      objekt: prop?.name ?? "",
+      strasse: prop?.street ?? "",
+      plz: prop?.zip ?? "",
+      ort: prop?.city ?? "",
+      adresse: [prop?.street, [prop?.zip, prop?.city].filter(Boolean).join(" ")].filter(Boolean).join(", "),
+      kaltmiete: fmtEur(prop?.cold_rent),
+      nebenkosten: fmtEur(prop?.utilities),
+      datum: today.toLocaleDateString("de-DE"),
+      heute: today.toLocaleDateString("de-DE"),
+      vermieter: profile?.display_name ?? "",
+    };
+    let out = template.body_md;
+    Object.entries(vars).forEach(([k, v]) => {
+      out = out.replace(new RegExp(`\\{${k}\\}`, "gi"), v);
+    });
+    setOutput(out);
+  }, [template, tenantId, propertyId, tenants, properties, profile]);
+
+  const copy = async () => {
+    await navigator.clipboard.writeText(output);
+    toast.success("Text kopiert");
+  };
+
+  const download = () => {
+    const blob = new Blob([output], { type: "text/plain" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `${template?.title ?? "vorlage"}-ausgefuellt.txt`;
+    a.click();
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-3xl">
+        <DialogHeader><DialogTitle>Vorlage anwenden · {template?.title}</DialogTitle></DialogHeader>
+        <div className="space-y-3">
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div>
+              <Label>Mieter</Label>
+              <select className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm" value={tenantId} onChange={e => setTenantId(e.target.value)}>
+                <option value="">— keiner —</option>
+                {tenants.map(t => <option key={t.id} value={t.id}>{t.full_name}</option>)}
+              </select>
+            </div>
+            <div>
+              <Label>Objekt</Label>
+              <select className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm" value={propertyId} onChange={e => setPropertyId(e.target.value)}>
+                <option value="">— Mieter-Objekt nutzen —</option>
+                {properties.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+              </select>
+            </div>
+          </div>
+          <div className="text-[11px] text-muted-foreground">
+            Platzhalter: <code className="bg-muted px-1 rounded">{"{name}"}</code>, <code className="bg-muted px-1 rounded">{"{adresse}"}</code>, <code className="bg-muted px-1 rounded">{"{kaltmiete}"}</code>, <code className="bg-muted px-1 rounded">{"{datum}"}</code>, <code className="bg-muted px-1 rounded">{"{mietbeginn}"}</code>, <code className="bg-muted px-1 rounded">{"{vermieter}"}</code> u. a.
+          </div>
+          <Textarea rows={14} value={output} onChange={e => setOutput(e.target.value)} className="font-mono text-xs" />
+        </div>
+        <DialogFooter>
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>Schließen</Button>
+          <Button variant="outline" onClick={download}><Download className="h-3.5 w-3.5 mr-1.5" /> Als .txt</Button>
+          <Button onClick={copy} className="bg-gradient-gold text-primary-foreground shadow-gold"><Copy className="h-3.5 w-3.5 mr-1.5" /> Kopieren</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
