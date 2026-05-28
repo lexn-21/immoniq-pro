@@ -41,6 +41,8 @@ export default function Templates() {
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState<Partial<UserTemplate>>({});
   const [saving, setSaving] = useState(false);
+  const [applyOpen, setApplyOpen] = useState(false);
+  const [applyTemplate, setApplyTemplate] = useState<UserTemplate | null>(null);
 
   useEffect(() => {
     document.title = "Vertragsvorlagen · ImmonIQ";
