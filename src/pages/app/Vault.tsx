@@ -461,15 +461,24 @@ const Vault = () => {
   // Derived
   const activeCats = scope === "personal" ? PERSONAL_CATEGORIES : IMMO_CATEGORIES;
   const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
     return docs.filter((d) => {
       if ((d.scope ?? "immo") !== scope) return false;
       if (scope === "immo" && filterProp !== "all" && d.property_id !== filterProp) return false;
       if (filterCat !== "all" && d.category !== filterCat) return false;
-      if (search && !d.display_name.toLowerCase().includes(search.toLowerCase())) return false;
+      if (q) {
+        const hay = `${d.display_name} ${d.original_name ?? ""} ${d.notes ?? ""} ${d.category ?? ""}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
       return true;
     });
   }, [docs, search, filterProp, filterCat, scope]);
   const scopedDocs = useMemo(() => docs.filter((d) => (d.scope ?? "immo") === scope), [docs, scope]);
+  const catCounts = useMemo(() => {
+    const m: Record<string, number> = {};
+    scopedDocs.forEach((d) => { m[d.category] = (m[d.category] ?? 0) + 1; });
+    return m;
+  }, [scopedDocs]);
 
   const totalSize = docs.reduce((a, d) => a + d.size_bytes, 0);
 
@@ -736,6 +745,46 @@ const Vault = () => {
             </Card>
           ))}
         </div>
+      </Item>
+
+      {/* Kategorien-Übersicht — alles auf einen Blick */}
+      <Item>
+        <Card className="p-4 glass">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Kategorien</p>
+            {filterCat !== "all" && (
+              <button onClick={() => setFilterCat("all")} className="text-[11px] text-primary hover:underline">Filter zurücksetzen</button>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setFilterCat("all")}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium border transition ${
+                filterCat === "all" ? "bg-primary text-primary-foreground border-primary" : "bg-muted/40 border-border hover:bg-muted"
+              }`}
+            >
+              Alle <span className="opacity-70">· {scopedDocs.length}</span>
+            </button>
+            {activeCats.map((c) => {
+              const n = catCounts[c.value] ?? 0;
+              const active = filterCat === c.value;
+              return (
+                <button
+                  key={c.value}
+                  onClick={() => setFilterCat(active ? "all" : c.value)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium border transition ${
+                    active ? "bg-primary text-primary-foreground border-primary"
+                    : n === 0 ? "bg-muted/20 border-border/40 text-muted-foreground/60 hover:bg-muted/40"
+                    : "bg-muted/40 border-border hover:bg-muted"
+                  }`}
+                >
+                  <span className="mr-1">{c.emoji}</span>{c.label}
+                  <span className={`ml-1.5 ${active ? "opacity-80" : "opacity-60"}`}>· {n}</span>
+                </button>
+              );
+            })}
+          </div>
+        </Card>
       </Item>
 
       {/* Filters */}

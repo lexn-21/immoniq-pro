@@ -205,17 +205,7 @@ export default function TenantDetail() {
 
         {/* Vertrag */}
         <TabsContent value="contract">
-          <Card className="p-5 glass space-y-3">
-            <h3 className="font-semibold flex items-center gap-2"><CalendarDays className="h-4 w-4" /> Vertragsdetails</h3>
-            <div className="grid sm:grid-cols-2 gap-3 text-sm">
-              <Row label="Mietbeginn" value={date(tenant.lease_start)} />
-              <Row label="Mietende" value={tenant.lease_end ? date(tenant.lease_end) : "unbefristet"} />
-              <Row label="E-Mail" value={tenant.email || "—"} icon={Mail} />
-              <Row label="Telefon" value={tenant.phone || "—"} icon={Phone} />
-              <Row label="Kaltmiete (Objekt)" value={eur(property?.cold_rent || 0)} />
-              <Row label="Nebenkosten (Objekt)" value={eur(property?.utilities || 0)} />
-            </div>
-          </Card>
+          <ContractPanel tenant={tenant} property={property} reload={load} />
         </TabsContent>
 
         {/* Zahlungen */}
@@ -405,6 +395,83 @@ function NotesPanel({ tenantId, notes, reload }: { tenantId: string; notes: any[
           ))}
         </ul>
       )}
+    </Card>
+  );
+}
+
+function ContractPanel({ tenant, property, reload }: { tenant: any; property: any; reload: () => void }) {
+  const [editing, setEditing] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [f, setF] = useState({
+    full_name: tenant.full_name ?? "",
+    email: tenant.email ?? "",
+    phone: tenant.phone ?? "",
+    lease_start: tenant.lease_start ?? "",
+    lease_end: tenant.lease_end ?? "",
+    deposit: tenant.deposit ?? "",
+    move_in: tenant.move_in ?? "",
+    move_out: tenant.move_out ?? "",
+  });
+
+  const save = async () => {
+    if (!f.full_name.trim()) return toast.error("Name fehlt");
+    setBusy(true);
+    const payload: any = {
+      full_name: f.full_name.trim(),
+      email: f.email || null,
+      phone: f.phone || null,
+      lease_start: f.lease_start || null,
+      lease_end: f.lease_end || null,
+      deposit: f.deposit === "" ? null : Number(f.deposit),
+      move_in: f.move_in || null,
+      move_out: f.move_out || null,
+    };
+    const { error } = await supabase.from("tenants").update(payload).eq("id", tenant.id);
+    setBusy(false);
+    if (error) return toastError(error);
+    toast.success("Gespeichert.");
+    setEditing(false);
+    reload();
+  };
+
+  if (!editing) {
+    return (
+      <Card className="p-5 glass space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="font-semibold flex items-center gap-2"><CalendarDays className="h-4 w-4" /> Vertragsdetails</h3>
+          <Button size="sm" variant="outline" onClick={() => setEditing(true)}>Bearbeiten</Button>
+        </div>
+        <div className="grid sm:grid-cols-2 gap-3 text-sm">
+          <Row label="Mietbeginn" value={tenant.lease_start ? date(tenant.lease_start) : "—"} />
+          <Row label="Mietende" value={tenant.lease_end ? date(tenant.lease_end) : "unbefristet"} />
+          <Row label="Einzug" value={tenant.move_in ? date(tenant.move_in) : "—"} />
+          <Row label="Auszug" value={tenant.move_out ? date(tenant.move_out) : "—"} />
+          <Row label="E-Mail" value={tenant.email || "—"} icon={Mail} />
+          <Row label="Telefon" value={tenant.phone || "—"} icon={Phone} />
+          <Row label="Kaution" value={tenant.deposit ? eur(tenant.deposit) : "—"} />
+          <Row label="Kaltmiete (Objekt)" value={eur(property?.cold_rent || 0)} />
+        </div>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="p-5 glass space-y-3">
+      <h3 className="font-semibold flex items-center gap-2"><CalendarDays className="h-4 w-4" /> Vertrag bearbeiten</h3>
+      <div className="grid sm:grid-cols-2 gap-3">
+        <div className="sm:col-span-2"><Label>Voller Name</Label><Input value={f.full_name} onChange={e => setF({ ...f, full_name: e.target.value })} /></div>
+        <div><Label>E-Mail</Label><Input type="email" value={f.email} onChange={e => setF({ ...f, email: e.target.value })} /></div>
+        <div><Label>Telefon</Label><Input value={f.phone} onChange={e => setF({ ...f, phone: e.target.value })} /></div>
+        <div><Label>Mietbeginn</Label><Input type="date" value={f.lease_start} onChange={e => setF({ ...f, lease_start: e.target.value })} /></div>
+        <div><Label>Mietende <span className="text-muted-foreground text-[10px]">(leer = unbefristet)</span></Label><Input type="date" value={f.lease_end} onChange={e => setF({ ...f, lease_end: e.target.value })} /></div>
+        <div><Label>Einzug</Label><Input type="date" value={f.move_in} onChange={e => setF({ ...f, move_in: e.target.value })} /></div>
+        <div><Label>Auszug</Label><Input type="date" value={f.move_out} onChange={e => setF({ ...f, move_out: e.target.value })} /></div>
+        <div className="sm:col-span-2"><Label>Kaution (€)</Label><Input type="number" step="0.01" value={f.deposit} onChange={e => setF({ ...f, deposit: e.target.value })} /></div>
+      </div>
+      <div className="flex gap-2 justify-end pt-2">
+        <Button variant="ghost" onClick={() => setEditing(false)} disabled={busy}>Abbrechen</Button>
+        <Button onClick={save} disabled={busy} className="bg-gradient-gold text-primary-foreground shadow-gold">{busy ? "Speichere…" : "Speichern"}</Button>
+      </div>
     </Card>
   );
 }
