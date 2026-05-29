@@ -19,7 +19,9 @@ import {
   Fingerprint, ServerCrash, CheckCircle2, AlertTriangle,
   Upload, Search, Download, Trash2, Building2, Filter,
   FileImage, FileType2, Sparkles, Clock, Camera, Zap,
+  ChevronRight, ChevronDown, List, FolderTree,
 } from "lucide-react";
+
 import {
   buildVerifier, verifyPin, encryptBytes, decryptBytes, b64, randomBytes, deriveKey,
 } from "@/lib/vaultCrypto";
