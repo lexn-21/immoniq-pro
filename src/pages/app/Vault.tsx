@@ -957,7 +957,7 @@ const Vault = () => {
             </p>
           </Card>
         </Item>
-      ) : (
+      ) : viewMode === "list" ? (
         <Item>
           <div className="grid gap-2">
             <AnimatePresence>
@@ -1004,7 +1004,72 @@ const Vault = () => {
             </AnimatePresence>
           </div>
         </Item>
+      ) : (
+        <Item>
+          <div className="space-y-3">
+            {tree.map((node) => {
+              const open = !collapsed[node.key];
+              return (
+                <Card key={node.key} className="glass overflow-hidden">
+                  <button
+                    onClick={() => toggleNode(node.key)}
+                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted/40 transition text-left"
+                  >
+                    {open ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />}
+                    <span className="text-xl">{node.emoji}</span>
+                    <span className="font-semibold flex-1 truncate">{node.label}</span>
+                    <Badge variant="secondary" className="text-[10px]">{node.count} {node.count === 1 ? "Dok." : "Dokumente"}</Badge>
+                    <span className="text-[11px] text-muted-foreground tabular hidden sm:inline">{formatBytes(node.size)}</span>
+                  </button>
+                  {open && node.children && (
+                    <div className="border-t border-border/40 divide-y divide-border/30">
+                      {node.children.map((child) => {
+                        const ckey = child.key;
+                        const copen = !collapsed[ckey];
+                        return (
+                          <div key={ckey}>
+                            <button
+                              onClick={() => toggleNode(ckey)}
+                              className="w-full flex items-center gap-2 pl-10 pr-4 py-2 hover:bg-muted/30 transition text-left"
+                            >
+                              {copen ? <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />}
+                              <span>{child.emoji}</span>
+                              <span className="text-sm font-medium flex-1 truncate">{child.label}</span>
+                              <Badge variant="outline" className="text-[10px]">{child.count}</Badge>
+                            </button>
+                            {copen && (
+                              <div className="pl-12 pr-3 py-2 space-y-1 bg-muted/10">
+                                {child.docs.map((d) => {
+                                  const isImage = d.mime_type?.startsWith("image/");
+                                  return (
+                                    <div key={d.id} className="flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-muted/40 transition group">
+                                      {isImage ? <FileImage className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" /> : <FileType2 className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />}
+                                      <span className="text-sm truncate flex-1">{d.display_name}</span>
+                                      <span className="text-[10px] text-muted-foreground tabular hidden sm:inline">{date(d.created_at)} · {formatBytes(d.size_bytes)}</span>
+                                      {d.retention_until && <Clock className="h-3 w-3 text-warning" aria-label="Aufbewahrungspflicht" />}
+                                      <Button size="icon" variant="ghost" className="h-7 w-7 opacity-0 group-hover:opacity-100 transition" onClick={() => downloadDoc(d)} title="Herunterladen">
+                                        <Download className="h-3.5 w-3.5" />
+                                      </Button>
+                                      <Button size="icon" variant="ghost" className="h-7 w-7 opacity-0 group-hover:opacity-100 transition" onClick={() => deleteDoc(d)} title="Löschen">
+                                        <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                                      </Button>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </Card>
+              );
+            })}
+          </div>
+        </Item>
       )}
+
 
       <Item>
         <Card className="p-4 glass border-primary/20 bg-primary/5">
