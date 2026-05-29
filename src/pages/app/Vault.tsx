@@ -893,9 +893,26 @@ const Vault = () => {
                 {activeCats.map((c) => <SelectItem key={c.value} value={c.value}>{c.emoji} {c.label}</SelectItem>)}
               </SelectContent>
             </Select>
+            <div className="inline-flex p-1 rounded-lg bg-muted/60 border">
+              <button
+                onClick={() => setViewMode("tree")}
+                className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1 transition ${viewMode === "tree" ? "bg-background shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                title="Gruppiert nach Objekt / Kategorie"
+              >
+                <FolderTree className="h-3.5 w-3.5" /> Gruppiert
+              </button>
+              <button
+                onClick={() => setViewMode("list")}
+                className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1 transition ${viewMode === "list" ? "bg-background shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                title="Flache Liste"
+              >
+                <List className="h-3.5 w-3.5" /> Liste
+              </button>
+            </div>
           </div>
         </Card>
       </Item>
+
 
       {/* Drop zone */}
       <Item>
