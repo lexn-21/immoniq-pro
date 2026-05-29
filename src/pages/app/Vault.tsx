@@ -19,7 +19,9 @@ import {
   Fingerprint, ServerCrash, CheckCircle2, AlertTriangle,
   Upload, Search, Download, Trash2, Building2, Filter,
   FileImage, FileType2, Sparkles, Clock, Camera, Zap,
+  ChevronRight, ChevronDown, List, FolderTree,
 } from "lucide-react";
+
 import {
   buildVerifier, verifyPin, encryptBytes, decryptBytes, b64, randomBytes, deriveKey,
 } from "@/lib/vaultCrypto";
@@ -121,6 +123,10 @@ const Vault = () => {
   const [filterProp, setFilterProp] = useState<string>("all");
   const [filterCat, setFilterCat] = useState<string>("all");
   const [scope, setScope] = useState<"immo" | "personal">("immo");
+  const [viewMode, setViewMode] = useState<"list" | "tree">("tree");
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+  const toggleNode = (k: string) => setCollapsed((c) => ({ ...c, [k]: !c[k] }));
+
 
   // Upload dialog
   const [uploadOpen, setUploadOpen] = useState(false);
@@ -482,6 +488,82 @@ const Vault = () => {
 
   const totalSize = docs.reduce((a, d) => a + d.size_bytes, 0);
 
+  // Tree-Gruppierung: Immo → Objekt → Kategorie, Personal → Kategorie → Jahr
+  type TreeNode = { key: string; label: string; emoji?: string; count: number; size: number; docs: VaultDoc[]; children?: TreeNode[] };
+  const tree = useMemo<TreeNode[]>(() => {
+    if (scope === "immo") {
+      const byProp = new Map<string, VaultDoc[]>();
+      filtered.forEach((d) => {
+        const k = d.property_id ?? "_none";
+        if (!byProp.has(k)) byProp.set(k, []);
+        byProp.get(k)!.push(d);
+      });
+      return Array.from(byProp.entries()).map(([pid, items]) => {
+        const p = properties.find((x) => x.id === pid);
+        const byCat = new Map<string, VaultDoc[]>();
+        items.forEach((d) => {
+          if (!byCat.has(d.category)) byCat.set(d.category, []);
+          byCat.get(d.category)!.push(d);
+        });
+        const children: TreeNode[] = Array.from(byCat.entries()).map(([cv, ds]) => {
+          const c = CATEGORIES.find((x) => x.value === cv);
+          return {
+            key: `${pid}::${cv}`,
+            label: c?.label ?? cv,
+            emoji: c?.emoji ?? "📁",
+            count: ds.length,
+            size: ds.reduce((s, x) => s + x.size_bytes, 0),
+            docs: ds,
+          };
+        }).sort((a, b) => b.count - a.count);
+        return {
+          key: `prop::${pid}`,
+          label: p?.name ?? (pid === "_none" ? "Ohne Objekt" : "Unbekanntes Objekt"),
+          emoji: "🏠",
+          count: items.length,
+          size: items.reduce((s, x) => s + x.size_bytes, 0),
+          docs: items,
+          children,
+        };
+      }).sort((a, b) => b.count - a.count);
+    }
+    // personal: Kategorie → Jahr
+    const byCat = new Map<string, VaultDoc[]>();
+    filtered.forEach((d) => {
+      if (!byCat.has(d.category)) byCat.set(d.category, []);
+      byCat.get(d.category)!.push(d);
+    });
+    return Array.from(byCat.entries()).map(([cv, items]) => {
+      const c = CATEGORIES.find((x) => x.value === cv);
+      const byYear = new Map<string, VaultDoc[]>();
+      items.forEach((d) => {
+        const y = new Date(d.created_at).getFullYear().toString();
+        if (!byYear.has(y)) byYear.set(y, []);
+        byYear.get(y)!.push(d);
+      });
+      const children: TreeNode[] = Array.from(byYear.entries())
+        .sort((a, b) => b[0].localeCompare(a[0]))
+        .map(([y, ds]) => ({
+          key: `${cv}::${y}`,
+          label: y,
+          emoji: "📅",
+          count: ds.length,
+          size: ds.reduce((s, x) => s + x.size_bytes, 0),
+          docs: ds,
+        }));
+      return {
+        key: `cat::${cv}`,
+        label: c?.label ?? cv,
+        emoji: c?.emoji ?? "📁",
+        count: items.length,
+        size: items.reduce((s, x) => s + x.size_bytes, 0),
+        docs: items,
+        children,
+      };
+    }).sort((a, b) => b.count - a.count);
+  }, [filtered, scope, properties]);
+
+
   // ----- Render -----
   if (hasPin === null) {
     return <div className="h-64 flex items-center justify-center"><div className="h-8 w-8 rounded-full border-2 border-primary border-t-transparent animate-spin" /></div>;
@@ -811,9 +893,26 @@ const Vault = () => {
                 {activeCats.map((c) => <SelectItem key={c.value} value={c.value}>{c.emoji} {c.label}</SelectItem>)}
               </SelectContent>
             </Select>
+            <div className="inline-flex p-1 rounded-lg bg-muted/60 border">
+              <button
+                onClick={() => setViewMode("tree")}
+                className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1 transition ${viewMode === "tree" ? "bg-background shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                title="Gruppiert nach Objekt / Kategorie"
+              >
+                <FolderTree className="h-3.5 w-3.5" /> Gruppiert
+              </button>
+              <button
+                onClick={() => setViewMode("list")}
+                className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1 transition ${viewMode === "list" ? "bg-background shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                title="Flache Liste"
+              >
+                <List className="h-3.5 w-3.5" /> Liste
+              </button>
+            </div>
           </div>
         </Card>
       </Item>
+
 
       {/* Drop zone */}
       <Item>
@@ -858,7 +957,7 @@ const Vault = () => {
             </p>
           </Card>
         </Item>
-      ) : (
+      ) : viewMode === "list" ? (
         <Item>
           <div className="grid gap-2">
             <AnimatePresence>
@@ -905,7 +1004,72 @@ const Vault = () => {
             </AnimatePresence>
           </div>
         </Item>
+      ) : (
+        <Item>
+          <div className="space-y-3">
+            {tree.map((node) => {
+              const open = !collapsed[node.key];
+              return (
+                <Card key={node.key} className="glass overflow-hidden">
+                  <button
+                    onClick={() => toggleNode(node.key)}
+                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted/40 transition text-left"
+                  >
+                    {open ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />}
+                    <span className="text-xl">{node.emoji}</span>
+                    <span className="font-semibold flex-1 truncate">{node.label}</span>
+                    <Badge variant="secondary" className="text-[10px]">{node.count} {node.count === 1 ? "Dok." : "Dokumente"}</Badge>
+                    <span className="text-[11px] text-muted-foreground tabular hidden sm:inline">{formatBytes(node.size)}</span>
+                  </button>
+                  {open && node.children && (
+                    <div className="border-t border-border/40 divide-y divide-border/30">
+                      {node.children.map((child) => {
+                        const ckey = child.key;
+                        const copen = !collapsed[ckey];
+                        return (
+                          <div key={ckey}>
+                            <button
+                              onClick={() => toggleNode(ckey)}
+                              className="w-full flex items-center gap-2 pl-10 pr-4 py-2 hover:bg-muted/30 transition text-left"
+                            >
+                              {copen ? <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />}
+                              <span>{child.emoji}</span>
+                              <span className="text-sm font-medium flex-1 truncate">{child.label}</span>
+                              <Badge variant="outline" className="text-[10px]">{child.count}</Badge>
+                            </button>
+                            {copen && (
+                              <div className="pl-12 pr-3 py-2 space-y-1 bg-muted/10">
+                                {child.docs.map((d) => {
+                                  const isImage = d.mime_type?.startsWith("image/");
+                                  return (
+                                    <div key={d.id} className="flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-muted/40 transition group">
+                                      {isImage ? <FileImage className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" /> : <FileType2 className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />}
+                                      <span className="text-sm truncate flex-1">{d.display_name}</span>
+                                      <span className="text-[10px] text-muted-foreground tabular hidden sm:inline">{date(d.created_at)} · {formatBytes(d.size_bytes)}</span>
+                                      {d.retention_until && <Clock className="h-3 w-3 text-warning" aria-label="Aufbewahrungspflicht" />}
+                                      <Button size="icon" variant="ghost" className="h-7 w-7 opacity-0 group-hover:opacity-100 transition" onClick={() => downloadDoc(d)} title="Herunterladen">
+                                        <Download className="h-3.5 w-3.5" />
+                                      </Button>
+                                      <Button size="icon" variant="ghost" className="h-7 w-7 opacity-0 group-hover:opacity-100 transition" onClick={() => deleteDoc(d)} title="Löschen">
+                                        <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                                      </Button>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </Card>
+              );
+            })}
+          </div>
+        </Item>
       )}
+
 
       <Item>
         <Card className="p-4 glass border-primary/20 bg-primary/5">
