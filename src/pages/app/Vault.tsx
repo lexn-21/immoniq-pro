@@ -488,6 +488,82 @@ const Vault = () => {
 
   const totalSize = docs.reduce((a, d) => a + d.size_bytes, 0);
 
+  // Tree-Gruppierung: Immo → Objekt → Kategorie, Personal → Kategorie → Jahr
+  type TreeNode = { key: string; label: string; emoji?: string; count: number; size: number; docs: VaultDoc[]; children?: TreeNode[] };
+  const tree = useMemo<TreeNode[]>(() => {
+    if (scope === "immo") {
+      const byProp = new Map<string, VaultDoc[]>();
+      filtered.forEach((d) => {
+        const k = d.property_id ?? "_none";
+        if (!byProp.has(k)) byProp.set(k, []);
+        byProp.get(k)!.push(d);
+      });
+      return Array.from(byProp.entries()).map(([pid, items]) => {
+        const p = properties.find((x) => x.id === pid);
+        const byCat = new Map<string, VaultDoc[]>();
+        items.forEach((d) => {
+          if (!byCat.has(d.category)) byCat.set(d.category, []);
+          byCat.get(d.category)!.push(d);
+        });
+        const children: TreeNode[] = Array.from(byCat.entries()).map(([cv, ds]) => {
+          const c = CATEGORIES.find((x) => x.value === cv);
+          return {
+            key: `${pid}::${cv}`,
+            label: c?.label ?? cv,
+            emoji: c?.emoji ?? "📁",
+            count: ds.length,
+            size: ds.reduce((s, x) => s + x.size_bytes, 0),
+            docs: ds,
+          };
+        }).sort((a, b) => b.count - a.count);
+        return {
+          key: `prop::${pid}`,
+          label: p?.name ?? (pid === "_none" ? "Ohne Objekt" : "Unbekanntes Objekt"),
+          emoji: "🏠",
+          count: items.length,
+          size: items.reduce((s, x) => s + x.size_bytes, 0),
+          docs: items,
+          children,
+        };
+      }).sort((a, b) => b.count - a.count);
+    }
+    // personal: Kategorie → Jahr
+    const byCat = new Map<string, VaultDoc[]>();
+    filtered.forEach((d) => {
+      if (!byCat.has(d.category)) byCat.set(d.category, []);
+      byCat.get(d.category)!.push(d);
+    });
+    return Array.from(byCat.entries()).map(([cv, items]) => {
+      const c = CATEGORIES.find((x) => x.value === cv);
+      const byYear = new Map<string, VaultDoc[]>();
+      items.forEach((d) => {
+        const y = new Date(d.created_at).getFullYear().toString();
+        if (!byYear.has(y)) byYear.set(y, []);
+        byYear.get(y)!.push(d);
+      });
+      const children: TreeNode[] = Array.from(byYear.entries())
+        .sort((a, b) => b[0].localeCompare(a[0]))
+        .map(([y, ds]) => ({
+          key: `${cv}::${y}`,
+          label: y,
+          emoji: "📅",
+          count: ds.length,
+          size: ds.reduce((s, x) => s + x.size_bytes, 0),
+          docs: ds,
+        }));
+      return {
+        key: `cat::${cv}`,
+        label: c?.label ?? cv,
+        emoji: c?.emoji ?? "📁",
+        count: items.length,
+        size: items.reduce((s, x) => s + x.size_bytes, 0),
+        docs: items,
+        children,
+      };
+    }).sort((a, b) => b.count - a.count);
+  }, [filtered, scope, properties]);
+
+
   // ----- Render -----
   if (hasPin === null) {
     return <div className="h-64 flex items-center justify-center"><div className="h-8 w-8 rounded-full border-2 border-primary border-t-transparent animate-spin" /></div>;
