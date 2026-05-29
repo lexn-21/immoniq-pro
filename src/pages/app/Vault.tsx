@@ -116,6 +116,8 @@ const Vault = () => {
   const lastPinRef = useRef<string>("");
 
   // Data
+  const [docs, setDocs] = useState<VaultDoc[]>([]);
+  const [properties, setProperties] = useState<Property[]>([]);
   // Filter
   const [search, setSearch] = useState("");
   const [filterProp, setFilterProp] = useState<string>("all");
@@ -125,8 +127,6 @@ const Vault = () => {
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const toggleNode = (k: string) => setCollapsed((c) => ({ ...c, [k]: !c[k] }));
 
-  const [filterCat, setFilterCat] = useState<string>("all");
-  const [scope, setScope] = useState<"immo" | "personal">("immo");
 
   // Upload dialog
   const [uploadOpen, setUploadOpen] = useState(false);
