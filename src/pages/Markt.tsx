@@ -496,11 +496,21 @@ const Markt = () => {
                           </p>
                           <div className="flex items-center justify-between text-xs mb-2">
                             <div className="flex gap-3 text-muted-foreground">
-                              <span className="flex items-center gap-1"><Bed className="h-3 w-3" /> {l.rooms ?? "—"}</span>
-                              <span className="flex items-center gap-1"><Maximize2 className="h-3 w-3" /> {l.living_space ?? "—"} m²</span>
+                              {l.kind === "wg_room" ? (
+                                <>
+                                  <span className="flex items-center gap-1"><Bed className="h-3 w-3" /> {l.wg_room_size_sqm ?? "—"} m²</span>
+                                  <span className="flex items-center gap-1"><Maximize2 className="h-3 w-3" /> {l.wg_total_rooms ?? "—"}-Zi-WG</span>
+                                </>
+                              ) : (
+                                <>
+                                  <span className="flex items-center gap-1"><Bed className="h-3 w-3" /> {l.rooms ?? "—"}</span>
+                                  <span className="flex items-center gap-1"><Maximize2 className="h-3 w-3" /> {l.living_space ?? "—"} m²</span>
+                                </>
+                              )}
                             </div>
                             <span className="font-bold text-gradient-gold">{eur(l.price)}{(l.kind === "rent" || l.kind === "wg_room") ? "/Mo" : ""}</span>
                           </div>
+
                           <div className="flex items-center justify-between text-[11px] text-muted-foreground mt-auto pt-2 border-t border-border/50">
                             <span className="flex items-center gap-1">
                               {fr ? <><Clock className="h-3 w-3" /> {fr.label}</> : null}

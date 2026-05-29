@@ -128,9 +128,13 @@ const MarktDetail = () => {
         <div className="grid lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
             <div>
-              <div className="flex gap-2 mb-2">
-                <Badge>{l.kind === "rent" ? "Zur Miete" : "Zum Kauf"}</Badge>
+
+              <div className="flex gap-2 mb-2 flex-wrap">
+                <Badge className={l.kind === "wg_room" ? "bg-violet-500 text-white" : ""}>
+                  {l.kind === "rent" ? "Zur Miete" : l.kind === "sale" ? "Zum Kauf" : "WG-Zimmer"}
+                </Badge>
                 {l.energy_class && <Badge variant="outline">Energie {l.energy_class}</Badge>}
+                {l.kind === "wg_room" && l.wg_furnished && <Badge variant="outline" className="border-violet-500/40 text-violet-700 dark:text-violet-300">möbliert</Badge>}
               </div>
               <h1 className="text-3xl font-bold">{l.title}</h1>
               <p className="text-muted-foreground flex items-center gap-1 mt-1">
@@ -139,10 +143,37 @@ const MarktDetail = () => {
             </div>
 
             <Card className="p-5 glass grid grid-cols-3 gap-4 text-sm">
-              <div><p className="text-muted-foreground text-xs">Zimmer</p><p className="font-semibold flex items-center gap-1"><Bed className="h-3 w-3" /> {l.rooms ?? "—"}</p></div>
-              <div><p className="text-muted-foreground text-xs">Wohnfläche</p><p className="font-semibold flex items-center gap-1"><Maximize2 className="h-3 w-3" /> {l.living_space ?? "—"} m²</p></div>
+              <div><p className="text-muted-foreground text-xs">{l.kind === "wg_room" ? "Zimmergröße" : "Zimmer"}</p><p className="font-semibold flex items-center gap-1"><Bed className="h-3 w-3" /> {l.kind === "wg_room" ? `${l.wg_room_size_sqm ?? "—"} m²` : (l.rooms ?? "—")}</p></div>
+              <div><p className="text-muted-foreground text-xs">{l.kind === "wg_room" ? "WG gesamt" : "Wohnfläche"}</p><p className="font-semibold flex items-center gap-1"><Maximize2 className="h-3 w-3" /> {l.kind === "wg_room" ? `${l.wg_total_rooms ?? "—"} Zi.` : `${l.living_space ?? "—"} m²`}</p></div>
               <div><p className="text-muted-foreground text-xs">Verfügbar</p><p className="font-semibold flex items-center gap-1"><Calendar className="h-3 w-3" /> {l.available_from ? new Date(l.available_from).toLocaleDateString("de-DE") : "sofort"}</p></div>
             </Card>
+
+            {l.kind === "wg_room" && (
+              <Card className="p-6 glass border-violet-500/30">
+                <h2 className="font-bold mb-3 flex items-center gap-2">
+                  <span className="h-2 w-2 rounded-full bg-violet-500" /> WG-Details
+                </h2>
+                <div className="grid sm:grid-cols-2 gap-3 text-sm">
+                  {l.wg_current_flatmates != null && (
+                    <div><span className="text-muted-foreground">Aktuelle Mitbewohner: </span><strong>{l.wg_current_flatmates}</strong></div>
+                  )}
+                  {(l.wg_flatmate_age_min || l.wg_flatmate_age_max) && (
+                    <div><span className="text-muted-foreground">Alter Mitbewohner: </span><strong>{l.wg_flatmate_age_min ?? "?"}–{l.wg_flatmate_age_max ?? "?"} J.</strong></div>
+                  )}
+                  {l.wg_flatmate_gender_pref && l.wg_flatmate_gender_pref !== "any" && (
+                    <div><span className="text-muted-foreground">Gesucht: </span><strong className="capitalize">{l.wg_flatmate_gender_pref}</strong></div>
+                  )}
+                </div>
+                {l.wg_shared_facilities && (
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {Object.entries(l.wg_shared_facilities as Record<string, boolean>).filter(([, v]) => v).map(([k]) => (
+                      <Badge key={k} variant="secondary" className="capitalize text-[10px]">{k} geteilt</Badge>
+                    ))}
+                  </div>
+                )}
+              </Card>
+            )}
+
 
             {l.description && (
               <Card className="p-6 glass">
