@@ -128,7 +128,7 @@ const MarktDetail = () => {
         <div className="grid lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
             <div>
-            <div>
+
               <div className="flex gap-2 mb-2 flex-wrap">
                 <Badge className={l.kind === "wg_room" ? "bg-violet-500 text-white" : ""}>
                   {l.kind === "rent" ? "Zur Miete" : l.kind === "sale" ? "Zum Kauf" : "WG-Zimmer"}
