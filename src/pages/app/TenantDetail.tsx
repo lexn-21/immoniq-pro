@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
-  ArrowLeft, Mail, Phone, Building2, CalendarDays, Wallet, FileText, Upload,
+  ArrowLeft, Mail, Phone, Building2, CalendarDays, Wallet, FileText, Upload, MessageCircle,
   Download, Trash2, StickyNote, ShieldCheck, AlertTriangle, CheckCircle2, Clock, Link2,
 } from "lucide-react";
 import { eur, date } from "@/lib/format";
