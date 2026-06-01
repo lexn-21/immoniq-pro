@@ -790,7 +790,7 @@ const Vault = () => {
           </div>
           <div className="flex gap-2 flex-wrap">
             <Button variant="outline" onClick={lock}><Lock className="h-4 w-4 mr-2" />Sperren</Button>
-            {bioAvailable && (
+            {bioAvailable ? (
               bioEnrolled ? (
                 <Button variant="outline" onClick={disableBio} className="gap-2" title="Biometrie für diesen Tresor entfernen">
                   <Fingerprint className="h-4 w-4 text-success" /> Biometrie aktiv
@@ -800,7 +800,11 @@ const Vault = () => {
                   <Fingerprint className="h-4 w-4" /> Biometrie aktivieren
                 </Button>
               )
-            )}
+            ) : isInCrossOriginIframe() ? (
+              <Button variant="outline" onClick={() => window.open(window.location.href, "_blank")} className="gap-2" title="Biometrie nur außerhalb der Vorschau verfügbar">
+                <Fingerprint className="h-4 w-4 text-muted-foreground" /> Im neuen Tab öffnen
+              </Button>
+            ) : null}
             <input id="vault-camera-input" type="file" accept="image/*" capture="environment" hidden
               onChange={(e) => e.target.files && handleFiles(e.target.files)} />
             <Button
