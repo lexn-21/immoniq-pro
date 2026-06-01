@@ -22,13 +22,24 @@ const unitSchema = z.object({
   utilities: z.number().min(0).max(99999),
 });
 
-const STEPS = ["Willkommen", "Erstes Objekt", "Erste Einheit", "Fertig"] as const;
+type Persona = "privat" | "vermieter" | "suchender" | "pro";
+const PERSONAS: { id: Persona; title: string; desc: string; icon: any }[] = [
+  { id: "privat", title: "Eigenverwaltung", desc: "Selbstnutzer · nur meine Immobilie & Bürokratie", icon: Home },
+  { id: "vermieter", title: "Vermieter", desc: "Mieter, Mieten, Nebenkosten, Steuer", icon: Wallet },
+  { id: "suchender", title: "Wohnungssuche", desc: "Inserate finden & bewerben", icon: Search },
+  { id: "pro", title: "Profi / Alles", desc: "Alle Funktionen sofort sichtbar", icon: Briefcase },
+];
+
+const STEPS = ["Rolle", "Willkommen", "Erstes Objekt", "Erste Einheit", "Fertig"] as const;
 
 const Onboarding = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [propertyId, setPropertyId] = useState<string | null>(null);
+  const [persona, setPersona] = useState<Persona>(
+    (typeof window !== "undefined" && (localStorage.getItem("immoniq_persona") as Persona)) || "vermieter"
+  );
   const [prop, setProp] = useState({ name: "", street: "", zip: "", city: "" });
   const [unit, setUnit] = useState({ label: "WE 01", rent_cold: "", utilities: "" });
 
