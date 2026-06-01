@@ -125,7 +125,14 @@ const Advisor = () => {
                       {it.last_accessed_at && <span>Zuletzt: {date(it.last_accessed_at)}</span>}
                     </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 flex-wrap">
+                    {status === "active" && it.advisor_email && (
+                      <a href={`mailto:${it.advisor_email}?subject=${encodeURIComponent("Lese-Zugang zu meinen Immobilien-Unterlagen")}&body=${encodeURIComponent(`Hallo ${it.advisor_name},\n\nüber den folgenden Link bekommst du 90 Tage lang Lese-Zugriff auf alle meine Objekte, Mieter, Zahlungen und Belege bei ImmonIQ — ohne Account, ohne Login:\n\n${linkFor(it.token)}\n\nViele Grüße`)}`}>
+                        <Button size="sm" className="bg-gradient-gold text-primary-foreground shadow-gold">
+                          <Send className="h-3.5 w-3.5 mr-1.5" /> Einladung senden
+                        </Button>
+                      </a>
+                    )}
                     {status === "active" && (
                       <Button size="sm" variant="outline" onClick={() => copyLink(it.token)}>
                         <Copy className="h-3.5 w-3.5 mr-1.5" /> Link
