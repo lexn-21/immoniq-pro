@@ -28,61 +28,58 @@ import {
 type NavItem = { to: string; label: string; icon: any; end?: boolean; badge?: string; hint?: string; simple?: boolean };
 type NavGroup = { title: string; subtitle?: string; items: NavItem[]; simple?: boolean };
 
-// Reihenfolge nach Nutzungs-Frequenz: Verwalten (täglich) → Vermieten → Tresor → Tools
+// Cleaner Navigation: weniger Gruppen, kürzere Labels, keine Subtitles, weniger Badges.
+// "simple" zeigt nur die wichtigsten Einträge — "full" zeigt alles.
 const groups: NavGroup[] = [
   {
-    title: "Überblick",
+    title: "Start",
     items: [
-      { to: "/app", label: "Dashboard", icon: Home, end: true, hint: "Cashflow, KPIs, Termine", simple: true },
-      { to: "/app/inbox", label: "Smart Inbox", icon: Inbox, badge: "AI", hint: "E-Mails an deine Inbox-Adresse — AI sortiert & legt Aufgaben an", simple: true },
-      { to: "/app/tasks", label: "Mein Plan", icon: CalendarCheck, badge: "TO-DO", hint: "Alle Aufgaben & Fristen — nichts mehr verpassen", simple: true },
-      { to: "/app/messenger", label: "Nachrichten", icon: MessageSquare, badge: "NEU", hint: "Chat mit Mietern, Bewerbern & Interessenten", simple: true },
-      { to: "/app/feed", label: "Community", icon: PartyPopper, badge: "NEU", hint: "Anonyme Wins & Tipps von verifizierten Eigentümern" },
+      { to: "/app", label: "Dashboard", icon: Home, end: true, simple: true },
+      { to: "/app/tasks", label: "Mein Plan", icon: CalendarCheck, simple: true },
+      { to: "/app/messenger", label: "Nachrichten", icon: MessageSquare, simple: true },
+      { to: "/app/inbox", label: "Smart Inbox", icon: Inbox, simple: true },
+      { to: "/app/feed", label: "Community", icon: PartyPopper },
     ],
   },
   {
     title: "Verwalten",
-    subtitle: "Dein Tagesgeschäft",
     items: [
-      { to: "/app/properties", label: "Objekte", icon: Building2, hint: "Deine Immobilien", simple: true },
-      { to: "/app/parcels", label: "Grundstücke", icon: Trees, badge: "NEU", hint: "Flurstücke, Erbpacht & Bodenrichtwert" },
-      { to: "/app/tenants", label: "Mieter", icon: Users, hint: "Mit Verträgen", simple: true },
+      { to: "/app/properties", label: "Objekte", icon: Building2, simple: true },
+      { to: "/app/tenants", label: "Mieter", icon: Users, simple: true },
       { to: "/app/payments", label: "Einnahmen", icon: Wallet, simple: true },
-      { to: "/app/expenses", label: "Ausgaben", icon: Receipt, hint: "Belege scannen", simple: true },
-      { to: "/app/nebenkosten", label: "Nebenkosten", icon: Calculator, badge: "NEU", hint: "NK-Abrechnung pro Mieter — BetrKV-konform", simple: true },
-      { to: "/app/org", label: "Organisation", icon: Landmark, hint: "Bistum → Dekanat → Gemeinde oder Stiftung" },
-      { to: "/app/templates", label: "Vorlagen", icon: FileText, hint: "Verträge & Schreiben", simple: true },
+      { to: "/app/expenses", label: "Ausgaben", icon: Receipt, simple: true },
+      { to: "/app/nebenkosten", label: "Nebenkosten", icon: Calculator },
+      { to: "/app/parcels", label: "Grundstücke", icon: Trees },
+      { to: "/app/org", label: "Organisation", icon: Landmark },
+      { to: "/app/templates", label: "Vorlagen", icon: FileText },
     ],
   },
   {
-    title: "Vermieten & Markt",
-    subtitle: "Finden · Anbieten · Werben",
+    title: "Tresor",
     items: [
-      { to: "/markt", label: "Markt durchsuchen", icon: SearchIcon, badge: "LIVE", hint: "Inserate von Eigentümern — mit Umkreissuche" },
-      { to: "/app/listings", label: "Meine Inserate", icon: Megaphone, hint: "Vermieten & verkaufen — provisionsfrei" },
-      { to: "/app/applications", label: "Bewerbungen", icon: Inbox, hint: "Mit KI-Score" },
-      { to: "/app/marketplace", label: "Experten finden", icon: Wrench, hint: "Handwerker, Steuerberater & mehr in deiner Nähe" },
-      { to: "/app/ads", label: "Werben", icon: Megaphone, badge: "€49/Wo", hint: "Eigene Anzeigen schalten" },
+      { to: "/app/vault", label: "Immo-Tresor", icon: Lock, simple: true },
+      { to: "/app/vault?scope=personal", label: "Lebensbürokratie", icon: Lock, simple: true },
+      { to: "/app/law", label: "Rechts-Ecke", icon: Scale },
+      { to: "/app/advisor", label: "Steuerberater", icon: ShieldCheck },
     ],
   },
   {
-    title: "Tresor & Recht",
-    subtitle: "Dokumente sicher · Gesetze parat",
+    title: "Vermieten",
     items: [
-      { to: "/app/vault", label: "Tresor (Immo)", icon: Lock, badge: "AES-256", hint: "Verschlüsselte Dokumente zu Objekten", simple: true },
-      { to: "/app/vault?scope=personal", label: "Lebensbürokratie", icon: Lock, badge: "NEU", hint: "Ausweis, Verträge, Bank, Versicherungen — alles griffbereit", simple: true },
-      { to: "/app/law", label: "Rechts-Ecke", icon: Scale, hint: "BGB, WEG, HeizkostenV" },
-      { to: "/app/advisor", label: "Steuerberater", icon: ShieldCheck, hint: "Sicher freigeben" },
+      { to: "/markt", label: "Markt", icon: SearchIcon },
+      { to: "/app/listings", label: "Meine Inserate", icon: Megaphone },
+      { to: "/app/applications", label: "Bewerbungen", icon: Inbox },
+      { to: "/app/marketplace", label: "Experten", icon: Wrench },
+      { to: "/app/ads", label: "Werben", icon: Megaphone },
     ],
   },
   {
-    title: "Tools",
-    subtitle: "Selten gebraucht — aber nützlich",
+    title: "Mehr",
     items: [
-      { to: "/app/profile", label: "Mein Profil", icon: IdCard, badge: "NEU", hint: "Steckbrief, Bewerber-Daten, Vermieter-Trust — alles an einem Ort", simple: true },
-      { to: "/app/valuation", label: "Bewertung", icon: TrendingUp, badge: "AVM", hint: "Was ist deine Immobilie wert?" },
-      { to: "/app/calculator", label: "Rechner", icon: Calculator, hint: "AfA, Rendite, Tilgung" },
-      { to: "/app/tax", label: "Steuer-Brücke", icon: Calculator, hint: "Anlage V Export" },
+      { to: "/app/profile", label: "Mein Profil", icon: IdCard, simple: true },
+      { to: "/app/valuation", label: "Bewertung", icon: TrendingUp },
+      { to: "/app/calculator", label: "Rechner", icon: Calculator },
+      { to: "/app/tax", label: "Steuer-Export", icon: Calculator },
     ],
   },
 ];
