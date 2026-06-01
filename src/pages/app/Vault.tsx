@@ -28,6 +28,7 @@ import {
 import {
   platformAuthenticatorAvailable, hasBiometricSetup,
   enrollBiometric, unlockWithBiometric, clearBiometric,
+  isInCrossOriginIframe,
 } from "@/lib/vaultBiometric";
 import { VaultUnlockAnimation } from "@/components/VaultUnlockAnimation";
 import { AnimatePresence as AP } from "framer-motion";
