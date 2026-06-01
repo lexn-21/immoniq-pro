@@ -1019,6 +1019,9 @@ const Vault = () => {
                         <Button size="icon" variant="ghost" onClick={() => downloadDoc(d)} title="Herunterladen & entschlüsseln">
                           <Download className="h-4 w-4" />
                         </Button>
+                        <Button size="icon" variant="ghost" onClick={() => shareDoc(d)} title="Per Mail / WhatsApp senden">
+                          <Share2 className="h-4 w-4" />
+                        </Button>
                         <Button size="icon" variant="ghost" onClick={() => deleteDoc(d)} title="Löschen">
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
