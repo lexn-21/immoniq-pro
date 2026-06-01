@@ -322,16 +322,46 @@ export default function Nebenkosten() {
     URL.revokeObjectURL(url);
   }
 
+  // Wizard-Schritte
+  const stepObject = !!propertyId;
+  const stepPeriod = !!periodId;
+  const stepItems = items.length > 0;
+  const stepReady = stepItems && results.length > 0;
+  const currentStep = !stepObject ? 1 : !stepPeriod ? 2 : !stepItems ? 3 : 4;
+  const Step = ({ n, label, active, done }: { n: number; label: string; active: boolean; done: boolean }) => (
+    <div className={`flex items-center gap-2 ${active ? "text-foreground font-medium" : done ? "text-emerald-600" : "text-muted-foreground"}`}>
+      <div className={`h-6 w-6 rounded-full flex items-center justify-center text-xs ${done ? "bg-emerald-500/15 text-emerald-700" : active ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
+        {done ? "✓" : n}
+      </div>
+      <span className="text-sm whitespace-nowrap">{label}</span>
+    </div>
+  );
+
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold">Nebenkostenabrechnung</h1>
-        <p className="text-muted-foreground">Belege erfassen, Verteilung berechnen, PDF-Abrechnung pro Mieter und Forderung anlegen — BetrKV/HeizkostenV-konform.</p>
+        <p className="text-muted-foreground text-sm">In 4 Schritten zur fertigen Abrechnung — BetrKV/HeizkostenV-konform.</p>
       </div>
 
+      {/* Step-Indicator */}
+      <Card className="p-3 overflow-x-auto">
+        <div className="flex items-center gap-3 min-w-max">
+          <Step n={1} label="Objekt" active={currentStep === 1} done={stepObject} />
+          <div className="h-px w-6 bg-border" />
+          <Step n={2} label="Periode" active={currentStep === 2} done={stepPeriod} />
+          <div className="h-px w-6 bg-border" />
+          <Step n={3} label="Kosten erfassen" active={currentStep === 3} done={stepItems} />
+          <div className="h-px w-6 bg-border" />
+          <Step n={4} label="Verteilen & versenden" active={currentStep === 4} done={stepReady && period?.status === "sent"} />
+        </div>
+      </Card>
+
       {properties.length === 0 ? (
-        <Card className="p-6 text-center text-muted-foreground">
-          Lege zuerst eine Immobilie an.
+        <Card className="p-8 text-center space-y-3">
+          <div className="text-4xl">🏠</div>
+          <div className="font-medium">Noch keine Immobilie angelegt</div>
+          <p className="text-sm text-muted-foreground">Lege zuerst unter <strong>Objekte</strong> eine Immobilie mit Einheiten und Mietern an.</p>
         </Card>
       ) : (
         <>
@@ -382,6 +412,17 @@ export default function Nebenkosten() {
             </Card>
           )}
 
+          {!periodId && (
+            <Card className="p-8 text-center space-y-3">
+              <div className="text-4xl">📅</div>
+              <div className="font-medium">Wähle oder erstelle eine Abrechnungsperiode</div>
+              <p className="text-sm text-muted-foreground">Üblich ist das Kalenderjahr ({new Date().getFullYear() - 1}).</p>
+              <Button onClick={() => setNewPeriodOpen(true)}>
+                <Plus className="h-4 w-4 mr-1" /> Periode für {new Date().getFullYear() - 1} anlegen
+              </Button>
+            </Card>
+          )}
+
           {periodId && (
             <>
               {/* Kostenpositionen */}
@@ -399,7 +440,18 @@ export default function Nebenkosten() {
                 </div>
 
                 {items.length === 0 ? (
-                  <p className="text-sm text-muted-foreground py-6 text-center">Noch keine Kostenpositionen.</p>
+                  <div className="py-8 text-center space-y-3">
+                    <Receipt className="h-10 w-10 mx-auto text-muted-foreground/40" />
+                    <p className="text-sm text-muted-foreground">Noch keine Kostenpositionen. Importiere automatisch aus deinen Belegen oder lege manuell an.</p>
+                    <div className="flex gap-2 justify-center flex-wrap">
+                      <Button variant="outline" size="sm" onClick={importFromExpenses}>
+                        <Receipt className="h-4 w-4 mr-1" /> Aus Belegen importieren
+                      </Button>
+                      <Button size="sm" onClick={addCostItem}>
+                        <Plus className="h-4 w-4 mr-1" /> Erste Position
+                      </Button>
+                    </div>
+                  </div>
                 ) : (
                   <div className="space-y-2">
                     {items.map(it => (

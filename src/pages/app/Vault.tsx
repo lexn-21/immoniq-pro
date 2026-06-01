@@ -767,74 +767,69 @@ const Vault = () => {
   return (
     <Stagger className="space-y-6">
       <Item>
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <div className="h-7 w-7 rounded-lg bg-success/15 flex items-center justify-center">
-                <CheckCircle2 className="h-4 w-4 text-success" />
-              </div>
-              <p className="text-xs text-success font-semibold uppercase tracking-wider">Tresor entsperrt</p>
+        {/* Kompakter Header: Titel + Actions in einer Zeile */}
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="h-9 w-9 rounded-xl bg-success/15 flex items-center justify-center flex-shrink-0">
+              <ShieldCheck className="h-5 w-5 text-success" />
             </div>
-            <h1 className="text-3xl lg:text-4xl font-bold tracking-tight">
-              {scope === "personal" ? (
-                <>Deine <span className="text-gradient-gold">Lebensbürokratie</span></>
-              ) : (
-                <>Dein <span className="text-gradient-gold">Eigentums-Archiv</span></>
-              )}
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              {scope === "personal"
-                ? "Personalausweis, Verträge, Bank, Versicherungen — alles griffbereit, alles verschlüsselt."
-                : "Alle Dokumente zu deinen Objekten — verschlüsselt, sortiert, in Sekunden findbar."}
-            </p>
+            <div className="min-w-0">
+              <h1 className="text-xl font-bold tracking-tight truncate">
+                {scope === "personal" ? "Lebensbürokratie" : "Eigentums-Archiv"}
+              </h1>
+              <p className="text-[11px] text-muted-foreground flex items-center gap-2">
+                <span className="text-success font-medium">● Entsperrt</span>
+                <span>·</span>
+                <span>{scopedDocs.length} Dok.</span>
+                <span>·</span>
+                <span>{formatBytes(totalSize)}</span>
+              </p>
+            </div>
           </div>
-          <div className="flex gap-2 flex-wrap">
-            <Button variant="outline" onClick={lock}><Lock className="h-4 w-4 mr-2" />Sperren</Button>
+          <div className="flex gap-1.5 flex-wrap">
+            <Button variant="ghost" size="sm" onClick={lock} className="gap-1.5">
+              <Lock className="h-4 w-4" /><span className="hidden sm:inline">Sperren</span>
+            </Button>
             {bioAvailable ? (
               bioEnrolled ? (
-                <Button variant="outline" onClick={disableBio} className="gap-2" title="Biometrie für diesen Tresor entfernen">
-                  <Fingerprint className="h-4 w-4 text-success" /> Biometrie aktiv
+                <Button variant="ghost" size="sm" onClick={disableBio} className="gap-1.5" title="Biometrie entfernen">
+                  <Fingerprint className="h-4 w-4 text-success" />
                 </Button>
               ) : (
-                <Button variant="outline" onClick={() => setEnrollPromptOpen(true)} className="gap-2">
-                  <Fingerprint className="h-4 w-4" /> Biometrie aktivieren
+                <Button variant="ghost" size="sm" onClick={() => setEnrollPromptOpen(true)} className="gap-1.5" title="Biometrie aktivieren">
+                  <Fingerprint className="h-4 w-4" />
                 </Button>
               )
             ) : isInCrossOriginIframe() ? (
-              <Button variant="outline" onClick={() => window.open(window.location.href, "_blank")} className="gap-2" title="Biometrie nur außerhalb der Vorschau verfügbar">
-                <Fingerprint className="h-4 w-4 text-muted-foreground" /> Im neuen Tab öffnen
+              <Button variant="ghost" size="sm" onClick={() => window.open(window.location.href, "_blank")} className="gap-1.5" title="Biometrie nur außerhalb der Vorschau">
+                <Fingerprint className="h-4 w-4 text-muted-foreground" />
               </Button>
             ) : null}
             <input id="vault-camera-input" type="file" accept="image/*" capture="environment" hidden
               onChange={(e) => e.target.files && handleFiles(e.target.files)} />
-            <Button
-              variant="outline"
-              onClick={() => document.getElementById("vault-camera-input")?.click()}
-              disabled={quickSaving}
-              className="gap-2"
-              title="Mit Kamera scannen — sofort verschlüsselt gespeichert"
-            >
-              <Camera className="h-4 w-4" /> Schnell-Scan
+            <Button variant="outline" size="sm" onClick={() => document.getElementById("vault-camera-input")?.click()} disabled={quickSaving} className="gap-1.5">
+              <Camera className="h-4 w-4" /><span className="hidden sm:inline">Scan</span>
             </Button>
             <Button
+              size="sm"
               onClick={() => {
                 setUploadForm((s) => ({ ...s, category: scope === "personal" ? "vertrag" : "sonstiges" }));
                 setUploadOpen(true);
               }}
-              className="bg-gradient-gold text-primary-foreground shadow-gold"
+              className="bg-gradient-gold text-primary-foreground shadow-gold gap-1.5"
             >
-              <Upload className="h-4 w-4 mr-2" />Mit Details
+              <Upload className="h-4 w-4" />Hochladen
             </Button>
           </div>
         </div>
       </Item>
 
-      {/* Scope-Toggle: Immo vs. Lebensbürokratie */}
+      {/* Scope-Toggle */}
       <Item>
-        <div className="inline-flex p-1 rounded-xl bg-muted/60 border">
+        <div className="inline-flex p-1 rounded-xl bg-muted/60 border w-full sm:w-auto">
           <button
             onClick={() => switchScope("immo")}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+            className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-medium transition-all ${
               scope === "immo" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -842,7 +837,7 @@ const Vault = () => {
           </button>
           <button
             onClick={() => switchScope("personal")}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+            className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-medium transition-all ${
               scope === "personal" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -851,23 +846,6 @@ const Vault = () => {
         </div>
       </Item>
 
-      {/* Stats */}
-      <Item>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          {[
-            { icon: FileText, label: scope === "personal" ? "Persönlich" : "Objekt-Docs", value: num(scopedDocs.length) },
-            { icon: Building2, label: scope === "personal" ? "Lebensbereiche" : "Objekte", value: num(scope === "personal" ? PERSONAL_CATEGORIES.length : properties.length) },
-            { icon: Sparkles, label: "Speicher gesamt", value: formatBytes(totalSize) },
-            { icon: ShieldCheck, label: "Verschlüsselt", value: "100 %" },
-          ].map((s) => (
-            <Card key={s.label} className="p-4 glass">
-              <s.icon className="h-4 w-4 text-primary mb-2" />
-              <p className="text-2xl font-bold tabular">{s.value}</p>
-              <p className="text-[11px] text-muted-foreground uppercase tracking-wider">{s.label}</p>
-            </Card>
-          ))}
-        </div>
-      </Item>
 
       {/* Kategorien-Übersicht — alles auf einen Blick */}
       <Item>
