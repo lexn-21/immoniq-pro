@@ -181,6 +181,22 @@ const Tenants = () => {
               }}>
                 <Link2 className="h-3.5 w-3.5 mr-1.5" /> Mieter-Portal-Link
               </Button>
+              <div className="flex gap-2 mt-2">
+                {waHref(t.phone) && (
+                  <a href={waHref(t.phone)!} target="_blank" rel="noreferrer" className="flex-1">
+                    <Button variant="outline" size="sm" className="w-full">
+                      <MessageCircle className="h-3.5 w-3.5 mr-1.5" /> WhatsApp
+                    </Button>
+                  </a>
+                )}
+                {mailHref(t.email) && (
+                  <a href={mailHref(t.email)!} className="flex-1">
+                    <Button variant="outline" size="sm" className="w-full">
+                      <Mail className="h-3.5 w-3.5 mr-1.5" /> E-Mail
+                    </Button>
+                  </a>
+                )}
+              </div>
             </Card>
           ))}
         </div>
