@@ -352,6 +352,11 @@ export default function Profile() {
           </TabsContent>
         )}
 
+        {/* TOOLS / PRO */}
+        <TabsContent value="tools" className="space-y-4">
+          <FeatureToggles />
+        </TabsContent>
+
         {/* SHARE */}
         <TabsContent value="share" className="space-y-4">
           <Card className="p-5">
