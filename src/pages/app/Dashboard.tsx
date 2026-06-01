@@ -132,14 +132,20 @@ const Dashboard = () => {
       setAppsIn(ai.count ?? 0);
       setAppsOut(ao.count ?? 0);
 
-      const [nkaOpenRes, nkaDraftRes] = await Promise.all([
+      const [nkaOpenRes, nkaDraftRes, wgMemRes, wgListRes] = await Promise.all([
         supabase.from("payments").select("id", { count: "exact", head: true })
           .eq("user_id", user.id).eq("kind", "nka_nachzahlung").eq("status", "open"),
         supabase.from("nka_periods").select("id", { count: "exact", head: true })
           .eq("user_id", user.id).eq("status", "draft"),
+        supabase.from("wg_member_links").select("id", { count: "exact", head: true })
+          .eq("user_id", user.id).eq("revoked", false),
+        supabase.from("listings").select("id", { count: "exact", head: true })
+          .eq("user_id", user.id).eq("kind", "wg_room").eq("status", "published"),
       ]);
       setNkaOpen(nkaOpenRes.count ?? 0);
       setNkaDraft(nkaDraftRes.count ?? 0);
+      setWgMembers(wgMemRes.count ?? 0);
+      setWgListings(wgListRes.count ?? 0);
       setLoading(false);
     })();
   }, [user]);
