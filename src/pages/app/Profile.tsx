@@ -13,6 +13,7 @@ import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Copy, IdCard, UserCircle2, Sparkles, Home as HomeIcon, Briefcase, ShieldCheck } from "lucide-react";
+import FeatureToggles from "@/components/FeatureToggles";
 
 /**
  * Unified Profile — ein zentraler Ort wie Social Media.
