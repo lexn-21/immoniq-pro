@@ -1,12 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
-import { Plus, Building2, MapPin, ArrowRight, Megaphone } from "lucide-react";
+import { Plus, Building2, MapPin, ArrowRight, Megaphone, Users, Home as HomeIcon, Search } from "lucide-react";
 import { toast } from "sonner";
 import { toastError } from "@/lib/errors";
 import { eur } from "@/lib/format";
@@ -35,16 +36,35 @@ const empty = { name: "", street: "", zip: "", city: "", build_year: "", area_sq
 
 const Properties = () => {
   const [items, setItems] = useState<any[]>([]);
+  const [unitsByProp, setUnitsByProp] = useState<Record<string, any[]>>({});
+  const [tenantsByProp, setTenantsByProp] = useState<Record<string, any[]>>({});
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<any>(empty);
+  const [q, setQ] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"all" | "rented" | "vacant" | "self_use">("all");
 
   useEffect(() => { document.title = "Objekte · ImmonIQ"; load(); }, []);
 
   const load = async () => {
     setLoading(true);
-    const { data } = await supabase.from("properties").select("*").order("created_at", { ascending: false });
-    setItems(data ?? []);
+    const { data: props } = await supabase.from("properties").select("*").order("created_at", { ascending: false });
+    const propsArr = props ?? [];
+    setItems(propsArr);
+
+    const ids = propsArr.map((p) => p.id);
+    if (ids.length) {
+      const [u, t] = await Promise.all([
+        supabase.from("units").select("id,property_id,rent_cold,utilities,label").in("property_id", ids),
+        supabase.from("tenants").select("id,property_id,full_name,move_out").in("property_id", ids),
+      ]);
+      const uMap: Record<string, any[]> = {};
+      (u.data ?? []).forEach((x: any) => { (uMap[x.property_id] ||= []).push(x); });
+      const tMap: Record<string, any[]> = {};
+      (t.data ?? []).forEach((x: any) => { (tMap[x.property_id] ||= []).push(x); });
+      setUnitsByProp(uMap);
+      setTenantsByProp(tMap);
+    }
     setLoading(false);
   };
 
