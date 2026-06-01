@@ -285,22 +285,24 @@ export default function Templates() {
       {!loading && mine.length > 0 && (
         <div className="grid md:grid-cols-2 gap-3">
           {mine.map(t => (
-            <Card key={t.id} className="glass">
+            <Card key={t.id} className="glass hover:border-primary/40 transition group">
               <CardContent className="p-5">
-                <div className="flex items-start justify-between gap-2 mb-2">
-                  <div className="min-w-0">
+                <div className="flex items-start justify-between gap-2 mb-3">
+                  <div className="min-w-0 flex-1">
                     <p className="font-medium truncate">{t.title}</p>
                     {t.category && <Badge variant="outline" className="mt-1">{t.category}</Badge>}
                   </div>
-                  <div className="flex gap-1 flex-shrink-0">
-                    <Button size="icon" variant="ghost" className="h-7 w-7" title="Auf Mieter/Objekt anwenden" onClick={() => { setApplyTemplate(t); setApplyOpen(true); }}><Wand2 className="h-3.5 w-3.5 text-primary" /></Button>
-                    <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => { setEdit(t); setOpen(true); }}><Pencil className="h-3.5 w-3.5" /></Button>
-                    <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => duplicate(t)}><Copy className="h-3.5 w-3.5" /></Button>
-                    <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => exportTxt(t)}><Download className="h-3.5 w-3.5" /></Button>
-                    <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => remove(t.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                  <div className="flex gap-0.5 flex-shrink-0 opacity-60 group-hover:opacity-100 transition">
+                    <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => { setEdit(t); setOpen(true); }} title="Bearbeiten"><Pencil className="h-3.5 w-3.5" /></Button>
+                    <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => duplicate(t)} title="Duplizieren"><Copy className="h-3.5 w-3.5" /></Button>
+                    <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => exportTxt(t)} title="Export .txt"><Download className="h-3.5 w-3.5" /></Button>
+                    <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => remove(t.id)} title="Löschen"><Trash2 className="h-3.5 w-3.5" /></Button>
                   </div>
                 </div>
-                <p className="text-xs text-muted-foreground line-clamp-3 whitespace-pre-wrap font-mono">{t.body_md || "—"}</p>
+                <p className="text-xs text-muted-foreground line-clamp-2 whitespace-pre-wrap font-mono mb-3">{t.body_md || "—"}</p>
+                <Button size="sm" className="w-full bg-gradient-gold text-primary-foreground shadow-gold" onClick={() => { setApplyTemplate(t); setApplyOpen(true); }}>
+                  <Wand2 className="h-3.5 w-3.5 mr-1.5" /> Mieter & Objekt wählen · ausfüllen
+                </Button>
               </CardContent>
             </Card>
           ))}
