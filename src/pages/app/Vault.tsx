@@ -497,17 +497,34 @@ const Vault = () => {
   const activeCats = scope === "personal" ? PERSONAL_CATEGORIES : IMMO_CATEGORIES;
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
+    const now = Date.now();
+    const soonMs = 30 * 24 * 3600 * 1000;
     return docs.filter((d) => {
       if ((d.scope ?? "immo") !== scope) return false;
       if (scope === "immo" && filterProp !== "all" && d.property_id !== filterProp) return false;
       if (filterCat !== "all" && d.category !== filterCat) return false;
+      if (filterType !== "all") {
+        const m = (d.mime_type ?? "").toLowerCase();
+        const isPdf = m.includes("pdf");
+        const isImg = m.startsWith("image/");
+        if (filterType === "pdf" && !isPdf) return false;
+        if (filterType === "image" && !isImg) return false;
+        if (filterType === "other" && (isPdf || isImg)) return false;
+      }
+      if (filterStatus !== "all") {
+        const t = d.retention_until ? new Date(d.retention_until).getTime() : null;
+        if (filterStatus === "noexp" && t !== null) return false;
+        if (filterStatus === "expired" && (t === null || t >= now)) return false;
+        if (filterStatus === "soon" && (t === null || t < now || t - now > soonMs)) return false;
+        if (filterStatus === "active" && (t === null || t - now <= soonMs)) return false;
+      }
       if (q) {
         const hay = `${d.display_name} ${d.original_name ?? ""} ${d.notes ?? ""} ${d.category ?? ""}`.toLowerCase();
         if (!hay.includes(q)) return false;
       }
       return true;
     });
-  }, [docs, search, filterProp, filterCat, scope]);
+  }, [docs, search, filterProp, filterCat, filterType, filterStatus, scope]);
   const scopedDocs = useMemo(() => docs.filter((d) => (d.scope ?? "immo") === scope), [docs, scope]);
   const catCounts = useMemo(() => {
     const m: Record<string, number> = {};
