@@ -28,61 +28,58 @@ import {
 type NavItem = { to: string; label: string; icon: any; end?: boolean; badge?: string; hint?: string; simple?: boolean };
 type NavGroup = { title: string; subtitle?: string; items: NavItem[]; simple?: boolean };
 
-// Reihenfolge nach Nutzungs-Frequenz: Verwalten (täglich) → Vermieten → Tresor → Tools
+// Cleaner Navigation: weniger Gruppen, kürzere Labels, keine Subtitles, weniger Badges.
+// "simple" zeigt nur die wichtigsten Einträge — "full" zeigt alles.
 const groups: NavGroup[] = [
   {
-    title: "Überblick",
+    title: "Start",
     items: [
-      { to: "/app", label: "Dashboard", icon: Home, end: true, hint: "Cashflow, KPIs, Termine", simple: true },
-      { to: "/app/inbox", label: "Smart Inbox", icon: Inbox, badge: "AI", hint: "E-Mails an deine Inbox-Adresse — AI sortiert & legt Aufgaben an", simple: true },
-      { to: "/app/tasks", label: "Mein Plan", icon: CalendarCheck, badge: "TO-DO", hint: "Alle Aufgaben & Fristen — nichts mehr verpassen", simple: true },
-      { to: "/app/messenger", label: "Nachrichten", icon: MessageSquare, badge: "NEU", hint: "Chat mit Mietern, Bewerbern & Interessenten", simple: true },
-      { to: "/app/feed", label: "Community", icon: PartyPopper, badge: "NEU", hint: "Anonyme Wins & Tipps von verifizierten Eigentümern" },
+      { to: "/app", label: "Dashboard", icon: Home, end: true, simple: true },
+      { to: "/app/tasks", label: "Mein Plan", icon: CalendarCheck, simple: true },
+      { to: "/app/messenger", label: "Nachrichten", icon: MessageSquare, simple: true },
+      { to: "/app/inbox", label: "Smart Inbox", icon: Inbox, simple: true },
+      { to: "/app/feed", label: "Community", icon: PartyPopper },
     ],
   },
   {
     title: "Verwalten",
-    subtitle: "Dein Tagesgeschäft",
     items: [
-      { to: "/app/properties", label: "Objekte", icon: Building2, hint: "Deine Immobilien", simple: true },
-      { to: "/app/parcels", label: "Grundstücke", icon: Trees, badge: "NEU", hint: "Flurstücke, Erbpacht & Bodenrichtwert" },
-      { to: "/app/tenants", label: "Mieter", icon: Users, hint: "Mit Verträgen", simple: true },
+      { to: "/app/properties", label: "Objekte", icon: Building2, simple: true },
+      { to: "/app/tenants", label: "Mieter", icon: Users, simple: true },
       { to: "/app/payments", label: "Einnahmen", icon: Wallet, simple: true },
-      { to: "/app/expenses", label: "Ausgaben", icon: Receipt, hint: "Belege scannen", simple: true },
-      { to: "/app/nebenkosten", label: "Nebenkosten", icon: Calculator, badge: "NEU", hint: "NK-Abrechnung pro Mieter — BetrKV-konform", simple: true },
-      { to: "/app/org", label: "Organisation", icon: Landmark, hint: "Bistum → Dekanat → Gemeinde oder Stiftung" },
-      { to: "/app/templates", label: "Vorlagen", icon: FileText, hint: "Verträge & Schreiben", simple: true },
+      { to: "/app/expenses", label: "Ausgaben", icon: Receipt, simple: true },
+      { to: "/app/nebenkosten", label: "Nebenkosten", icon: Calculator },
+      { to: "/app/parcels", label: "Grundstücke", icon: Trees },
+      { to: "/app/org", label: "Organisation", icon: Landmark },
+      { to: "/app/templates", label: "Vorlagen", icon: FileText },
     ],
   },
   {
-    title: "Vermieten & Markt",
-    subtitle: "Finden · Anbieten · Werben",
+    title: "Tresor",
     items: [
-      { to: "/markt", label: "Markt durchsuchen", icon: SearchIcon, badge: "LIVE", hint: "Inserate von Eigentümern — mit Umkreissuche" },
-      { to: "/app/listings", label: "Meine Inserate", icon: Megaphone, hint: "Vermieten & verkaufen — provisionsfrei" },
-      { to: "/app/applications", label: "Bewerbungen", icon: Inbox, hint: "Mit KI-Score" },
-      { to: "/app/marketplace", label: "Experten finden", icon: Wrench, hint: "Handwerker, Steuerberater & mehr in deiner Nähe" },
-      { to: "/app/ads", label: "Werben", icon: Megaphone, badge: "€49/Wo", hint: "Eigene Anzeigen schalten" },
+      { to: "/app/vault", label: "Immo-Tresor", icon: Lock, simple: true },
+      { to: "/app/vault?scope=personal", label: "Lebensbürokratie", icon: Lock, simple: true },
+      { to: "/app/law", label: "Rechts-Ecke", icon: Scale },
+      { to: "/app/advisor", label: "Steuerberater", icon: ShieldCheck },
     ],
   },
   {
-    title: "Tresor & Recht",
-    subtitle: "Dokumente sicher · Gesetze parat",
+    title: "Vermieten",
     items: [
-      { to: "/app/vault", label: "Tresor (Immo)", icon: Lock, badge: "AES-256", hint: "Verschlüsselte Dokumente zu Objekten", simple: true },
-      { to: "/app/vault?scope=personal", label: "Lebensbürokratie", icon: Lock, badge: "NEU", hint: "Ausweis, Verträge, Bank, Versicherungen — alles griffbereit", simple: true },
-      { to: "/app/law", label: "Rechts-Ecke", icon: Scale, hint: "BGB, WEG, HeizkostenV" },
-      { to: "/app/advisor", label: "Steuerberater", icon: ShieldCheck, hint: "Sicher freigeben" },
+      { to: "/markt", label: "Markt", icon: SearchIcon },
+      { to: "/app/listings", label: "Meine Inserate", icon: Megaphone },
+      { to: "/app/applications", label: "Bewerbungen", icon: Inbox },
+      { to: "/app/marketplace", label: "Experten", icon: Wrench },
+      { to: "/app/ads", label: "Werben", icon: Megaphone },
     ],
   },
   {
-    title: "Tools",
-    subtitle: "Selten gebraucht — aber nützlich",
+    title: "Mehr",
     items: [
-      { to: "/app/profile", label: "Mein Profil", icon: IdCard, badge: "NEU", hint: "Steckbrief, Bewerber-Daten, Vermieter-Trust — alles an einem Ort", simple: true },
-      { to: "/app/valuation", label: "Bewertung", icon: TrendingUp, badge: "AVM", hint: "Was ist deine Immobilie wert?" },
-      { to: "/app/calculator", label: "Rechner", icon: Calculator, hint: "AfA, Rendite, Tilgung" },
-      { to: "/app/tax", label: "Steuer-Brücke", icon: Calculator, hint: "Anlage V Export" },
+      { to: "/app/profile", label: "Mein Profil", icon: IdCard, simple: true },
+      { to: "/app/valuation", label: "Bewertung", icon: TrendingUp },
+      { to: "/app/calculator", label: "Rechner", icon: Calculator },
+      { to: "/app/tax", label: "Steuer-Export", icon: Calculator },
     ],
   },
 ];
@@ -123,7 +120,7 @@ const AppLayout = () => {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [scannerOpen, setScannerOpen] = useState(false);
   const [mode, setMode] = useState<"simple" | "full">(() =>
-    (typeof window !== "undefined" && (localStorage.getItem("immoniq_mode") as any)) || "full"
+    (typeof window !== "undefined" && (localStorage.getItem("immoniq_mode") as any)) || "simple"
   );
   useEffect(() => { localStorage.setItem("immoniq_mode", mode); }, [mode]);
   const visibleGroups = mode === "simple"
@@ -178,61 +175,49 @@ const AppLayout = () => {
             </Button>
           </div>
 
-          <nav className="flex-1 px-3 space-y-5 overflow-y-auto pb-4">
+          <nav className="flex-1 px-3 space-y-4 overflow-y-auto pb-4">
             {visibleGroups.map((g) => (
               <div key={g.title}>
-                <div className="px-3 mb-2">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/80">
+                {mode === "full" && (
+                  <p className="px-3 mb-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground/60">
                     {g.title}
                   </p>
-                  {g.subtitle && (
-                    <p className="text-[10px] text-muted-foreground/50 mt-0.5">{g.subtitle}</p>
-                  )}
-                </div>
+                )}
                 <div className="space-y-0.5">
                   {g.items.map((n) => (
-                    <Tooltip key={n.to}>
-                      <TooltipTrigger asChild>
-                        <span className="block">
-                          <NavLink
-                            to={n.to}
-                            end={n.end}
-                            className={({ isActive }) =>
-                              `group relative flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all ${
-                                isActive
-                                  ? "bg-primary/10 text-primary shadow-sm"
-                                  : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
-                              }`
-                            }
-                          >
-                            {({ isActive }) => (
-                              <>
-                                <n.icon className={`h-[18px] w-[18px] transition-transform ${isActive ? "scale-110" : "group-hover:scale-105"}`} />
-                                <span className="flex-1">{n.label}</span>
-                                {n.badge && (
-                                  <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-primary/15 text-primary tracking-wide">
-                                    {n.badge}
-                                  </span>
-                                )}
-                                {isActive && (
-                                  <motion.div
-                                    layoutId="active-nav-pill"
-                                    className="absolute left-0 w-1 h-6 bg-primary rounded-r-full"
-                                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                                  />
-                                )}
-                              </>
-                            )}
-                          </NavLink>
-                        </span>
-                      </TooltipTrigger>
-                      {n.hint && <TooltipContent side="right">{n.hint}</TooltipContent>}
-                    </Tooltip>
+                    <NavLink
+                      key={n.to}
+                      to={n.to}
+                      end={n.end}
+                      title={n.hint}
+                      className={({ isActive }) =>
+                        `group relative flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                          isActive
+                            ? "bg-primary/10 text-primary"
+                            : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+                        }`
+                      }
+                    >
+                      {({ isActive }) => (
+                        <>
+                          <n.icon className="h-[18px] w-[18px]" />
+                          <span className="flex-1 truncate">{n.label}</span>
+                          {isActive && (
+                            <motion.div
+                              layoutId="active-nav-pill"
+                              className="absolute left-0 w-1 h-5 bg-primary rounded-r-full"
+                              transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                            />
+                          )}
+                        </>
+                      )}
+                    </NavLink>
                   ))}
                 </div>
               </div>
             ))}
           </nav>
+
 
           <div className="p-4 border-t border-border/60 space-y-2">
             <button
