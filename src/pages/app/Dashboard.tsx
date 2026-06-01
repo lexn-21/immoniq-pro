@@ -103,6 +103,8 @@ const Dashboard = () => {
   const [appsOut, setAppsOut] = useState<number>(0);
   const [nkaOpen, setNkaOpen] = useState<number>(0);
   const [nkaDraft, setNkaDraft] = useState<number>(0);
+  const [wgMembers, setWgMembers] = useState<number>(0);
+  const [wgListings, setWgListings] = useState<number>(0);
 
   useEffect(() => { document.title = "Übersicht · ImmonIQ"; }, []);
 
