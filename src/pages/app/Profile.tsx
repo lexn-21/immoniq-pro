@@ -123,6 +123,14 @@ export default function Profile() {
         ? String(seeker.preferred_zips).split(",").map((s: string) => s.trim()).filter(Boolean)
         : [],
       about_me: seeker.about_me || null,
+      is_student: !!seeker.is_student,
+      university: seeker.is_student ? (seeker.university || null) : null,
+      study_program: seeker.is_student ? (seeker.study_program || null) : null,
+      study_semester: seeker.is_student && seeker.study_semester ? Number(seeker.study_semester) : null,
+      bafoeg_amount: seeker.is_student && seeker.bafoeg_amount ? Number(seeker.bafoeg_amount) : null,
+      guarantor_name: seeker.is_student ? (seeker.guarantor_name || null) : null,
+      guarantor_relation: seeker.is_student ? (seeker.guarantor_relation || null) : null,
+      guarantor_income: seeker.is_student && seeker.guarantor_income ? Number(seeker.guarantor_income) : null,
       completeness_score: calcSeekerScore(seeker),
     };
     const { error } = await supabase.from("seeker_profiles" as any).upsert(payload, { onConflict: "user_id" });
