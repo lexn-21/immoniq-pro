@@ -25,64 +25,83 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
 
-type NavItem = { to: string; label: string; icon: any; end?: boolean; badge?: string; hint?: string; simple?: boolean };
-type NavGroup = { title: string; subtitle?: string; items: NavItem[]; simple?: boolean };
+type Persona = "privat" | "vermieter" | "suchender" | "pro";
 
-// Cleaner Navigation: weniger Gruppen, kürzere Labels, keine Subtitles, weniger Badges.
-// "simple" zeigt nur die wichtigsten Einträge — "full" zeigt alles.
+type NavItem = {
+  to: string;
+  label: string;
+  icon: any;
+  end?: boolean;
+  badge?: string;
+  hint?: string;
+  personas?: Persona[]; // wenn leer = immer sichtbar (Kernfunktion)
+};
+type NavGroup = { title: string; items: NavItem[]; personas?: Persona[] };
+
+// Persona-basiert: jede Rolle bekommt nur ihre Kern-Items.
+// "Profi-Modus" oder Persona "pro" zeigt alles.
 const groups: NavGroup[] = [
   {
     title: "Start",
     items: [
-      { to: "/app", label: "Dashboard", icon: Home, end: true, simple: true },
-      { to: "/app/tasks", label: "Mein Plan", icon: CalendarCheck, simple: true },
-      { to: "/app/messenger", label: "Nachrichten", icon: MessageSquare, simple: true },
-      { to: "/app/inbox", label: "Smart Inbox", icon: Inbox, simple: true },
-      { to: "/app/feed", label: "Community", icon: PartyPopper },
+      { to: "/app", label: "Dashboard", icon: Home, end: true },
+      { to: "/app/tasks", label: "Mein Plan", icon: CalendarCheck },
+      { to: "/app/messenger", label: "Nachrichten", icon: MessageSquare },
+      { to: "/app/inbox", label: "Smart Inbox", icon: Inbox, personas: ["vermieter", "pro"] },
+      { to: "/app/feed", label: "Community", icon: PartyPopper, personas: ["pro"] },
     ],
   },
   {
     title: "Verwalten",
+    personas: ["privat", "vermieter", "pro"],
     items: [
-      { to: "/app/properties", label: "Objekte", icon: Building2, simple: true },
-      { to: "/app/tenants", label: "Mieter", icon: Users, simple: true },
-      { to: "/app/payments", label: "Einnahmen", icon: Wallet, simple: true },
-      { to: "/app/expenses", label: "Ausgaben", icon: Receipt, simple: true },
-      { to: "/app/nebenkosten", label: "Nebenkosten", icon: Calculator },
-      { to: "/app/parcels", label: "Grundstücke", icon: Trees },
-      { to: "/app/org", label: "Organisation", icon: Landmark },
-      { to: "/app/templates", label: "Vorlagen", icon: FileText },
+      { to: "/app/properties", label: "Objekte", icon: Building2 },
+      { to: "/app/tenants", label: "Mieter", icon: Users, personas: ["vermieter", "pro"] },
+      { to: "/app/payments", label: "Einnahmen", icon: Wallet },
+      { to: "/app/expenses", label: "Ausgaben", icon: Receipt },
+      { to: "/app/nebenkosten", label: "Nebenkosten", icon: Calculator, personas: ["vermieter", "pro"] },
+      { to: "/app/parcels", label: "Grundstücke", icon: Trees, personas: ["pro"] },
+      { to: "/app/org", label: "Organisation", icon: Landmark, personas: ["pro"] },
+      { to: "/app/templates", label: "Vorlagen", icon: FileText, personas: ["vermieter", "pro"] },
     ],
   },
   {
     title: "Tresor",
     items: [
-      { to: "/app/vault", label: "Immo-Tresor", icon: Lock, simple: true },
-      { to: "/app/vault?scope=personal", label: "Lebensbürokratie", icon: Lock, simple: true },
-      { to: "/app/law", label: "Rechts-Ecke", icon: Scale },
-      { to: "/app/advisor", label: "Steuerberater", icon: ShieldCheck },
+      { to: "/app/vault", label: "Immo-Tresor", icon: Lock, personas: ["privat", "vermieter", "pro"] },
+      { to: "/app/vault?scope=personal", label: "Lebensbürokratie", icon: Lock },
+      { to: "/app/law", label: "Rechts-Ecke", icon: Scale, personas: ["pro"] },
+      { to: "/app/advisor", label: "Steuerberater", icon: ShieldCheck, personas: ["vermieter", "pro"] },
     ],
   },
   {
     title: "Vermieten",
+    personas: ["vermieter", "suchender", "pro"],
     items: [
       { to: "/markt", label: "Markt", icon: SearchIcon },
-      { to: "/app/listings", label: "Meine Inserate", icon: Megaphone },
-      { to: "/app/applications", label: "Bewerbungen", icon: Inbox },
-      { to: "/app/marketplace", label: "Experten", icon: Wrench },
-      { to: "/app/ads", label: "Werben", icon: Megaphone },
+      { to: "/app/listings", label: "Meine Inserate", icon: Megaphone, personas: ["vermieter", "pro"] },
+      { to: "/app/applications", label: "Bewerbungen", icon: Inbox, personas: ["vermieter", "pro"] },
+      { to: "/app/marketplace", label: "Experten", icon: Wrench, personas: ["pro"] },
+      { to: "/app/ads", label: "Werben", icon: Megaphone, personas: ["pro"] },
     ],
   },
   {
     title: "Mehr",
     items: [
-      { to: "/app/profile", label: "Mein Profil", icon: IdCard, simple: true },
-      { to: "/app/valuation", label: "Bewertung", icon: TrendingUp },
-      { to: "/app/calculator", label: "Rechner", icon: Calculator },
-      { to: "/app/tax", label: "Steuer-Export", icon: Calculator },
+      { to: "/app/profile", label: "Mein Profil", icon: IdCard },
+      { to: "/app/valuation", label: "Bewertung", icon: TrendingUp, personas: ["vermieter", "pro"] },
+      { to: "/app/calculator", label: "Rechner", icon: Calculator, personas: ["pro"] },
+      { to: "/app/tax", label: "Steuer-Export", icon: Calculator, personas: ["vermieter", "pro"] },
     ],
   },
 ];
+
+const PERSONA_LABEL: Record<Persona, string> = {
+  privat: "Privat",
+  vermieter: "Vermieter",
+  suchender: "Suche",
+  pro: "Profi",
+};
 
 // 4 Tabs + zentraler "+" FAB für Mobile
 const bottomLeft: NavItem[] = [
