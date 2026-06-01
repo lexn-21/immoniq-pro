@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/Logo";
 import { toast } from "sonner";
-import { CheckCircle2, ArrowRight, Building2, Home, Sparkles } from "lucide-react";
+import { CheckCircle2, ArrowRight, Building2, Home, Sparkles, Wallet, Search, Briefcase } from "lucide-react";
 import { z } from "zod";
 
 const propSchema = z.object({
