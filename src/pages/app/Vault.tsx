@@ -123,6 +123,8 @@ const Vault = () => {
   const [search, setSearch] = useState("");
   const [filterProp, setFilterProp] = useState<string>("all");
   const [filterCat, setFilterCat] = useState<string>("all");
+  const [filterType, setFilterType] = useState<"all" | "pdf" | "image" | "other">("all");
+  const [filterStatus, setFilterStatus] = useState<"all" | "active" | "soon" | "expired" | "noexp">("all");
   const [scope, setScope] = useState<"immo" | "personal">("immo");
   const [viewMode, setViewMode] = useState<"list" | "tree">("tree");
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
