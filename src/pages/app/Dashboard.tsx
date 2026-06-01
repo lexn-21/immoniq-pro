@@ -16,7 +16,7 @@ import { motion } from "framer-motion";
 import {
   ArrowUpRight, Building2, Wallet, Receipt, TrendingUp, Plus,
   Lock, Wrench, CalendarClock, Scale, ShieldCheck, Sparkles,
-  BarChart3, Briefcase, Megaphone, CalendarCheck,
+  BarChart3, Briefcase, Megaphone, CalendarCheck, Users,
 } from "lucide-react";
 
 const KPI = ({ label, value, hint, trend, icon: Icon, tone = "default", progress }: {
