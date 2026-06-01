@@ -25,6 +25,173 @@ const CATEGORIES = ["Mietvertrag", "Kündigung", "Mahnung", "Übergabeprotokoll"
 
 const STARTERS: Array<{ title: string; category: string; body_md: string }> = [
   {
+    title: "Mietvertrag – Wohnraum (Standard)",
+    category: "Mietvertrag",
+    body_md: `MIETVERTRAG ÜBER WOHNRAUM
+
+Zwischen
+{vermieter} (Vermieter)
+und
+{name} (Mieter)
+
+wird folgender Mietvertrag geschlossen:
+
+§ 1 Mietsache
+Vermietet wird die Wohnung {objekt}, {adresse}.
+Mitvermietet sind: Keller, ggf. Stellplatz, Boden- bzw. Speicherraum (sofern vorhanden).
+
+§ 2 Mietzeit
+Das Mietverhältnis beginnt am {mietbeginn} und läuft auf unbestimmte Zeit.
+Die Kündigung richtet sich nach §§ 573, 573c BGB.
+
+§ 3 Miete und Nebenkosten
+Kaltmiete: {kaltmiete} monatlich
+Betriebskostenvorauszahlung: {nebenkosten} monatlich
+Die Miete ist monatlich im Voraus, spätestens am 3. Werktag eines Monats, zu zahlen.
+
+§ 4 Kaution
+Der Mieter leistet eine Kaution in Höhe von {kaution} (max. 3 Nettokaltmieten, § 551 BGB).
+Die Kaution wird verzinslich angelegt.
+
+§ 5 Betriebskosten
+Die Betriebskosten gemäß BetrKV werden jährlich abgerechnet. Verteilungsschlüssel: Wohnfläche, soweit nichts anderes vereinbart.
+
+§ 6 Schönheitsreparaturen
+Der Mieter führt Schönheitsreparaturen entsprechend dem üblichen Bedarf in vertragsgemäßem Umfang aus.
+
+§ 7 Tierhaltung, Untervermietung, Veränderungen
+Tierhaltung (außer Kleintiere), Untervermietung und bauliche Veränderungen bedürfen der vorherigen schriftlichen Zustimmung des Vermieters.
+
+§ 8 Hausordnung
+Die Hausordnung ist Bestandteil dieses Vertrags.
+
+§ 9 Sonstiges
+Mündliche Nebenabreden bestehen nicht. Änderungen bedürfen der Schriftform.
+Sollten einzelne Bestimmungen unwirksam sein, bleibt der Vertrag im Übrigen wirksam.
+
+Ort, Datum: {datum}
+
+___________________________          ___________________________
+Vermieter ({vermieter})              Mieter ({name})`,
+  },
+  {
+    title: "Staffelmietvertrag – Anlage",
+    category: "Mietvertrag",
+    body_md: `ANLAGE ZUM MIETVERTRAG · STAFFELMIETE (§ 557a BGB)
+
+Objekt: {adresse}
+Mieter: {name}
+Beginn: {mietbeginn}
+
+Vereinbart wird folgende Staffelmiete (jeweils Nettokaltmiete):
+
+Ab {mietbeginn}: {kaltmiete}
+Ab Jahr 2: ________ EUR
+Ab Jahr 3: ________ EUR
+Ab Jahr 4: ________ EUR
+
+Jede Staffel gilt für mindestens 12 Monate. Mieterhöhungen nach §§ 558–559 BGB sind während der Staffelmiete ausgeschlossen, mit Ausnahme der gesetzlich zugelassenen Fälle.
+
+Datum: {datum}
+
+___________________________          ___________________________
+Vermieter                            Mieter`,
+  },
+  {
+    title: "Indexmietvertrag – Anlage",
+    category: "Mietvertrag",
+    body_md: `ANLAGE ZUM MIETVERTRAG · INDEXMIETE (§ 557b BGB)
+
+Objekt: {adresse}
+Mieter: {name}
+
+Die Miete ändert sich entsprechend dem vom Statistischen Bundesamt veröffentlichten Verbraucherpreisindex für Deutschland (VPI, Basis 2020 = 100).
+
+Ausgangsindex: __________ (Monat/Jahr: __________)
+Ausgangsmiete (netto-kalt): {kaltmiete}
+
+Eine Anpassung erfolgt frühestens 12 Monate nach der letzten Mietfestsetzung und nur in Textform mit Angabe der Indexstände und der neuen Miete.
+
+Datum: {datum}
+
+___________________________          ___________________________
+Vermieter                            Mieter`,
+  },
+  {
+    title: "Stellplatz-/Garagenmietvertrag",
+    category: "Mietvertrag",
+    body_md: `STELLPLATZ-/GARAGENMIETVERTRAG
+
+Zwischen {vermieter} und {name}
+
+§ 1 Mietsache
+Vermietet wird der Stellplatz/die Garage Nr. ______ in {adresse}.
+
+§ 2 Mietzeit
+Beginn: {mietbeginn} · auf unbestimmte Zeit.
+Kündigungsfrist: 1 Monat zum Monatsende.
+
+§ 3 Miete
+Monatliche Miete: ______ EUR, fällig im Voraus zum 3. Werktag.
+
+§ 4 Nutzung
+Erlaubt ist ausschließlich das Abstellen eines zugelassenen, fahrbereiten Kraftfahrzeugs. Lagerung sonstiger Gegenstände, Reparaturen und Waschen sind untersagt.
+
+§ 5 Sonstiges
+Untervermietung nur mit Zustimmung des Vermieters.
+
+Datum: {datum}
+
+___________________________          ___________________________
+Vermieter ({vermieter})              Mieter ({name})`,
+  },
+  {
+    title: "WG-/Untermietvertrag",
+    category: "Mietvertrag",
+    body_md: `UNTERMIETVERTRAG
+
+Zwischen {vermieter} (Hauptmieter) und {name} (Untermieter)
+
+§ 1 Mietsache
+Untervermietet wird das Zimmer Nr. ____ (ca. ____ m²) in der Wohnung {adresse} zur Mitbenutzung von Bad, Küche und Flur.
+
+§ 2 Mietzeit
+Beginn: {mietbeginn} · Ende: {mietende} (bzw. unbefristet).
+Kündigung: 3 Monate zum Monatsende, soweit unbefristet.
+
+§ 3 Miete und Nebenkosten
+Gesamtmiete inkl. Nebenkosten: ______ EUR/Monat
+Kaution: {kaution}
+
+§ 4 Zustimmung des Vermieters
+Die Untervermietung erfolgt mit Zustimmung des Hauptvermieters (Schreiben vom ____).
+
+§ 5 Hausordnung & Rücksichtnahme
+Die WG-Regeln und die Hausordnung sind einzuhalten.
+
+Datum: {datum}
+
+___________________________          ___________________________
+Hauptmieter ({vermieter})            Untermieter ({name})`,
+  },
+  {
+    title: "Bürgschaft (Mietkaution)",
+    category: "Mietvertrag",
+    body_md: `MIETKAUTIONSBÜRGSCHAFT (selbstschuldnerisch)
+
+Bürge: __________________________________
+Anschrift: ________________________________
+
+Hiermit übernehme ich für die Verpflichtungen des Mieters {name} aus dem Mietvertrag über die Wohnung {adresse} gegenüber dem Vermieter {vermieter} die selbstschuldnerische Bürgschaft bis zu einem Höchstbetrag von {kaution}.
+
+Die Bürgschaft erlischt nach ordnungsgemäßer Rückgabe der Wohnung und vollständiger Begleichung aller offenen Forderungen.
+
+Ort, Datum: {datum}
+
+___________________________
+Bürge`,
+  },
+  {
     title: "Mahnung – 1. Stufe",
     category: "Mahnung",
     body_md: `Sehr geehrte/r {name},
@@ -40,6 +207,21 @@ Mit freundlichen Grüßen
 {datum}`,
   },
   {
+    title: "Mahnung – 2. Stufe (letzte Aufforderung)",
+    category: "Mahnung",
+    body_md: `Sehr geehrte/r {name},
+
+trotz unserer ersten Mahnung ist der offene Mietbetrag für die Wohnung {adresse} bis heute nicht eingegangen.
+
+Wir fordern Sie letztmalig auf, den ausstehenden Betrag innerhalb von 7 Tagen vollständig zu begleichen.
+
+Andernfalls behalten wir uns weitere rechtliche Schritte, einschließlich der fristlosen Kündigung gemäß § 543 Abs. 2 Nr. 3 BGB, ausdrücklich vor.
+
+Mit freundlichen Grüßen
+{vermieter}
+{datum}`,
+  },
+  {
     title: "Mieterhöhung – Anschreiben",
     category: "Mietvertrag",
     body_md: `Sehr geehrte/r {name},
@@ -49,6 +231,24 @@ für die Wohnung {adresse} bitte ich Sie um Zustimmung zur Mieterhöhung ab dem 
 Die ortsübliche Vergleichsmiete liegt aktuell höher als Ihre derzeitige Kaltmiete von {kaltmiete}. Eine Begründung anhand des örtlichen Mietspiegels füge ich bei.
 
 Bitte teilen Sie mir bis innerhalb von 2 Monaten Ihre Zustimmung mit (§ 558 BGB).
+
+Mit freundlichen Grüßen
+{vermieter}
+{datum}`,
+  },
+  {
+    title: "Modernisierungsankündigung (§ 555c BGB)",
+    category: "Mietvertrag",
+    body_md: `Sehr geehrte/r {name},
+
+hiermit kündigen wir gemäß § 555c BGB folgende Modernisierungsmaßnahme(n) in der Wohnung {adresse} an:
+
+Art der Maßnahme: ____________________________________
+Voraussichtlicher Beginn: ______________
+Voraussichtliche Dauer: ______________
+Voraussichtliche Mieterhöhung: ______ EUR/Monat
+
+Die Ankündigung erfolgt mindestens 3 Monate vor Beginn der Arbeiten. Sie haben das Recht, Härtegründe innerhalb eines Monats nach Zugang dieses Schreibens mitzuteilen.
 
 Mit freundlichen Grüßen
 {vermieter}
@@ -83,6 +283,40 @@ Unterschriften
 Übernehmer: ___________________`,
   },
   {
+    title: "Wohnungsrückgabe-Protokoll",
+    category: "Übergabeprotokoll",
+    body_md: `WOHNUNGSRÜCKGABE-PROTOKOLL
+
+Objekt: {adresse}
+Mieter: {name}
+Rückgabedatum: {datum}
+
+Zählerstände bei Rückgabe
+- Strom: ________
+- Gas: ________
+- Wasser kalt: ________
+- Wasser warm: ________
+
+Schlüssel zurückgegeben
+- Wohnungstür: ____ Stück
+- Haustür: ____ Stück
+- Briefkasten: ____ Stück
+- Sonstige: ____
+
+Zustand der Räume / Mängel
+__________________________________________
+
+Vereinbarungen (z. B. Nachbesserung, Einbehalt)
+__________________________________________
+
+Kautionsrückzahlung
+Kaution: {kaution} · Einbehalt: ______ EUR · Auszahlung an: __________
+
+Unterschriften
+Mieter: ___________________
+Vermieter: ___________________`,
+  },
+  {
     title: "Kündigung – Mietverhältnis (Vermieter)",
     category: "Kündigung",
     body_md: `Sehr geehrte/r {name},
@@ -92,6 +326,37 @@ hiermit kündige ich das Mietverhältnis über die Wohnung {adresse} ordentlich 
 Begründung: ____________________________________________
 
 Bitte räumen Sie die Wohnung fristgerecht und übergeben Sie sie in vertragsgemäßem Zustand.
+
+Mit freundlichen Grüßen
+{vermieter}
+{datum}`,
+  },
+  {
+    title: "Fristlose Kündigung wegen Zahlungsverzugs",
+    category: "Kündigung",
+    body_md: `Sehr geehrte/r {name},
+
+wegen erheblichen Zahlungsrückstands kündige ich das Mietverhältnis über die Wohnung {adresse} gemäß § 543 Abs. 2 Nr. 3 BGB fristlos, hilfsweise ordentlich zum nächsten zulässigen Termin.
+
+Offener Mietrückstand: ______ EUR (Monate: __________)
+
+Bitte räumen und übergeben Sie die Wohnung bis spätestens __________.
+
+Mit freundlichen Grüßen
+{vermieter}
+{datum}`,
+  },
+  {
+    title: "Kündigungsbestätigung (Mieter)",
+    category: "Kündigung",
+    body_md: `Sehr geehrte/r {name},
+
+den Eingang Ihrer Kündigung des Mietverhältnisses über die Wohnung {adresse} bestätige ich hiermit.
+
+Das Mietverhältnis endet zum: __________
+Wohnungsrückgabe-Termin: __________ (Vorschlag, bitte bestätigen)
+
+Bitte teilen Sie mir Ihre neue Anschrift für die Kautionsabrechnung mit.
 
 Mit freundlichen Grüßen
 {vermieter}
@@ -110,6 +375,69 @@ Mit freundlichen Grüßen
 6. Rücksicht auf Mitbewohner — keine Belästigung durch Lärm, Gerüche, Rauch.
 
 Stand: {datum}
+{vermieter}`,
+  },
+  {
+    title: "Selbstauskunft (Mietinteressent)",
+    category: "Sonstiges",
+    body_md: `MIETER-SELBSTAUSKUNFT
+
+Objekt: {adresse}
+
+Persönliche Angaben
+Name, Vorname: __________________________
+Geburtsdatum: __________  Familienstand: __________
+Aktuelle Anschrift: __________________________________________
+Telefon: __________  E-Mail: __________
+
+Beruf & Einkommen
+Beruf / Arbeitgeber: __________________________
+Beschäftigt seit: __________  Anstellungsverhältnis: [ ] unbefristet [ ] befristet [ ] selbständig
+Monatliches Nettoeinkommen: ______ EUR
+
+Mit einziehende Personen: __________________________
+Haustiere: [ ] nein  [ ] ja: __________
+
+Erklärung
+Es besteht kein laufendes Insolvenz- oder Räumungsverfahren. Mietzahlungen wurden in den letzten 3 Jahren ordnungsgemäß geleistet.
+
+Datenschutz: Die Angaben werden ausschließlich zur Prüfung dieses Mietverhältnisses verwendet und nach Ablehnung bzw. Vertragsende gelöscht (Art. 6 DSGVO).
+
+Ort, Datum: {datum}
+Unterschrift: ___________________`,
+  },
+  {
+    title: "Mietbescheinigung",
+    category: "Sonstiges",
+    body_md: `MIETBESCHEINIGUNG
+
+Hiermit bestätige ich, dass {name} seit {mietbeginn} Mieter der Wohnung {adresse} ist.
+
+Aktuelle Miete (kalt): {kaltmiete}
+Nebenkostenvorauszahlung: {nebenkosten}
+Kaution: {kaution}
+
+Die Mietzahlungen erfolgen pünktlich und vertragsgemäß. Es bestehen keine Rückstände.
+
+Diese Bescheinigung wird auf Wunsch des Mieters zur Vorlage bei Behörden / Vermietern ausgestellt.
+
+Ort, Datum: {datum}
+{vermieter}`,
+  },
+  {
+    title: "Quittung / Zahlungsbestätigung",
+    category: "Sonstiges",
+    body_md: `QUITTUNG
+
+Empfangen von: {name}
+Betrag: ______ EUR
+in Worten: __________________________________
+Verwendungszweck: __________________________ (z. B. Miete __/____, Kaution, Nebenkostennachzahlung)
+Objekt: {adresse}
+
+Ort, Datum: {datum}
+
+___________________
 {vermieter}`,
   },
 ];
