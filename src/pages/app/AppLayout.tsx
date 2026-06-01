@@ -12,7 +12,7 @@ import {
   Lock, Wrench, Bell, Search, Scale,
   TrendingUp, Megaphone, Inbox,
   FileText, Plus, Home, Menu, X, CalendarCheck, Search as SearchIcon, ScanLine, PartyPopper,
-  Trees, Landmark, IdCard, MessageSquare, Sparkles, ToggleLeft, ToggleRight,
+  Trees, Landmark, IdCard, MessageSquare, Sparkles,
 } from "lucide-react";
 import { AskCopilot } from "@/components/AskCopilot";
 import { DocScanner } from "@/components/DocScanner";
@@ -25,64 +25,83 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
 
-type NavItem = { to: string; label: string; icon: any; end?: boolean; badge?: string; hint?: string; simple?: boolean };
-type NavGroup = { title: string; subtitle?: string; items: NavItem[]; simple?: boolean };
+type Persona = "privat" | "vermieter" | "suchender" | "pro";
 
-// Cleaner Navigation: weniger Gruppen, kürzere Labels, keine Subtitles, weniger Badges.
-// "simple" zeigt nur die wichtigsten Einträge — "full" zeigt alles.
+type NavItem = {
+  to: string;
+  label: string;
+  icon: any;
+  end?: boolean;
+  badge?: string;
+  hint?: string;
+  personas?: Persona[]; // wenn leer = immer sichtbar (Kernfunktion)
+};
+type NavGroup = { title: string; items: NavItem[]; personas?: Persona[] };
+
+// Persona-basiert: jede Rolle bekommt nur ihre Kern-Items.
+// "Profi-Modus" oder Persona "pro" zeigt alles.
 const groups: NavGroup[] = [
   {
     title: "Start",
     items: [
-      { to: "/app", label: "Dashboard", icon: Home, end: true, simple: true },
-      { to: "/app/tasks", label: "Mein Plan", icon: CalendarCheck, simple: true },
-      { to: "/app/messenger", label: "Nachrichten", icon: MessageSquare, simple: true },
-      { to: "/app/inbox", label: "Smart Inbox", icon: Inbox, simple: true },
-      { to: "/app/feed", label: "Community", icon: PartyPopper },
+      { to: "/app", label: "Dashboard", icon: Home, end: true },
+      { to: "/app/tasks", label: "Mein Plan", icon: CalendarCheck },
+      { to: "/app/messenger", label: "Nachrichten", icon: MessageSquare },
+      { to: "/app/inbox", label: "Smart Inbox", icon: Inbox, personas: ["vermieter", "pro"] },
+      { to: "/app/feed", label: "Community", icon: PartyPopper, personas: ["pro"] },
     ],
   },
   {
     title: "Verwalten",
+    personas: ["privat", "vermieter", "pro"],
     items: [
-      { to: "/app/properties", label: "Objekte", icon: Building2, simple: true },
-      { to: "/app/tenants", label: "Mieter", icon: Users, simple: true },
-      { to: "/app/payments", label: "Einnahmen", icon: Wallet, simple: true },
-      { to: "/app/expenses", label: "Ausgaben", icon: Receipt, simple: true },
-      { to: "/app/nebenkosten", label: "Nebenkosten", icon: Calculator },
-      { to: "/app/parcels", label: "Grundstücke", icon: Trees },
-      { to: "/app/org", label: "Organisation", icon: Landmark },
-      { to: "/app/templates", label: "Vorlagen", icon: FileText },
+      { to: "/app/properties", label: "Objekte", icon: Building2 },
+      { to: "/app/tenants", label: "Mieter", icon: Users, personas: ["vermieter", "pro"] },
+      { to: "/app/payments", label: "Einnahmen", icon: Wallet },
+      { to: "/app/expenses", label: "Ausgaben", icon: Receipt },
+      { to: "/app/nebenkosten", label: "Nebenkosten", icon: Calculator, personas: ["vermieter", "pro"] },
+      { to: "/app/parcels", label: "Grundstücke", icon: Trees, personas: ["pro"] },
+      { to: "/app/org", label: "Organisation", icon: Landmark, personas: ["pro"] },
+      { to: "/app/templates", label: "Vorlagen", icon: FileText, personas: ["vermieter", "pro"] },
     ],
   },
   {
     title: "Tresor",
     items: [
-      { to: "/app/vault", label: "Immo-Tresor", icon: Lock, simple: true },
-      { to: "/app/vault?scope=personal", label: "Lebensbürokratie", icon: Lock, simple: true },
-      { to: "/app/law", label: "Rechts-Ecke", icon: Scale },
-      { to: "/app/advisor", label: "Steuerberater", icon: ShieldCheck },
+      { to: "/app/vault", label: "Immo-Tresor", icon: Lock, personas: ["privat", "vermieter", "pro"] },
+      { to: "/app/vault?scope=personal", label: "Lebensbürokratie", icon: Lock },
+      { to: "/app/law", label: "Rechts-Ecke", icon: Scale, personas: ["pro"] },
+      { to: "/app/advisor", label: "Steuerberater", icon: ShieldCheck, personas: ["vermieter", "pro"] },
     ],
   },
   {
     title: "Vermieten",
+    personas: ["vermieter", "suchender", "pro"],
     items: [
       { to: "/markt", label: "Markt", icon: SearchIcon },
-      { to: "/app/listings", label: "Meine Inserate", icon: Megaphone },
-      { to: "/app/applications", label: "Bewerbungen", icon: Inbox },
-      { to: "/app/marketplace", label: "Experten", icon: Wrench },
-      { to: "/app/ads", label: "Werben", icon: Megaphone },
+      { to: "/app/listings", label: "Meine Inserate", icon: Megaphone, personas: ["vermieter", "pro"] },
+      { to: "/app/applications", label: "Bewerbungen", icon: Inbox, personas: ["vermieter", "pro"] },
+      { to: "/app/marketplace", label: "Experten", icon: Wrench, personas: ["pro"] },
+      { to: "/app/ads", label: "Werben", icon: Megaphone, personas: ["pro"] },
     ],
   },
   {
     title: "Mehr",
     items: [
-      { to: "/app/profile", label: "Mein Profil", icon: IdCard, simple: true },
-      { to: "/app/valuation", label: "Bewertung", icon: TrendingUp },
-      { to: "/app/calculator", label: "Rechner", icon: Calculator },
-      { to: "/app/tax", label: "Steuer-Export", icon: Calculator },
+      { to: "/app/profile", label: "Mein Profil", icon: IdCard },
+      { to: "/app/valuation", label: "Bewertung", icon: TrendingUp, personas: ["vermieter", "pro"] },
+      { to: "/app/calculator", label: "Rechner", icon: Calculator, personas: ["pro"] },
+      { to: "/app/tax", label: "Steuer-Export", icon: Calculator, personas: ["vermieter", "pro"] },
     ],
   },
 ];
+
+const PERSONA_LABEL: Record<Persona, string> = {
+  privat: "Privat",
+  vermieter: "Vermieter",
+  suchender: "Suche",
+  pro: "Profi",
+};
 
 // 4 Tabs + zentraler "+" FAB für Mobile
 const bottomLeft: NavItem[] = [
@@ -119,13 +138,25 @@ const AppLayout = () => {
   const [createOpen, setCreateOpen] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [scannerOpen, setScannerOpen] = useState(false);
-  const [mode, setMode] = useState<"simple" | "full">(() =>
-    (typeof window !== "undefined" && (localStorage.getItem("immoniq_mode") as any)) || "simple"
+  const [persona, setPersona] = useState<Persona>(() =>
+    (typeof window !== "undefined" && (localStorage.getItem("immoniq_persona") as Persona)) || "vermieter"
   );
-  useEffect(() => { localStorage.setItem("immoniq_mode", mode); }, [mode]);
-  const visibleGroups = mode === "simple"
-    ? groups.map((g) => ({ ...g, items: g.items.filter((i) => i.simple) })).filter((g) => g.items.length > 0)
-    : groups;
+  useEffect(() => { localStorage.setItem("immoniq_persona", persona); }, [persona]);
+  const [showAll, setShowAll] = useState<boolean>(() =>
+    typeof window !== "undefined" && localStorage.getItem("immoniq_show_all") === "1"
+  );
+  useEffect(() => { localStorage.setItem("immoniq_show_all", showAll ? "1" : "0"); }, [showAll]);
+
+  const personaMatch = (p?: Persona[]) => !p || p.length === 0 || p.includes(persona) || persona === "pro";
+  const visibleGroups = showAll || persona === "pro"
+    ? groups
+    : groups
+        .filter((g) => personaMatch(g.personas))
+        .map((g) => ({ ...g, items: g.items.filter((i) => personaMatch(i.personas)) }))
+        .filter((g) => g.items.length > 0);
+
+  const hiddenCount = groups.reduce((acc, g) => acc + g.items.length, 0)
+    - visibleGroups.reduce((acc, g) => acc + g.items.length, 0);
   const handleSignOut = async () => { await signOut(); navigate("/", { replace: true }); };
 
   // Schließe Drawer bei Routenwechsel
@@ -178,11 +209,9 @@ const AppLayout = () => {
           <nav className="flex-1 px-3 space-y-4 overflow-y-auto pb-4">
             {visibleGroups.map((g) => (
               <div key={g.title}>
-                {mode === "full" && (
-                  <p className="px-3 mb-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground/60">
-                    {g.title}
-                  </p>
-                )}
+                <p className="px-3 mb-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground/60">
+                  {g.title}
+                </p>
                 <div className="space-y-0.5">
                   {g.items.map((n) => (
                     <NavLink
@@ -220,15 +249,38 @@ const AppLayout = () => {
 
 
           <div className="p-4 border-t border-border/60 space-y-2">
-            <button
-              onClick={() => setMode(mode === "simple" ? "full" : "simple")}
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-muted-foreground hover:bg-muted/60 hover:text-foreground transition"
-              title="Zwischen einfachem und vollem Modus wechseln"
-            >
-              {mode === "simple" ? <ToggleLeft className="h-[18px] w-[18px]" /> : <ToggleRight className="h-[18px] w-[18px] text-primary" />}
-              <span className="flex-1 text-left">{mode === "simple" ? "Einfach-Modus" : "Profi-Modus"}</span>
-              <Sparkles className="h-3 w-3 opacity-60" />
-            </button>
+            {/* Persona-Pills */}
+            <div className="px-1 pb-1">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground/70 mb-1.5 px-2">Rolle</p>
+              <div className="grid grid-cols-4 gap-1">
+                {(["privat", "vermieter", "suchender", "pro"] as Persona[]).map((p) => (
+                  <button
+                    key={p}
+                    onClick={() => { setPersona(p); setShowAll(false); }}
+                    className={`text-[10px] py-1.5 rounded-md font-medium transition ${
+                      persona === p
+                        ? "bg-primary/15 text-primary"
+                        : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+                    }`}
+                  >
+                    {PERSONA_LABEL[p]}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Sanfter Upsell: ausgeblendete Funktionen anzeigen */}
+            {hiddenCount > 0 && (
+              <button
+                onClick={() => setShowAll(!showAll)}
+                className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-muted-foreground hover:bg-muted/60 hover:text-foreground transition border border-dashed border-border/60"
+              >
+                <Sparkles className="h-3.5 w-3.5 text-primary" />
+                <span className="flex-1 text-left">
+                  {showAll ? "Weniger anzeigen" : `+${hiddenCount} weitere Tools entdecken`}
+                </span>
+              </button>
+            )}
             <NavLink
               to="/app/settings"
               className={({ isActive }) =>

@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/Logo";
 import { toast } from "sonner";
-import { CheckCircle2, ArrowRight, Building2, Home, Sparkles } from "lucide-react";
+import { CheckCircle2, ArrowRight, Building2, Home, Sparkles, Wallet, Search, Briefcase } from "lucide-react";
 import { z } from "zod";
 
 const propSchema = z.object({
@@ -22,13 +22,24 @@ const unitSchema = z.object({
   utilities: z.number().min(0).max(99999),
 });
 
-const STEPS = ["Willkommen", "Erstes Objekt", "Erste Einheit", "Fertig"] as const;
+type Persona = "privat" | "vermieter" | "suchender" | "pro";
+const PERSONAS: { id: Persona; title: string; desc: string; icon: any }[] = [
+  { id: "privat", title: "Eigenverwaltung", desc: "Selbstnutzer · nur meine Immobilie & Bürokratie", icon: Home },
+  { id: "vermieter", title: "Vermieter", desc: "Mieter, Mieten, Nebenkosten, Steuer", icon: Wallet },
+  { id: "suchender", title: "Wohnungssuche", desc: "Inserate finden & bewerben", icon: Search },
+  { id: "pro", title: "Profi / Alles", desc: "Alle Funktionen sofort sichtbar", icon: Briefcase },
+];
+
+const STEPS = ["Rolle", "Willkommen", "Erstes Objekt", "Erste Einheit", "Fertig"] as const;
 
 const Onboarding = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [propertyId, setPropertyId] = useState<string | null>(null);
+  const [persona, setPersona] = useState<Persona>(
+    (typeof window !== "undefined" && (localStorage.getItem("immoniq_persona") as Persona)) || "vermieter"
+  );
   const [prop, setProp] = useState({ name: "", street: "", zip: "", city: "" });
   const [unit, setUnit] = useState({ label: "WE 01", rent_cold: "", utilities: "" });
 
@@ -96,6 +107,57 @@ const Onboarding = () => {
         </div>
 
         {step === 0 && (
+          <Card className="p-6 glass animate-fade-in">
+            <div className="h-14 w-14 mx-auto rounded-2xl bg-gradient-gold flex items-center justify-center shadow-gold mb-4">
+              <Sparkles className="h-7 w-7 text-primary-foreground" />
+            </div>
+            <h1 className="text-2xl font-bold text-center mb-2">Was passt zu dir?</h1>
+            <p className="text-sm text-muted-foreground text-center mb-6">
+              Wir zeigen dir nur, was du wirklich brauchst. Du kannst jederzeit umschalten.
+            </p>
+            <div className="space-y-2">
+              {PERSONAS.map((p) => {
+                const Icon = p.icon;
+                const active = persona === p.id;
+                return (
+                  <button
+                    key={p.id}
+                    onClick={() => setPersona(p.id)}
+                    className={`w-full flex items-center gap-3 p-3 rounded-xl border text-left transition ${
+                      active ? "border-primary bg-primary/5" : "border-border hover:border-border/80 hover:bg-muted/40"
+                    }`}
+                  >
+                    <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${active ? "bg-gradient-gold text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-semibold text-sm">{p.title}</div>
+                      <div className="text-xs text-muted-foreground">{p.desc}</div>
+                    </div>
+                    {active && <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />}
+                  </button>
+                );
+              })}
+            </div>
+            <Button
+              onClick={() => {
+                localStorage.setItem("immoniq_persona", persona);
+                if (persona === "suchender") {
+                  // Suchende brauchen kein Objekt → direkt fertig
+                  setStep(STEPS.length - 1);
+                } else {
+                  next();
+                }
+              }}
+              size="lg"
+              className="w-full mt-5 bg-gradient-gold text-primary-foreground shadow-gold hover:opacity-90"
+            >
+              Weiter <ArrowRight className="h-4 w-4 ml-2" />
+            </Button>
+          </Card>
+        )}
+
+        {step === 1 && (
           <Card className="p-8 glass text-center animate-fade-in">
             <div className="h-16 w-16 mx-auto rounded-2xl bg-gradient-gold flex items-center justify-center shadow-gold mb-6">
               <Sparkles className="h-8 w-8 text-primary-foreground" />
@@ -111,7 +173,7 @@ const Onboarding = () => {
           </Card>
         )}
 
-        {step === 1 && (
+        {step === 2 && (
           <Card className="p-8 glass animate-fade-in">
             <div className="flex items-center gap-3 mb-6">
               <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center"><Building2 className="h-5 w-5 text-primary" /></div>
@@ -134,7 +196,7 @@ const Onboarding = () => {
           </Card>
         )}
 
-        {step === 2 && (
+        {step === 3 && (
           <Card className="p-8 glass animate-fade-in">
             <div className="flex items-center gap-3 mb-6">
               <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center"><Home className="h-5 w-5 text-primary" /></div>
@@ -156,15 +218,15 @@ const Onboarding = () => {
           </Card>
         )}
 
-        {step === 3 && (
+        {step === 4 && (
           <Card className="p-8 glass text-center animate-fade-in">
             <div className="h-16 w-16 mx-auto rounded-2xl bg-success/15 flex items-center justify-center mb-6">
               <CheckCircle2 className="h-8 w-8 text-success" />
             </div>
             <h2 className="text-2xl font-bold mb-3">Dein Cockpit ist bereit.</h2>
             <p className="text-muted-foreground mb-6 leading-relaxed">
-              Als Nächstes: einen Mieter zuordnen, die erste Mietzahlung erfassen, oder einen Beleg hochladen.
-              Am Ende des Quartals: einmal auf "Steuer-Export" klicken — fertig.
+              Deine Ansicht ist auf <span className="text-foreground font-semibold">{PERSONAS.find(p => p.id === persona)?.title}</span> zugeschnitten.
+              Mehr Tools schaltest du jederzeit links unten frei.
             </p>
             <Button onClick={async () => { await markSeen(); navigate("/app"); }} size="lg" className="bg-gradient-gold text-primary-foreground shadow-gold">
               Zum Dashboard <ArrowRight className="h-4 w-4 ml-2" />
