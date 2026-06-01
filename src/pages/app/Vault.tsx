@@ -1079,6 +1079,9 @@ const Vault = () => {
                                       <Button size="icon" variant="ghost" className="h-7 w-7 opacity-0 group-hover:opacity-100 transition" onClick={() => downloadDoc(d)} title="Herunterladen">
                                         <Download className="h-3.5 w-3.5" />
                                       </Button>
+                                      <Button size="icon" variant="ghost" className="h-7 w-7 opacity-0 group-hover:opacity-100 transition" onClick={() => shareDoc(d)} title="Per Mail / WhatsApp senden">
+                                        <Share2 className="h-3.5 w-3.5" />
+                                      </Button>
                                       <Button size="icon" variant="ghost" className="h-7 w-7 opacity-0 group-hover:opacity-100 transition" onClick={() => deleteDoc(d)} title="Löschen">
                                         <Trash2 className="h-3.5 w-3.5 text-destructive" />
                                       </Button>
