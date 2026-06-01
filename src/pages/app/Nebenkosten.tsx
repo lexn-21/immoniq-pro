@@ -412,6 +412,17 @@ export default function Nebenkosten() {
             </Card>
           )}
 
+          {!periodId && (
+            <Card className="p-8 text-center space-y-3">
+              <div className="text-4xl">📅</div>
+              <div className="font-medium">Wähle oder erstelle eine Abrechnungsperiode</div>
+              <p className="text-sm text-muted-foreground">Üblich ist das Kalenderjahr ({new Date().getFullYear() - 1}).</p>
+              <Button onClick={() => setNewPeriodOpen(true)}>
+                <Plus className="h-4 w-4 mr-1" /> Periode für {new Date().getFullYear() - 1} anlegen
+              </Button>
+            </Card>
+          )}
+
           {periodId && (
             <>
               {/* Kostenpositionen */}
