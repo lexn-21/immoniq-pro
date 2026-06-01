@@ -249,15 +249,38 @@ const AppLayout = () => {
 
 
           <div className="p-4 border-t border-border/60 space-y-2">
-            <button
-              onClick={() => setMode(mode === "simple" ? "full" : "simple")}
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-muted-foreground hover:bg-muted/60 hover:text-foreground transition"
-              title="Zwischen einfachem und vollem Modus wechseln"
-            >
-              {mode === "simple" ? <ToggleLeft className="h-[18px] w-[18px]" /> : <ToggleRight className="h-[18px] w-[18px] text-primary" />}
-              <span className="flex-1 text-left">{mode === "simple" ? "Einfach-Modus" : "Profi-Modus"}</span>
-              <Sparkles className="h-3 w-3 opacity-60" />
-            </button>
+            {/* Persona-Pills */}
+            <div className="px-1 pb-1">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground/70 mb-1.5 px-2">Rolle</p>
+              <div className="grid grid-cols-4 gap-1">
+                {(["privat", "vermieter", "suchender", "pro"] as Persona[]).map((p) => (
+                  <button
+                    key={p}
+                    onClick={() => { setPersona(p); setShowAll(false); }}
+                    className={`text-[10px] py-1.5 rounded-md font-medium transition ${
+                      persona === p
+                        ? "bg-primary/15 text-primary"
+                        : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+                    }`}
+                  >
+                    {PERSONA_LABEL[p]}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Sanfter Upsell: ausgeblendete Funktionen anzeigen */}
+            {hiddenCount > 0 && (
+              <button
+                onClick={() => setShowAll(!showAll)}
+                className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-muted-foreground hover:bg-muted/60 hover:text-foreground transition border border-dashed border-border/60"
+              >
+                <Sparkles className="h-3.5 w-3.5 text-primary" />
+                <span className="flex-1 text-left">
+                  {showAll ? "Weniger anzeigen" : `+${hiddenCount} weitere Tools entdecken`}
+                </span>
+              </button>
+            )}
             <NavLink
               to="/app/settings"
               className={({ isActive }) =>
