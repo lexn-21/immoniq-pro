@@ -16,7 +16,7 @@ import { motion } from "framer-motion";
 import {
   ArrowUpRight, Building2, Wallet, Receipt, TrendingUp, Plus,
   Lock, Wrench, CalendarClock, Scale, ShieldCheck, Sparkles,
-  BarChart3, Briefcase, Megaphone, CalendarCheck,
+  BarChart3, Briefcase, Megaphone, CalendarCheck, Users,
 } from "lucide-react";
 
 const KPI = ({ label, value, hint, trend, icon: Icon, tone = "default", progress }: {
@@ -103,6 +103,8 @@ const Dashboard = () => {
   const [appsOut, setAppsOut] = useState<number>(0);
   const [nkaOpen, setNkaOpen] = useState<number>(0);
   const [nkaDraft, setNkaDraft] = useState<number>(0);
+  const [wgMembers, setWgMembers] = useState<number>(0);
+  const [wgListings, setWgListings] = useState<number>(0);
 
   useEffect(() => { document.title = "Übersicht · ImmonIQ"; }, []);
 
@@ -130,14 +132,20 @@ const Dashboard = () => {
       setAppsIn(ai.count ?? 0);
       setAppsOut(ao.count ?? 0);
 
-      const [nkaOpenRes, nkaDraftRes] = await Promise.all([
+      const [nkaOpenRes, nkaDraftRes, wgMemRes, wgListRes] = await Promise.all([
         supabase.from("payments").select("id", { count: "exact", head: true })
           .eq("user_id", user.id).eq("kind", "nka_nachzahlung").eq("status", "open"),
         supabase.from("nka_periods").select("id", { count: "exact", head: true })
           .eq("user_id", user.id).eq("status", "draft"),
+        supabase.from("wg_member_links").select("id", { count: "exact", head: true })
+          .eq("user_id", user.id).eq("revoked", false),
+        supabase.from("listings").select("id", { count: "exact", head: true })
+          .eq("user_id", user.id).eq("kind", "wg_room").eq("status", "published"),
       ]);
       setNkaOpen(nkaOpenRes.count ?? 0);
       setNkaDraft(nkaDraftRes.count ?? 0);
+      setWgMembers(wgMemRes.count ?? 0);
+      setWgListings(wgListRes.count ?? 0);
       setLoading(false);
     })();
   }, [user]);
@@ -425,6 +433,29 @@ const Dashboard = () => {
                     {nkaDraft > 0 && <span>{nkaDraft} Periode{nkaDraft > 1 ? "n" : ""} im Entwurf</span>}
                     {nkaDraft > 0 && nkaOpen > 0 && " · "}
                     {nkaOpen > 0 && <span className="text-warning font-semibold">{nkaOpen} offene Nachzahlung{nkaOpen > 1 ? "en" : ""}</span>}
+                  </p>
+                </div>
+                <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
+              </div>
+            </Card>
+          </Link>
+        </Item>
+      )}
+
+      {/* WG-Casting Status */}
+      {wgListings > 0 && (
+        <Item>
+          <Link to="/app/listings">
+            <Card className="p-5 glass border-primary/20 interactive-card">
+              <div className="flex items-center gap-4 flex-wrap">
+                <div className="h-11 w-11 rounded-xl bg-gradient-gold-soft border border-primary/15 flex items-center justify-center">
+                  <Users className="h-5 w-5 text-primary" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-base">WG-Casting aktiv</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {wgListings} WG-Inserat{wgListings > 1 ? "e" : ""}
+                    {wgMembers > 0 && <> · {wgMembers} Mitbewohner:in{wgMembers > 1 ? "nen" : ""} stimmberechtigt</>}
                   </p>
                 </div>
                 <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
