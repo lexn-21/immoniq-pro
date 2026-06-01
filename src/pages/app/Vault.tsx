@@ -123,6 +123,8 @@ const Vault = () => {
   const [search, setSearch] = useState("");
   const [filterProp, setFilterProp] = useState<string>("all");
   const [filterCat, setFilterCat] = useState<string>("all");
+  const [filterType, setFilterType] = useState<"all" | "pdf" | "image" | "other">("all");
+  const [filterStatus, setFilterStatus] = useState<"all" | "active" | "soon" | "expired" | "noexp">("all");
   const [scope, setScope] = useState<"immo" | "personal">("immo");
   const [viewMode, setViewMode] = useState<"list" | "tree">("tree");
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
@@ -495,17 +497,34 @@ const Vault = () => {
   const activeCats = scope === "personal" ? PERSONAL_CATEGORIES : IMMO_CATEGORIES;
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
+    const now = Date.now();
+    const soonMs = 30 * 24 * 3600 * 1000;
     return docs.filter((d) => {
       if ((d.scope ?? "immo") !== scope) return false;
       if (scope === "immo" && filterProp !== "all" && d.property_id !== filterProp) return false;
       if (filterCat !== "all" && d.category !== filterCat) return false;
+      if (filterType !== "all") {
+        const m = (d.mime_type ?? "").toLowerCase();
+        const isPdf = m.includes("pdf");
+        const isImg = m.startsWith("image/");
+        if (filterType === "pdf" && !isPdf) return false;
+        if (filterType === "image" && !isImg) return false;
+        if (filterType === "other" && (isPdf || isImg)) return false;
+      }
+      if (filterStatus !== "all") {
+        const t = d.retention_until ? new Date(d.retention_until).getTime() : null;
+        if (filterStatus === "noexp" && t !== null) return false;
+        if (filterStatus === "expired" && (t === null || t >= now)) return false;
+        if (filterStatus === "soon" && (t === null || t < now || t - now > soonMs)) return false;
+        if (filterStatus === "active" && (t === null || t - now <= soonMs)) return false;
+      }
       if (q) {
         const hay = `${d.display_name} ${d.original_name ?? ""} ${d.notes ?? ""} ${d.category ?? ""}`.toLowerCase();
         if (!hay.includes(q)) return false;
       }
       return true;
     });
-  }, [docs, search, filterProp, filterCat, scope]);
+  }, [docs, search, filterProp, filterCat, filterType, filterStatus, scope]);
   const scopedDocs = useMemo(() => docs.filter((d) => (d.scope ?? "immo") === scope), [docs, scope]);
   const catCounts = useMemo(() => {
     const m: Record<string, number> = {};
@@ -905,12 +924,36 @@ const Vault = () => {
               </Select>
             )}
             <Select value={filterCat} onValueChange={setFilterCat}>
-              <SelectTrigger className="w-[220px]"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-[200px]"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Alle Kategorien</SelectItem>
                 {activeCats.map((c) => <SelectItem key={c.value} value={c.value}>{c.emoji} {c.label}</SelectItem>)}
               </SelectContent>
             </Select>
+            <Select value={filterType} onValueChange={(v) => setFilterType(v as any)}>
+              <SelectTrigger className="w-[150px]"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Alle Dateitypen</SelectItem>
+                <SelectItem value="pdf">📄 PDF</SelectItem>
+                <SelectItem value="image">🖼️ Bilder</SelectItem>
+                <SelectItem value="other">📦 Sonstige</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={filterStatus} onValueChange={(v) => setFilterStatus(v as any)}>
+              <SelectTrigger className="w-[170px]"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Alle Status</SelectItem>
+                <SelectItem value="active">✅ Gültig</SelectItem>
+                <SelectItem value="soon">⏳ Läuft bald ab</SelectItem>
+                <SelectItem value="expired">⚠️ Abgelaufen</SelectItem>
+                <SelectItem value="noexp">∞ Ohne Ablauf</SelectItem>
+              </SelectContent>
+            </Select>
+            {(search || filterCat !== "all" || filterType !== "all" || filterStatus !== "all" || (scope === "immo" && filterProp !== "all")) && (
+              <Button variant="ghost" size="sm" onClick={() => { setSearch(""); setFilterCat("all"); setFilterType("all"); setFilterStatus("all"); setFilterProp("all"); }}>
+                Filter zurücksetzen
+              </Button>
+            )}
             <div className="inline-flex p-1 rounded-lg bg-muted/60 border">
               <button
                 onClick={() => setViewMode("tree")}
