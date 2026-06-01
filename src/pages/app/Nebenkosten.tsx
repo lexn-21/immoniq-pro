@@ -429,7 +429,18 @@ export default function Nebenkosten() {
                 </div>
 
                 {items.length === 0 ? (
-                  <p className="text-sm text-muted-foreground py-6 text-center">Noch keine Kostenpositionen.</p>
+                  <div className="py-8 text-center space-y-3">
+                    <Receipt className="h-10 w-10 mx-auto text-muted-foreground/40" />
+                    <p className="text-sm text-muted-foreground">Noch keine Kostenpositionen. Importiere automatisch aus deinen Belegen oder lege manuell an.</p>
+                    <div className="flex gap-2 justify-center flex-wrap">
+                      <Button variant="outline" size="sm" onClick={importFromExpenses}>
+                        <Receipt className="h-4 w-4 mr-1" /> Aus Belegen importieren
+                      </Button>
+                      <Button size="sm" onClick={addCostItem}>
+                        <Plus className="h-4 w-4 mr-1" /> Erste Position
+                      </Button>
+                    </div>
+                  </div>
                 ) : (
                   <div className="space-y-2">
                     {items.map(it => (
