@@ -209,11 +209,9 @@ const AppLayout = () => {
           <nav className="flex-1 px-3 space-y-4 overflow-y-auto pb-4">
             {visibleGroups.map((g) => (
               <div key={g.title}>
-                {mode === "full" && (
-                  <p className="px-3 mb-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground/60">
-                    {g.title}
-                  </p>
-                )}
+                <p className="px-3 mb-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground/60">
+                  {g.title}
+                </p>
                 <div className="space-y-0.5">
                   {g.items.map((n) => (
                     <NavLink
