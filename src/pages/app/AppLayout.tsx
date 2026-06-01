@@ -120,7 +120,7 @@ const AppLayout = () => {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [scannerOpen, setScannerOpen] = useState(false);
   const [mode, setMode] = useState<"simple" | "full">(() =>
-    (typeof window !== "undefined" && (localStorage.getItem("immoniq_mode") as any)) || "full"
+    (typeof window !== "undefined" && (localStorage.getItem("immoniq_mode") as any)) || "simple"
   );
   useEffect(() => { localStorage.setItem("immoniq_mode", mode); }, [mode]);
   const visibleGroups = mode === "simple"
