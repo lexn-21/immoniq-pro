@@ -924,12 +924,36 @@ const Vault = () => {
               </Select>
             )}
             <Select value={filterCat} onValueChange={setFilterCat}>
-              <SelectTrigger className="w-[220px]"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-[200px]"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Alle Kategorien</SelectItem>
                 {activeCats.map((c) => <SelectItem key={c.value} value={c.value}>{c.emoji} {c.label}</SelectItem>)}
               </SelectContent>
             </Select>
+            <Select value={filterType} onValueChange={(v) => setFilterType(v as any)}>
+              <SelectTrigger className="w-[150px]"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Alle Dateitypen</SelectItem>
+                <SelectItem value="pdf">📄 PDF</SelectItem>
+                <SelectItem value="image">🖼️ Bilder</SelectItem>
+                <SelectItem value="other">📦 Sonstige</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={filterStatus} onValueChange={(v) => setFilterStatus(v as any)}>
+              <SelectTrigger className="w-[170px]"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Alle Status</SelectItem>
+                <SelectItem value="active">✅ Gültig</SelectItem>
+                <SelectItem value="soon">⏳ Läuft bald ab</SelectItem>
+                <SelectItem value="expired">⚠️ Abgelaufen</SelectItem>
+                <SelectItem value="noexp">∞ Ohne Ablauf</SelectItem>
+              </SelectContent>
+            </Select>
+            {(search || filterCat !== "all" || filterType !== "all" || filterStatus !== "all" || (scope === "immo" && filterProp !== "all")) && (
+              <Button variant="ghost" size="sm" onClick={() => { setSearch(""); setFilterCat("all"); setFilterType("all"); setFilterStatus("all"); setFilterProp("all"); }}>
+                Filter zurücksetzen
+              </Button>
+            )}
             <div className="inline-flex p-1 rounded-lg bg-muted/60 border">
               <button
                 onClick={() => setViewMode("tree")}
