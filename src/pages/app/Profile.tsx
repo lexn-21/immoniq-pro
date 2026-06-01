@@ -275,6 +275,50 @@ export default function Profile() {
                 <Button onClick={saveSeeker} className="bg-gradient-gold text-primary-foreground shadow-gold">Bewerber-Daten speichern</Button>
               </div>
             </Card>
+
+            <Card className="p-5 space-y-4">
+              <div className="flex items-center justify-between gap-3 flex-wrap">
+                <div>
+                  <h3 className="font-semibold flex items-center gap-2">🎓 Student:in</h3>
+                  <p className="text-xs text-muted-foreground mt-1">Für WGs & Studi-Wohnungen — Bürgschaft zählt mehr als eigenes Einkommen.</p>
+                </div>
+                <label className="flex items-center gap-2 text-sm">
+                  <Switch checked={seeker.is_student} onCheckedChange={(v) => setSeeker({ ...seeker, is_student: v })} />
+                  Ich bin Student:in
+                </label>
+              </div>
+
+              {seeker.is_student && (
+                <div className="grid grid-cols-2 gap-3 pt-2 border-t">
+                  <div className="col-span-2"><Label>Hochschule / Universität</Label>
+                    <Input value={seeker.university} onChange={(e) => setSeeker({ ...seeker, university: e.target.value })} placeholder="z. B. TU München" /></div>
+                  <div><Label>Studiengang</Label>
+                    <Input value={seeker.study_program} onChange={(e) => setSeeker({ ...seeker, study_program: e.target.value })} /></div>
+                  <div><Label>Fachsemester</Label>
+                    <Input type="number" min={1} value={seeker.study_semester} onChange={(e) => setSeeker({ ...seeker, study_semester: e.target.value })} /></div>
+                  <div><Label>BAföG €/Monat (optional)</Label>
+                    <Input type="number" value={seeker.bafoeg_amount} onChange={(e) => setSeeker({ ...seeker, bafoeg_amount: e.target.value })} /></div>
+                  <div className="col-span-2 pt-2">
+                    <h4 className="text-sm font-medium mb-2">Bürge (z. B. Eltern)</h4>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div><Label>Name</Label>
+                        <Input value={seeker.guarantor_name} onChange={(e) => setSeeker({ ...seeker, guarantor_name: e.target.value })} /></div>
+                      <div><Label>Verhältnis</Label>
+                        <Input value={seeker.guarantor_relation} onChange={(e) => setSeeker({ ...seeker, guarantor_relation: e.target.value })} placeholder="Mutter / Vater" /></div>
+                      <div className="col-span-2"><Label>Netto-Einkommen Bürge €/Mo</Label>
+                        <Input type="number" value={seeker.guarantor_income} onChange={(e) => setSeeker({ ...seeker, guarantor_income: e.target.value })} /></div>
+                    </div>
+                  </div>
+                  <p className="col-span-2 text-[11px] text-muted-foreground">
+                    Immatrikulations- und Bürgschafts-Dokumente kannst du im Tresor hochladen — Vermieter sehen den Status in deiner Bewerbung.
+                  </p>
+                </div>
+              )}
+
+              <div className="flex justify-end">
+                <Button onClick={saveSeeker} variant="outline" size="sm">Studi-Daten speichern</Button>
+              </div>
+            </Card>
           </TabsContent>
         )}
 
