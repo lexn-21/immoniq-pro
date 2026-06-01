@@ -175,61 +175,49 @@ const AppLayout = () => {
             </Button>
           </div>
 
-          <nav className="flex-1 px-3 space-y-5 overflow-y-auto pb-4">
+          <nav className="flex-1 px-3 space-y-4 overflow-y-auto pb-4">
             {visibleGroups.map((g) => (
               <div key={g.title}>
-                <div className="px-3 mb-2">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/80">
+                {mode === "full" && (
+                  <p className="px-3 mb-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground/60">
                     {g.title}
                   </p>
-                  {g.subtitle && (
-                    <p className="text-[10px] text-muted-foreground/50 mt-0.5">{g.subtitle}</p>
-                  )}
-                </div>
+                )}
                 <div className="space-y-0.5">
                   {g.items.map((n) => (
-                    <Tooltip key={n.to}>
-                      <TooltipTrigger asChild>
-                        <span className="block">
-                          <NavLink
-                            to={n.to}
-                            end={n.end}
-                            className={({ isActive }) =>
-                              `group relative flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all ${
-                                isActive
-                                  ? "bg-primary/10 text-primary shadow-sm"
-                                  : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
-                              }`
-                            }
-                          >
-                            {({ isActive }) => (
-                              <>
-                                <n.icon className={`h-[18px] w-[18px] transition-transform ${isActive ? "scale-110" : "group-hover:scale-105"}`} />
-                                <span className="flex-1">{n.label}</span>
-                                {n.badge && (
-                                  <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-primary/15 text-primary tracking-wide">
-                                    {n.badge}
-                                  </span>
-                                )}
-                                {isActive && (
-                                  <motion.div
-                                    layoutId="active-nav-pill"
-                                    className="absolute left-0 w-1 h-6 bg-primary rounded-r-full"
-                                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                                  />
-                                )}
-                              </>
-                            )}
-                          </NavLink>
-                        </span>
-                      </TooltipTrigger>
-                      {n.hint && <TooltipContent side="right">{n.hint}</TooltipContent>}
-                    </Tooltip>
+                    <NavLink
+                      key={n.to}
+                      to={n.to}
+                      end={n.end}
+                      title={n.hint}
+                      className={({ isActive }) =>
+                        `group relative flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                          isActive
+                            ? "bg-primary/10 text-primary"
+                            : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+                        }`
+                      }
+                    >
+                      {({ isActive }) => (
+                        <>
+                          <n.icon className="h-[18px] w-[18px]" />
+                          <span className="flex-1 truncate">{n.label}</span>
+                          {isActive && (
+                            <motion.div
+                              layoutId="active-nav-pill"
+                              className="absolute left-0 w-1 h-5 bg-primary rounded-r-full"
+                              transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                            />
+                          )}
+                        </>
+                      )}
+                    </NavLink>
                   ))}
                 </div>
               </div>
             ))}
           </nav>
+
 
           <div className="p-4 border-t border-border/60 space-y-2">
             <button
