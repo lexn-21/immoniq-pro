@@ -82,6 +82,14 @@ export default function Profile() {
           move_in_from: d.move_in_from ?? "",
           about_me: d.about_me ?? "",
           employer: d.employer ?? "",
+          is_student: !!d.is_student,
+          university: d.university ?? "",
+          study_program: d.study_program ?? "",
+          study_semester: d.study_semester ?? "",
+          bafoeg_amount: d.bafoeg_amount ?? "",
+          guarantor_name: d.guarantor_name ?? "",
+          guarantor_relation: d.guarantor_relation ?? "",
+          guarantor_income: d.guarantor_income ?? "",
         }));
       }
       setProfile({ display_name: (pr as any).data?.display_name ?? "" });
