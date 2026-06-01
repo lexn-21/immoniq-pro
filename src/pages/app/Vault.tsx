@@ -456,6 +456,32 @@ const Vault = () => {
     }
   };
 
+  const shareDoc = async (d: VaultDoc) => {
+    if (!keyRef.current) return;
+    try {
+      const { data, error } = await supabase.storage.from("vault").download(d.storage_path);
+      if (error || !data) throw error ?? new Error("Download fehlgeschlagen");
+      const ct = await data.arrayBuffer();
+      const plain = await decryptBytes(keyRef.current, d.enc_iv, ct);
+      const file = new File([plain], d.original_name, { type: d.mime_type ?? "application/octet-stream" });
+      const nav = navigator as any;
+      if (nav.canShare && nav.canShare({ files: [file] })) {
+        await nav.share({ files: [file], title: d.display_name, text: `Dokument: ${d.display_name}` });
+        return;
+      }
+      // Desktop-Fallback: Datei runterladen + Mailprogramm öffnen
+      const url = URL.createObjectURL(new Blob([plain], { type: file.type }));
+      const a = document.createElement("a"); a.href = url; a.download = d.original_name; a.click();
+      URL.revokeObjectURL(url);
+      const subject = encodeURIComponent(`Dokument: ${d.display_name}`);
+      const body = encodeURIComponent(`Hallo,\n\nim Anhang findest du das Dokument "${d.display_name}".\n\nViele Grüße`);
+      window.location.href = `mailto:?subject=${subject}&body=${body}`;
+      toast.success("Datei gespeichert", { description: "Hänge sie jetzt an die geöffnete E-Mail an." });
+    } catch {
+      toast.error("Teilen fehlgeschlagen");
+    }
+  };
+
   const deleteDoc = async (d: VaultDoc) => {
     if (!confirm(`"${d.display_name}" endgültig löschen?`)) return;
     await supabase.storage.from("vault").remove([d.storage_path]);
