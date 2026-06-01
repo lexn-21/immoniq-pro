@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
-  ArrowLeft, Mail, Phone, Building2, CalendarDays, Wallet, FileText, Upload,
+  ArrowLeft, Mail, Phone, Building2, CalendarDays, Wallet, FileText, Upload, MessageCircle,
   Download, Trash2, StickyNote, ShieldCheck, AlertTriangle, CheckCircle2, Clock, Link2,
 } from "lucide-react";
 import { eur, date } from "@/lib/format";
@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { toastError } from "@/lib/errors";
 import { CardGridSkeleton } from "@/components/ListSkeleton";
 import EmptyState from "@/components/EmptyState";
+import { waHref, mailHref } from "@/lib/contact";
 
 const DOC_KIND_LABEL: Record<string, string> = {
   contract: "Mietvertrag",
@@ -451,6 +452,7 @@ function ContractPanel({ tenant, property, reload }: { tenant: any; property: an
           <Row label="Kaution" value={tenant.deposit ? eur(tenant.deposit) : "—"} />
           <Row label="Kaltmiete (Objekt)" value={eur(property?.cold_rent || 0)} />
         </div>
+        <ContactBar email={tenant.email} phone={tenant.phone} name={tenant.full_name} />
       </Card>
     );
   }
@@ -473,5 +475,25 @@ function ContractPanel({ tenant, property, reload }: { tenant: any; property: an
         <Button onClick={save} disabled={busy} className="bg-gradient-gold text-primary-foreground shadow-gold">{busy ? "Speichere…" : "Speichern"}</Button>
       </div>
     </Card>
+  );
+}
+
+function ContactBar({ email, phone, name }: { email?: string | null; phone?: string | null; name?: string }) {
+  const wa = waHref(phone, `Hallo ${name ?? ""},`);
+  const ma = mailHref(email);
+  if (!wa && !ma) return null;
+  return (
+    <div className="flex gap-2 pt-2 border-t border-border/40">
+      {wa && (
+        <a href={wa} target="_blank" rel="noreferrer" className="flex-1">
+          <Button variant="outline" size="sm" className="w-full"><MessageCircle className="h-3.5 w-3.5 mr-1.5" /> WhatsApp</Button>
+        </a>
+      )}
+      {ma && (
+        <a href={ma} className="flex-1">
+          <Button variant="outline" size="sm" className="w-full"><Mail className="h-3.5 w-3.5 mr-1.5" /> E-Mail</Button>
+        </a>
+      )}
+    </div>
   );
 }

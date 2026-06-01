@@ -13,6 +13,7 @@ import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Copy, IdCard, UserCircle2, Sparkles, Home as HomeIcon, Briefcase, ShieldCheck } from "lucide-react";
+import FeatureToggles from "@/components/FeatureToggles";
 
 /**
  * Unified Profile — ein zentraler Ort wie Social Media.
@@ -191,6 +192,7 @@ export default function Profile() {
           <TabsTrigger value="basic">Steckbrief</TabsTrigger>
           {showSeeker && <TabsTrigger value="seeker">Wohnungssuche</TabsTrigger>}
           {showLet && <TabsTrigger value="landlord">Vermieter</TabsTrigger>}
+          <TabsTrigger value="tools">Tools & Pro</TabsTrigger>
           <TabsTrigger value="share">Teilen</TabsTrigger>
         </TabsList>
 
@@ -349,6 +351,11 @@ export default function Profile() {
             </Card>
           </TabsContent>
         )}
+
+        {/* TOOLS / PRO */}
+        <TabsContent value="tools" className="space-y-4">
+          <FeatureToggles />
+        </TabsContent>
 
         {/* SHARE */}
         <TabsContent value="share" className="space-y-4">

@@ -19,7 +19,7 @@ import {
   Fingerprint, ServerCrash, CheckCircle2, AlertTriangle,
   Upload, Search, Download, Trash2, Building2, Filter,
   FileImage, FileType2, Sparkles, Clock, Camera, Zap,
-  ChevronRight, ChevronDown, List, FolderTree,
+  ChevronRight, ChevronDown, List, FolderTree, Share2, Mail,
 } from "lucide-react";
 
 import {
@@ -453,6 +453,32 @@ const Vault = () => {
       URL.revokeObjectURL(url);
     } catch (e: any) {
       toast.error("Entschlüsselung fehlgeschlagen");
+    }
+  };
+
+  const shareDoc = async (d: VaultDoc) => {
+    if (!keyRef.current) return;
+    try {
+      const { data, error } = await supabase.storage.from("vault").download(d.storage_path);
+      if (error || !data) throw error ?? new Error("Download fehlgeschlagen");
+      const ct = await data.arrayBuffer();
+      const plain = await decryptBytes(keyRef.current, d.enc_iv, ct);
+      const file = new File([plain], d.original_name, { type: d.mime_type ?? "application/octet-stream" });
+      const nav = navigator as any;
+      if (nav.canShare && nav.canShare({ files: [file] })) {
+        await nav.share({ files: [file], title: d.display_name, text: `Dokument: ${d.display_name}` });
+        return;
+      }
+      // Desktop-Fallback: Datei runterladen + Mailprogramm öffnen
+      const url = URL.createObjectURL(new Blob([plain], { type: file.type }));
+      const a = document.createElement("a"); a.href = url; a.download = d.original_name; a.click();
+      URL.revokeObjectURL(url);
+      const subject = encodeURIComponent(`Dokument: ${d.display_name}`);
+      const body = encodeURIComponent(`Hallo,\n\nim Anhang findest du das Dokument "${d.display_name}".\n\nViele Grüße`);
+      window.location.href = `mailto:?subject=${subject}&body=${body}`;
+      toast.success("Datei gespeichert", { description: "Hänge sie jetzt an die geöffnete E-Mail an." });
+    } catch {
+      toast.error("Teilen fehlgeschlagen");
     }
   };
 
@@ -993,6 +1019,9 @@ const Vault = () => {
                         <Button size="icon" variant="ghost" onClick={() => downloadDoc(d)} title="Herunterladen & entschlüsseln">
                           <Download className="h-4 w-4" />
                         </Button>
+                        <Button size="icon" variant="ghost" onClick={() => shareDoc(d)} title="Per Mail / WhatsApp senden">
+                          <Share2 className="h-4 w-4" />
+                        </Button>
                         <Button size="icon" variant="ghost" onClick={() => deleteDoc(d)} title="Löschen">
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
@@ -1049,6 +1078,9 @@ const Vault = () => {
                                       {d.retention_until && <Clock className="h-3 w-3 text-warning" aria-label="Aufbewahrungspflicht" />}
                                       <Button size="icon" variant="ghost" className="h-7 w-7 opacity-0 group-hover:opacity-100 transition" onClick={() => downloadDoc(d)} title="Herunterladen">
                                         <Download className="h-3.5 w-3.5" />
+                                      </Button>
+                                      <Button size="icon" variant="ghost" className="h-7 w-7 opacity-0 group-hover:opacity-100 transition" onClick={() => shareDoc(d)} title="Per Mail / WhatsApp senden">
+                                        <Share2 className="h-3.5 w-3.5" />
                                       </Button>
                                       <Button size="icon" variant="ghost" className="h-7 w-7 opacity-0 group-hover:opacity-100 transition" onClick={() => deleteDoc(d)} title="Löschen">
                                         <Trash2 className="h-3.5 w-3.5 text-destructive" />

@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Users, Mail, Phone, Link2, Building2, ChevronRight } from "lucide-react";
+import { Plus, Users, Mail, Phone, Link2, Building2, ChevronRight, MessageCircle } from "lucide-react";
+import { waHref, mailHref } from "@/lib/contact";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { toastError } from "@/lib/errors";
@@ -180,6 +181,22 @@ const Tenants = () => {
               }}>
                 <Link2 className="h-3.5 w-3.5 mr-1.5" /> Mieter-Portal-Link
               </Button>
+              <div className="flex gap-2 mt-2">
+                {waHref(t.phone) && (
+                  <a href={waHref(t.phone)!} target="_blank" rel="noreferrer" className="flex-1">
+                    <Button variant="outline" size="sm" className="w-full">
+                      <MessageCircle className="h-3.5 w-3.5 mr-1.5" /> WhatsApp
+                    </Button>
+                  </a>
+                )}
+                {mailHref(t.email) && (
+                  <a href={mailHref(t.email)!} className="flex-1">
+                    <Button variant="outline" size="sm" className="w-full">
+                      <Mail className="h-3.5 w-3.5 mr-1.5" /> E-Mail
+                    </Button>
+                  </a>
+                )}
+              </div>
             </Card>
           ))}
         </div>
