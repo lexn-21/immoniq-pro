@@ -323,23 +323,29 @@ function ApplyDialog({ open, onOpenChange, template }: { open: boolean; onOpenCh
   const [profile, setProfile] = useState<any>(null);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) { setTenantId(""); setPropertyId(""); return; }
     (async () => {
       const [t, p, prof] = await Promise.all([
         supabase.from("tenants").select("id,full_name,email,phone,lease_start,lease_end,deposit,property_id,unit_id").order("full_name"),
         supabase.from("properties").select("id,name,street,zip,city,cold_rent,utilities").order("name"),
         supabase.from("profiles").select("display_name").maybeSingle(),
       ]);
-      setTenants(t.data ?? []);
-      setProperties(p.data ?? []);
+      const ts = t.data ?? [];
+      const ps = p.data ?? [];
+      setTenants(ts);
+      setProperties(ps);
       setProfile(prof.data);
+      // Smart default: auto-pick first tenant so dialog opens "ready to send"
+      if (ts.length > 0) setTenantId(ts[0].id);
+      else if (ps.length > 0) setPropertyId(ps[0].id);
     })();
   }, [open]);
 
+  const tenant = tenants.find(x => x.id === tenantId);
+  const prop = properties.find(x => x.id === propertyId) ?? properties.find(x => x.id === tenant?.property_id);
+
   useEffect(() => {
     if (!template) { setOutput(""); return; }
-    const tenant = tenants.find(x => x.id === tenantId);
-    const prop = properties.find(x => x.id === propertyId) ?? properties.find(x => x.id === tenant?.property_id);
     const today = new Date();
     const fmtDate = (d: any) => d ? new Date(d).toLocaleDateString("de-DE") : "";
     const fmtEur = (n: any) => n != null ? Number(n).toLocaleString("de-DE", { style: "currency", currency: "EUR" }) : "";
@@ -369,6 +375,37 @@ function ApplyDialog({ open, onOpenChange, template }: { open: boolean; onOpenCh
     setOutput(out);
   }, [template, tenantId, propertyId, tenants, properties, profile]);
 
+  // Detect which placeholders the template uses and whether each one is filled
+  const placeholders = (() => {
+    if (!template) return [] as Array<{ key: string; filled: boolean }>;
+    const matches = Array.from(template.body_md.matchAll(/\{([a-zA-ZäöüÄÖÜß_]+)\}/g));
+    const keys = Array.from(new Set(matches.map(m => m[1].toLowerCase())));
+    const today = new Date().toLocaleDateString("de-DE");
+    const valueOf = (k: string): string => {
+      switch (k) {
+        case "name": case "mieter": return tenant?.full_name ?? "";
+        case "email": return tenant?.email ?? "";
+        case "telefon": return tenant?.phone ?? "";
+        case "mietbeginn": return tenant?.lease_start ?? "";
+        case "mietende": return tenant?.lease_end ?? "";
+        case "kaution": return tenant?.deposit ?? "";
+        case "objekt": return prop?.name ?? "";
+        case "strasse": return prop?.street ?? "";
+        case "plz": return prop?.zip ?? "";
+        case "ort": return prop?.city ?? "";
+        case "adresse": return prop?.street ?? "";
+        case "kaltmiete": return prop?.cold_rent ?? "";
+        case "nebenkosten": return prop?.utilities ?? "";
+        case "datum": case "heute": return today;
+        case "vermieter": return profile?.display_name ?? "";
+        default: return "";
+      }
+    };
+    return keys.map(k => ({ key: k, filled: String(valueOf(k)).trim() !== "" }));
+  })();
+
+  const missing = placeholders.filter(p => !p.filled);
+
   const copy = async () => { await navigator.clipboard.writeText(output); toast.success("Text kopiert"); };
 
   const download = () => {
@@ -379,9 +416,21 @@ function ApplyDialog({ open, onOpenChange, template }: { open: boolean; onOpenCh
     a.click();
   };
 
+  const sendMail = () => {
+    const href = mailHref(tenant?.email, template?.title, output);
+    if (!href) return toast.error("Mieter ohne E-Mail-Adresse");
+    window.location.href = href;
+  };
+
+  const sendWa = () => {
+    const href = waHref(tenant?.phone, output);
+    if (!href) return toast.error("Mieter ohne (gültige) Telefonnummer");
+    window.open(href, "_blank");
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader><DialogTitle>Anwenden · {template?.title}</DialogTitle></DialogHeader>
         <div className="space-y-3">
           <div className="grid sm:grid-cols-2 gap-3">
@@ -389,23 +438,56 @@ function ApplyDialog({ open, onOpenChange, template }: { open: boolean; onOpenCh
               <Label>Mieter</Label>
               <select className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm" value={tenantId} onChange={e => setTenantId(e.target.value)}>
                 <option value="">— keiner —</option>
-                {tenants.map(t => <option key={t.id} value={t.id}>{t.full_name}</option>)}
+                {tenants.map(t => <option key={t.id} value={t.id}>{t.full_name}{t.email ? ` · ${t.email}` : ""}</option>)}
               </select>
+              {tenant && (
+                <p className="text-[11px] text-muted-foreground mt-1 truncate">
+                  {tenant.email || "ohne E-Mail"} · {tenant.phone || "ohne Telefon"}
+                </p>
+              )}
             </div>
             <div>
-              <Label>Objekt</Label>
+              <Label>Objekt {tenant?.property_id && !propertyId && <span className="text-[10px] text-muted-foreground">(auto aus Mieter)</span>}</Label>
               <select className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm" value={propertyId} onChange={e => setPropertyId(e.target.value)}>
                 <option value="">— Mieter-Objekt nutzen —</option>
-                {properties.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                {properties.map(p => <option key={p.id} value={p.id}>{p.name}{p.city ? ` · ${p.city}` : ""}</option>)}
               </select>
+              {prop && (
+                <p className="text-[11px] text-muted-foreground mt-1 truncate">
+                  {[prop.street, prop.zip, prop.city].filter(Boolean).join(", ") || "ohne Adresse"}
+                </p>
+              )}
             </div>
           </div>
+
+          {placeholders.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 p-2 rounded-md bg-muted/40 border border-border/50">
+              {placeholders.map(p => (
+                <Badge key={p.key} variant={p.filled ? "outline" : "destructive"} className="font-mono text-[10px] gap-1">
+                  {p.filled ? <CheckCircle2 className="h-2.5 w-2.5" /> : <AlertCircle className="h-2.5 w-2.5" />}
+                  {`{${p.key}}`}
+                </Badge>
+              ))}
+              {missing.length > 0 && (
+                <span className="text-[10px] text-muted-foreground self-center ml-1">
+                  {missing.length} Platzhalter ohne Wert — ergänze {missing.some(m => ["name","email","telefon","mietbeginn","mietende","kaution"].includes(m.key)) ? "Mieter-" : ""}{missing.some(m => ["objekt","strasse","plz","ort","adresse","kaltmiete","nebenkosten"].includes(m.key)) ? "/Objekt-" : ""}Daten oder editiere unten direkt.
+                </span>
+              )}
+            </div>
+          )}
+
           <Textarea rows={14} value={output} onChange={e => setOutput(e.target.value)} className="font-mono text-xs" />
         </div>
-        <DialogFooter>
+        <DialogFooter className="flex-wrap gap-2">
           <Button variant="ghost" onClick={() => onOpenChange(false)}>Schließen</Button>
-          <Button variant="outline" onClick={download}><Download className="h-3.5 w-3.5 mr-1.5" /> Als .txt</Button>
-          <Button onClick={copy} className="bg-gradient-gold text-primary-foreground shadow-gold"><Copy className="h-3.5 w-3.5 mr-1.5" /> Kopieren</Button>
+          <Button variant="outline" onClick={download}><Download className="h-3.5 w-3.5 mr-1.5" /> .txt</Button>
+          <Button variant="outline" onClick={copy}><Copy className="h-3.5 w-3.5 mr-1.5" /> Kopieren</Button>
+          <Button variant="outline" onClick={sendWa} disabled={!tenant?.phone} title={tenant?.phone ? "Per WhatsApp senden" : "Kein Telefon hinterlegt"}>
+            <MessageCircle className="h-3.5 w-3.5 mr-1.5" /> WhatsApp
+          </Button>
+          <Button onClick={sendMail} disabled={!tenant?.email} className="bg-gradient-gold text-primary-foreground shadow-gold" title={tenant?.email ? "Per E-Mail senden" : "Keine E-Mail hinterlegt"}>
+            <Mail className="h-3.5 w-3.5 mr-1.5" /> E-Mail senden
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
