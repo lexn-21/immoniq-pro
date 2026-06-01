@@ -45,8 +45,7 @@ const Bookings = lazy(() => import("./pages/app/Bookings"));
 const Listings = lazy(() => import("./pages/app/Listings"));
 const ListingEditor = lazy(() => import("./pages/app/ListingEditor"));
 const ListingApplications = lazy(() => import("./pages/app/ListingApplications"));
-const SeekerProfile = lazy(() => import("./pages/app/SeekerProfile"));
-const MyApplications = lazy(() => import("./pages/app/MyApplications"));
+// Legacy: SeekerProfile + MyApplications + TenantPass → consolidated into Profile / Messenger
 const Calculator = lazy(() => import("./pages/app/Calculator"));
 const Tasks = lazy(() => import("./pages/app/Tasks"));
 const Templates = lazy(() => import("./pages/app/Templates"));
@@ -65,7 +64,7 @@ const WgCasting = lazy(() => import("./pages/WgCasting"));
 const Feed = lazy(() => import("./pages/app/Feed"));
 const LandParcels = lazy(() => import("./pages/app/LandParcels"));
 const OrgUnits = lazy(() => import("./pages/app/OrgUnits"));
-const TenantPass = lazy(() => import("./pages/app/TenantPass"));
+
 const SmartInbox = lazy(() => import("./pages/app/SmartInbox"));
 const PassPublic = lazy(() => import("./pages/PassPublic"));
 const Messenger = lazy(() => import("./pages/app/Messenger"));
@@ -146,11 +145,10 @@ const App = () => (
                 <Route path="profile" element={<Profile />} />
                 <Route path="profile-seeker" element={<Profile />} />
                 <Route path="pass" element={<Profile />} />
+                <Route path="seeker" element={<Profile />} />
+                <Route path="tenant-pass" element={<Profile />} />
                 <Route path="applications" element={<Messenger />} />
                 <Route path="my-applications" element={<Messenger />} />
-                <Route path="_legacy/seeker" element={<SeekerProfile />} />
-                <Route path="_legacy/my-applications" element={<MyApplications />} />
-                <Route path="_legacy/pass" element={<TenantPass />} />
                 <Route path="marketplace" element={<Marketplace />} />
                 <Route path="calculator" element={<Calculator />} />
                 <Route path="tasks" element={<Tasks />} />
@@ -160,7 +158,6 @@ const App = () => (
                 <Route path="feed" element={<Feed />} />
                 <Route path="parcels" element={<LandParcels />} />
                 <Route path="org" element={<OrgUnits />} />
-                <Route path="pass" element={<TenantPass />} />
                 <Route path="inbox" element={<SmartInbox />} />
                 <Route path="messenger" element={<Messenger />} />
                 <Route path="ads" element={<MyAds />} />
