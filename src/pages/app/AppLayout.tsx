@@ -147,12 +147,46 @@ const AppLayout = () => {
   );
   useEffect(() => { localStorage.setItem("immoniq_show_all", showAll ? "1" : "0"); }, [showAll]);
 
+  // Feature-Toggles aus Profil (Pro-Haken)
+  const [enabledFeatures, setEnabledFeatures] = useState<Set<string>>(() => {
+    try { return new Set(JSON.parse(localStorage.getItem("immoniq_features") || "[]")); }
+    catch { return new Set(); }
+  });
+  useEffect(() => {
+    const handler = () => {
+      try { setEnabledFeatures(new Set(JSON.parse(localStorage.getItem("immoniq_features") || "[]"))); }
+      catch { setEnabledFeatures(new Set()); }
+    };
+    window.addEventListener("immoniq:features-changed", handler);
+    window.addEventListener("storage", handler);
+    return () => {
+      window.removeEventListener("immoniq:features-changed", handler);
+      window.removeEventListener("storage", handler);
+    };
+  }, []);
+
+  // Pfad -> feature-key Mapping (Items werden zusätzlich sichtbar, wenn Haken gesetzt)
+  const ROUTE_FEATURE: Record<string, string> = {
+    "/app/tasks": "tasks", "/app/messenger": "messenger", "/app/vault": "vault",
+    "/app/templates": "templates", "/app/calculator": "calculator", "/app/advisor": "advisor",
+    "/app/law": "law", "/app/deadlines": "deadlines", "/app/nebenkosten": "nebenkosten",
+    "/app/expenses": "expenses", "/app/payments": "payments", "/app/valuation": "valuation",
+    "/app/benchmark": "benchmark", "/app/dunning": "dunning", "/app/tax": "taxbridge",
+    "/app/parcels": "landparcels", "/app/org": "orgunits",
+  };
+  const itemActive = (i: NavItem) => {
+    if (!i.personas || i.personas.length === 0) return true;
+    if (i.personas.includes(persona) || persona === "pro") return true;
+    const fk = ROUTE_FEATURE[i.to];
+    return fk ? enabledFeatures.has(fk) : false;
+  };
+
   const personaMatch = (p?: Persona[]) => !p || p.length === 0 || p.includes(persona) || persona === "pro";
   const visibleGroups = showAll || persona === "pro"
     ? groups
     : groups
-        .filter((g) => personaMatch(g.personas))
-        .map((g) => ({ ...g, items: g.items.filter((i) => personaMatch(i.personas)) }))
+        .filter((g) => personaMatch(g.personas) || g.items.some(itemActive))
+        .map((g) => ({ ...g, items: g.items.filter(itemActive) }))
         .filter((g) => g.items.length > 0);
 
   const hiddenCount = groups.reduce((acc, g) => acc + g.items.length, 0)
