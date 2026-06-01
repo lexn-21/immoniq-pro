@@ -451,9 +451,35 @@ function ContractPanel({ tenant, property, reload }: { tenant: any; property: an
           <Row label="Kaution" value={tenant.deposit ? eur(tenant.deposit) : "—"} />
           <Row label="Kaltmiete (Objekt)" value={eur(property?.cold_rent || 0)} />
         </div>
+        <ContactBar email={tenant.email} phone={tenant.phone} name={tenant.full_name} />
       </Card>
     );
   }
+
+  return null;
+}
+
+function ContactBar({ email, phone, name }: { email?: string | null; phone?: string | null; name?: string }) {
+  const wa = waHref(phone, `Hallo ${name ?? ""},`);
+  const ma = mailHref(email);
+  if (!wa && !ma) return null;
+  return (
+    <div className="flex gap-2 pt-2 border-t border-border/40">
+      {wa && (
+        <a href={wa} target="_blank" rel="noreferrer" className="flex-1">
+          <Button variant="outline" size="sm" className="w-full"><MessageCircle className="h-3.5 w-3.5 mr-1.5" /> WhatsApp</Button>
+        </a>
+      )}
+      {ma && (
+        <a href={ma} className="flex-1">
+          <Button variant="outline" size="sm" className="w-full"><Mail className="h-3.5 w-3.5 mr-1.5" /> E-Mail</Button>
+        </a>
+      )}
+    </div>
+  );
+}
+
+function _unused_returnGuard() {
 
   return (
     <Card className="p-5 glass space-y-3">
