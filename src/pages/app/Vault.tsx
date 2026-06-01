@@ -19,7 +19,7 @@ import {
   Fingerprint, ServerCrash, CheckCircle2, AlertTriangle,
   Upload, Search, Download, Trash2, Building2, Filter,
   FileImage, FileType2, Sparkles, Clock, Camera, Zap,
-  ChevronRight, ChevronDown, List, FolderTree,
+  ChevronRight, ChevronDown, List, FolderTree, Share2, Mail,
 } from "lucide-react";
 
 import {
