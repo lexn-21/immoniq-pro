@@ -138,13 +138,25 @@ const AppLayout = () => {
   const [createOpen, setCreateOpen] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [scannerOpen, setScannerOpen] = useState(false);
-  const [mode, setMode] = useState<"simple" | "full">(() =>
-    (typeof window !== "undefined" && (localStorage.getItem("immoniq_mode") as any)) || "simple"
+  const [persona, setPersona] = useState<Persona>(() =>
+    (typeof window !== "undefined" && (localStorage.getItem("immoniq_persona") as Persona)) || "vermieter"
   );
-  useEffect(() => { localStorage.setItem("immoniq_mode", mode); }, [mode]);
-  const visibleGroups = mode === "simple"
-    ? groups.map((g) => ({ ...g, items: g.items.filter((i) => i.simple) })).filter((g) => g.items.length > 0)
-    : groups;
+  useEffect(() => { localStorage.setItem("immoniq_persona", persona); }, [persona]);
+  const [showAll, setShowAll] = useState<boolean>(() =>
+    typeof window !== "undefined" && localStorage.getItem("immoniq_show_all") === "1"
+  );
+  useEffect(() => { localStorage.setItem("immoniq_show_all", showAll ? "1" : "0"); }, [showAll]);
+
+  const personaMatch = (p?: Persona[]) => !p || p.length === 0 || p.includes(persona) || persona === "pro";
+  const visibleGroups = showAll || persona === "pro"
+    ? groups
+    : groups
+        .filter((g) => personaMatch(g.personas))
+        .map((g) => ({ ...g, items: g.items.filter((i) => personaMatch(i.personas)) }))
+        .filter((g) => g.items.length > 0);
+
+  const hiddenCount = groups.reduce((acc, g) => acc + g.items.length, 0)
+    - visibleGroups.reduce((acc, g) => acc + g.items.length, 0);
   const handleSignOut = async () => { await signOut(); navigate("/", { replace: true }); };
 
   // Schließe Drawer bei Routenwechsel
