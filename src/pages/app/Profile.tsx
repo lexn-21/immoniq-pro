@@ -48,6 +48,9 @@ export default function Profile() {
     net_income_monthly: "", employment_type: "unbefristet", employer: "",
     schufa_status: "unverified", move_in_from: "", max_rent: "",
     preferred_zips: "", about_me: "",
+    is_student: false, university: "", study_program: "", study_semester: "",
+    bafoeg_amount: "", guarantor_name: "", guarantor_relation: "", guarantor_income: "",
+    guarantor_document_path: "", study_certificate_path: "",
   });
   const [profile, setProfile] = useState({ display_name: "" });
   const [loading, setLoading] = useState(true);
