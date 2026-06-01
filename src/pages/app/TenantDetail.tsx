@@ -456,7 +456,25 @@ function ContractPanel({ tenant, property, reload }: { tenant: any; property: an
     );
   }
 
-  return null;
+  return (
+    <Card className="p-5 glass space-y-3">
+      <h3 className="font-semibold flex items-center gap-2"><CalendarDays className="h-4 w-4" /> Vertrag bearbeiten</h3>
+      <div className="grid sm:grid-cols-2 gap-3">
+        <div className="sm:col-span-2"><Label>Voller Name</Label><Input value={f.full_name} onChange={e => setF({ ...f, full_name: e.target.value })} /></div>
+        <div><Label>E-Mail</Label><Input type="email" value={f.email} onChange={e => setF({ ...f, email: e.target.value })} /></div>
+        <div><Label>Telefon</Label><Input value={f.phone} onChange={e => setF({ ...f, phone: e.target.value })} /></div>
+        <div><Label>Mietbeginn</Label><Input type="date" value={f.lease_start} onChange={e => setF({ ...f, lease_start: e.target.value })} /></div>
+        <div><Label>Mietende <span className="text-muted-foreground text-[10px]">(leer = unbefristet)</span></Label><Input type="date" value={f.lease_end} onChange={e => setF({ ...f, lease_end: e.target.value })} /></div>
+        <div><Label>Einzug</Label><Input type="date" value={f.move_in} onChange={e => setF({ ...f, move_in: e.target.value })} /></div>
+        <div><Label>Auszug</Label><Input type="date" value={f.move_out} onChange={e => setF({ ...f, move_out: e.target.value })} /></div>
+        <div className="sm:col-span-2"><Label>Kaution (€)</Label><Input type="number" step="0.01" value={f.deposit} onChange={e => setF({ ...f, deposit: e.target.value })} /></div>
+      </div>
+      <div className="flex gap-2 justify-end pt-2">
+        <Button variant="ghost" onClick={() => setEditing(false)} disabled={busy}>Abbrechen</Button>
+        <Button onClick={save} disabled={busy} className="bg-gradient-gold text-primary-foreground shadow-gold">{busy ? "Speichere…" : "Speichern"}</Button>
+      </div>
+    </Card>
+  );
 }
 
 function ContactBar({ email, phone, name }: { email?: string | null; phone?: string | null; name?: string }) {
@@ -476,28 +494,5 @@ function ContactBar({ email, phone, name }: { email?: string | null; phone?: str
         </a>
       )}
     </div>
-  );
-}
-
-function _unused_returnGuard() {
-
-  return (
-    <Card className="p-5 glass space-y-3">
-      <h3 className="font-semibold flex items-center gap-2"><CalendarDays className="h-4 w-4" /> Vertrag bearbeiten</h3>
-      <div className="grid sm:grid-cols-2 gap-3">
-        <div className="sm:col-span-2"><Label>Voller Name</Label><Input value={f.full_name} onChange={e => setF({ ...f, full_name: e.target.value })} /></div>
-        <div><Label>E-Mail</Label><Input type="email" value={f.email} onChange={e => setF({ ...f, email: e.target.value })} /></div>
-        <div><Label>Telefon</Label><Input value={f.phone} onChange={e => setF({ ...f, phone: e.target.value })} /></div>
-        <div><Label>Mietbeginn</Label><Input type="date" value={f.lease_start} onChange={e => setF({ ...f, lease_start: e.target.value })} /></div>
-        <div><Label>Mietende <span className="text-muted-foreground text-[10px]">(leer = unbefristet)</span></Label><Input type="date" value={f.lease_end} onChange={e => setF({ ...f, lease_end: e.target.value })} /></div>
-        <div><Label>Einzug</Label><Input type="date" value={f.move_in} onChange={e => setF({ ...f, move_in: e.target.value })} /></div>
-        <div><Label>Auszug</Label><Input type="date" value={f.move_out} onChange={e => setF({ ...f, move_out: e.target.value })} /></div>
-        <div className="sm:col-span-2"><Label>Kaution (€)</Label><Input type="number" step="0.01" value={f.deposit} onChange={e => setF({ ...f, deposit: e.target.value })} /></div>
-      </div>
-      <div className="flex gap-2 justify-end pt-2">
-        <Button variant="ghost" onClick={() => setEditing(false)} disabled={busy}>Abbrechen</Button>
-        <Button onClick={save} disabled={busy} className="bg-gradient-gold text-primary-foreground shadow-gold">{busy ? "Speichere…" : "Speichern"}</Button>
-      </div>
-    </Card>
   );
 }
