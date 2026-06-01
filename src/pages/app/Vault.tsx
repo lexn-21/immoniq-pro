@@ -737,6 +737,15 @@ const Vault = () => {
                       {bioBusy ? "Warte auf Freigabe…" : "Mit Biometrie öffnen"}
                     </Button>
                   )}
+                  {!bioAvailable && isInCrossOriginIframe() && (
+                    <button
+                      type="button"
+                      onClick={() => window.open(window.location.href, "_blank")}
+                      className="block w-full text-center text-[11px] text-white/60 hover:text-white/90 mt-3 underline underline-offset-2"
+                    >
+                      🔒 Fingerabdruck nur im eigenen Tab — hier öffnen
+                    </button>
+                  )}
                   <p className="text-[11px] text-white/40 mt-6 flex items-center justify-center gap-1.5">
                     <ShieldCheck className="h-3 w-3" /> Dein PIN verlässt niemals dein Gerät
                   </p>
