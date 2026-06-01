@@ -48,6 +48,9 @@ export default function Profile() {
     net_income_monthly: "", employment_type: "unbefristet", employer: "",
     schufa_status: "unverified", move_in_from: "", max_rent: "",
     preferred_zips: "", about_me: "",
+    is_student: false, university: "", study_program: "", study_semester: "",
+    bafoeg_amount: "", guarantor_name: "", guarantor_relation: "", guarantor_income: "",
+    guarantor_document_path: "", study_certificate_path: "",
   });
   const [profile, setProfile] = useState({ display_name: "" });
   const [loading, setLoading] = useState(true);
@@ -79,6 +82,14 @@ export default function Profile() {
           move_in_from: d.move_in_from ?? "",
           about_me: d.about_me ?? "",
           employer: d.employer ?? "",
+          is_student: !!d.is_student,
+          university: d.university ?? "",
+          study_program: d.study_program ?? "",
+          study_semester: d.study_semester ?? "",
+          bafoeg_amount: d.bafoeg_amount ?? "",
+          guarantor_name: d.guarantor_name ?? "",
+          guarantor_relation: d.guarantor_relation ?? "",
+          guarantor_income: d.guarantor_income ?? "",
         }));
       }
       setProfile({ display_name: (pr as any).data?.display_name ?? "" });
@@ -112,6 +123,14 @@ export default function Profile() {
         ? String(seeker.preferred_zips).split(",").map((s: string) => s.trim()).filter(Boolean)
         : [],
       about_me: seeker.about_me || null,
+      is_student: !!seeker.is_student,
+      university: seeker.is_student ? (seeker.university || null) : null,
+      study_program: seeker.is_student ? (seeker.study_program || null) : null,
+      study_semester: seeker.is_student && seeker.study_semester ? Number(seeker.study_semester) : null,
+      bafoeg_amount: seeker.is_student && seeker.bafoeg_amount ? Number(seeker.bafoeg_amount) : null,
+      guarantor_name: seeker.is_student ? (seeker.guarantor_name || null) : null,
+      guarantor_relation: seeker.is_student ? (seeker.guarantor_relation || null) : null,
+      guarantor_income: seeker.is_student && seeker.guarantor_income ? Number(seeker.guarantor_income) : null,
       completeness_score: calcSeekerScore(seeker),
     };
     const { error } = await supabase.from("seeker_profiles" as any).upsert(payload, { onConflict: "user_id" });
@@ -254,6 +273,50 @@ export default function Profile() {
               </div>
               <div className="flex justify-end">
                 <Button onClick={saveSeeker} className="bg-gradient-gold text-primary-foreground shadow-gold">Bewerber-Daten speichern</Button>
+              </div>
+            </Card>
+
+            <Card className="p-5 space-y-4">
+              <div className="flex items-center justify-between gap-3 flex-wrap">
+                <div>
+                  <h3 className="font-semibold flex items-center gap-2">🎓 Student:in</h3>
+                  <p className="text-xs text-muted-foreground mt-1">Für WGs & Studi-Wohnungen — Bürgschaft zählt mehr als eigenes Einkommen.</p>
+                </div>
+                <label className="flex items-center gap-2 text-sm">
+                  <Switch checked={seeker.is_student} onCheckedChange={(v) => setSeeker({ ...seeker, is_student: v })} />
+                  Ich bin Student:in
+                </label>
+              </div>
+
+              {seeker.is_student && (
+                <div className="grid grid-cols-2 gap-3 pt-2 border-t">
+                  <div className="col-span-2"><Label>Hochschule / Universität</Label>
+                    <Input value={seeker.university} onChange={(e) => setSeeker({ ...seeker, university: e.target.value })} placeholder="z. B. TU München" /></div>
+                  <div><Label>Studiengang</Label>
+                    <Input value={seeker.study_program} onChange={(e) => setSeeker({ ...seeker, study_program: e.target.value })} /></div>
+                  <div><Label>Fachsemester</Label>
+                    <Input type="number" min={1} value={seeker.study_semester} onChange={(e) => setSeeker({ ...seeker, study_semester: e.target.value })} /></div>
+                  <div><Label>BAföG €/Monat (optional)</Label>
+                    <Input type="number" value={seeker.bafoeg_amount} onChange={(e) => setSeeker({ ...seeker, bafoeg_amount: e.target.value })} /></div>
+                  <div className="col-span-2 pt-2">
+                    <h4 className="text-sm font-medium mb-2">Bürge (z. B. Eltern)</h4>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div><Label>Name</Label>
+                        <Input value={seeker.guarantor_name} onChange={(e) => setSeeker({ ...seeker, guarantor_name: e.target.value })} /></div>
+                      <div><Label>Verhältnis</Label>
+                        <Input value={seeker.guarantor_relation} onChange={(e) => setSeeker({ ...seeker, guarantor_relation: e.target.value })} placeholder="Mutter / Vater" /></div>
+                      <div className="col-span-2"><Label>Netto-Einkommen Bürge €/Mo</Label>
+                        <Input type="number" value={seeker.guarantor_income} onChange={(e) => setSeeker({ ...seeker, guarantor_income: e.target.value })} /></div>
+                    </div>
+                  </div>
+                  <p className="col-span-2 text-[11px] text-muted-foreground">
+                    Immatrikulations- und Bürgschafts-Dokumente kannst du im Tresor hochladen — Vermieter sehen den Status in deiner Bewerbung.
+                  </p>
+                </div>
+              )}
+
+              <div className="flex justify-end">
+                <Button onClick={saveSeeker} variant="outline" size="sm">Studi-Daten speichern</Button>
               </div>
             </Card>
           </TabsContent>
