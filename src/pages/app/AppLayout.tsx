@@ -12,7 +12,7 @@ import {
   Lock, Wrench, Bell, Search, Scale,
   TrendingUp, Megaphone, Inbox,
   FileText, Plus, Home, Menu, X, CalendarCheck, Search as SearchIcon, ScanLine, PartyPopper,
-  Trees, Landmark, IdCard, MessageSquare, Sparkles, ToggleLeft, ToggleRight,
+  Trees, Landmark, IdCard, MessageSquare, Sparkles,
 } from "lucide-react";
 import { AskCopilot } from "@/components/AskCopilot";
 import { DocScanner } from "@/components/DocScanner";
