@@ -6,23 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { ExternalLink, FileText, AlertCircle, Plus, Pencil, Trash2, Copy, Download, Wand2 } from "lucide-react";
+import { FileText, Plus, Pencil, Trash2, Copy, Download, Wand2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import EmptyState from "@/components/EmptyState";
 import { CardGridSkeleton } from "@/components/ListSkeleton";
-
-interface Template {
-  id: string;
-  title: string;
-  description: string | null;
-  category: string | null;
-  source: string | null;
-  url: string | null;
-  format: string | null;
-  is_free: boolean;
-}
 
 interface UserTemplate {
   id: string;
@@ -34,8 +22,100 @@ interface UserTemplate {
 
 const CATEGORIES = ["Mietvertrag", "Kündigung", "Mahnung", "Übergabeprotokoll", "Hausordnung", "Sonstiges"];
 
+const STARTERS: Array<{ title: string; category: string; body_md: string }> = [
+  {
+    title: "Mahnung – 1. Stufe",
+    category: "Mahnung",
+    body_md: `Sehr geehrte/r {name},
+
+leider konnten wir für die Wohnung {adresse} noch keinen Eingang der fälligen Miete in Höhe von {kaltmiete} für den Monat feststellen.
+
+Bitte begleichen Sie den offenen Betrag bis spätestens in 7 Tagen.
+
+Sollten Sie die Zahlung bereits veranlasst haben, betrachten Sie dieses Schreiben als gegenstandslos.
+
+Mit freundlichen Grüßen
+{vermieter}
+{datum}`,
+  },
+  {
+    title: "Mieterhöhung – Anschreiben",
+    category: "Mietvertrag",
+    body_md: `Sehr geehrte/r {name},
+
+für die Wohnung {adresse} bitte ich Sie um Zustimmung zur Mieterhöhung ab dem nächsten zulässigen Termin.
+
+Die ortsübliche Vergleichsmiete liegt aktuell höher als Ihre derzeitige Kaltmiete von {kaltmiete}. Eine Begründung anhand des örtlichen Mietspiegels füge ich bei.
+
+Bitte teilen Sie mir bis innerhalb von 2 Monaten Ihre Zustimmung mit (§ 558 BGB).
+
+Mit freundlichen Grüßen
+{vermieter}
+{datum}`,
+  },
+  {
+    title: "Wohnungs-Übergabeprotokoll",
+    category: "Übergabeprotokoll",
+    body_md: `ÜBERGABEPROTOKOLL
+
+Objekt: {adresse}
+Mieter: {name}
+Übergabedatum: {datum}
+
+Zählerstände
+- Strom: ________
+- Gas: ________
+- Wasser kalt: ________
+- Wasser warm: ________
+
+Schlüssel übergeben
+- Wohnungstür: ____ Stück
+- Haustür: ____ Stück
+- Briefkasten: ____ Stück
+- Sonstige: ____
+
+Zustand der Räume
+(Beschreibung / Mängel je Raum)
+
+Unterschriften
+Übergeber: ___________________
+Übernehmer: ___________________`,
+  },
+  {
+    title: "Kündigung – Mietverhältnis (Vermieter)",
+    category: "Kündigung",
+    body_md: `Sehr geehrte/r {name},
+
+hiermit kündige ich das Mietverhältnis über die Wohnung {adresse} ordentlich zum nächsten zulässigen Zeitpunkt unter Beachtung der gesetzlichen Kündigungsfrist (§ 573c BGB).
+
+Begründung: ____________________________________________
+
+Bitte räumen Sie die Wohnung fristgerecht und übergeben Sie sie in vertragsgemäßem Zustand.
+
+Mit freundlichen Grüßen
+{vermieter}
+{datum}`,
+  },
+  {
+    title: "Hausordnung – Kurzfassung",
+    category: "Hausordnung",
+    body_md: `HAUSORDNUNG · {adresse}
+
+1. Ruhezeiten: 22:00 – 06:00 Uhr und sonntags ganztägig.
+2. Treppenhaus, Flure, Keller und Gemeinschaftsräume sind freizuhalten.
+3. Müll bitte sortiert in den vorgesehenen Tonnen entsorgen.
+4. Lüften nur kurz und durchziehend (Stoßlüften), kein Dauerkippen.
+5. Reparaturen und Schäden umgehend dem Vermieter melden.
+6. Rücksicht auf Mitbewohner — keine Belästigung durch Lärm, Gerüche, Rauch.
+
+Stand: {datum}
+{vermieter}`,
+  },
+];
+
+const VAR_HINTS = ["name", "adresse", "kaltmiete", "datum", "mietbeginn", "vermieter", "objekt", "kaution"];
+
 export default function Templates() {
-  const [items, setItems] = useState<Template[]>([]);
   const [mine, setMine] = useState<UserTemplate[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
@@ -45,26 +125,16 @@ export default function Templates() {
   const [applyTemplate, setApplyTemplate] = useState<UserTemplate | null>(null);
 
   useEffect(() => {
-    document.title = "Vertragsvorlagen · ImmonIQ";
+    document.title = "Vorlagen · ImmonIQ";
     load();
   }, []);
 
   const load = async () => {
     setLoading(true);
-    const [a, b] = await Promise.all([
-      supabase.from("contract_templates").select("*").order("sort_order"),
-      supabase.from("user_templates").select("*").order("updated_at", { ascending: false }),
-    ]);
-    setItems((a.data as Template[]) || []);
+    const b = await supabase.from("user_templates").select("*").order("updated_at", { ascending: false });
     setMine((b.data as UserTemplate[]) || []);
     setLoading(false);
   };
-
-  const grouped = items.reduce<Record<string, Template[]>>((acc, t) => {
-    const k = t.category || "Sonstige";
-    (acc[k] = acc[k] || []).push(t);
-    return acc;
-  }, {});
 
   const saveTemplate = async () => {
     if (!edit.title?.trim()) return toast.error("Titel fehlt");
@@ -108,130 +178,133 @@ export default function Templates() {
     a.click();
   };
 
+  const seedStarters = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const existing = new Set(mine.map(m => m.title));
+    const inserts = STARTERS.filter(s => !existing.has(s.title)).map(s => ({ ...s, user_id: user.id }));
+    if (inserts.length === 0) return toast("Alle Starter sind schon angelegt.");
+    const { error } = await supabase.from("user_templates").insert(inserts);
+    if (error) return toast.error(error.message);
+    toast.success(`${inserts.length} Starter-Vorlagen angelegt.`);
+    load();
+  };
+
+  const useStarter = (s: typeof STARTERS[number]) => {
+    setEdit({ title: s.title, category: s.category, body_md: s.body_md });
+    setOpen(true);
+  };
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-semibold tracking-tight">Vertragsvorlagen</h1>
-        <p className="text-muted-foreground mt-1">Geprüfte Quellen + deine eigenen Vorlagen.</p>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="text-3xl font-semibold tracking-tight">Vorlagen</h1>
+          <p className="text-muted-foreground mt-1">
+            Schreib einmal — fülle mit einem Klick aus deinen Mieter- und Objekt-Daten.
+          </p>
+        </div>
+        <div className="flex gap-2 flex-wrap">
+          {mine.length === 0 && (
+            <Button variant="outline" size="sm" onClick={seedStarters}>
+              <Sparkles className="h-4 w-4 mr-1.5 text-primary" /> Starter laden
+            </Button>
+          )}
+          <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setEdit({}); }}>
+            <DialogTrigger asChild>
+              <Button size="sm" className="bg-gradient-gold text-primary-foreground shadow-gold">
+                <Plus className="h-4 w-4 mr-1" /> Neue Vorlage
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader><DialogTitle>{edit.id ? "Vorlage bearbeiten" : "Neue Vorlage"}</DialogTitle></DialogHeader>
+              <div className="space-y-3">
+                <div><Label>Titel *</Label><Input value={edit.title || ""} onChange={e => setEdit({ ...edit, title: e.target.value })} placeholder="z.B. Mahnung 1. Stufe" /></div>
+                <div>
+                  <Label>Kategorie</Label>
+                  <select className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm" value={edit.category || ""} onChange={e => setEdit({ ...edit, category: e.target.value })}>
+                    <option value="">— wählen —</option>
+                    {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <Label>Inhalt</Label>
+                    <div className="flex gap-1 flex-wrap">
+                      {VAR_HINTS.map(v => (
+                        <button key={v} type="button" onClick={() => setEdit(e => ({ ...e, body_md: (e.body_md || "") + `{${v}}` }))} className="text-[10px] px-1.5 py-0.5 rounded bg-muted hover:bg-muted/70 font-mono">
+                          {`{${v}}`}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <Textarea rows={14} value={edit.body_md || ""} onChange={e => setEdit({ ...edit, body_md: e.target.value })} placeholder="Sehr geehrte/r {name},&#10;&#10;…" className="font-mono text-xs" />
+                </div>
+                <p className="text-[11px] text-muted-foreground">
+                  Tipp: Klick einen Platzhalter, um ihn einzufügen — beim Anwenden werden sie automatisch aus deinen Mieter-/Objektdaten ersetzt.
+                </p>
+              </div>
+              <DialogFooter>
+                <Button variant="ghost" onClick={() => setOpen(false)}>Abbrechen</Button>
+                <Button onClick={saveTemplate} disabled={saving} className="bg-gradient-gold text-primary-foreground">{saving ? "Speichere…" : "Speichern"}</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
-      <Tabs defaultValue="curated">
-        <TabsList>
-          <TabsTrigger value="curated">Geprüfte Quellen</TabsTrigger>
-          <TabsTrigger value="mine">Meine Vorlagen {mine.length > 0 && <Badge variant="secondary" className="ml-2">{mine.length}</Badge>}</TabsTrigger>
-        </TabsList>
+      {loading && <CardGridSkeleton count={4} />}
 
-        <TabsContent value="curated" className="space-y-6 mt-6">
-          <div className="rounded-xl border border-border/60 bg-muted/40 p-4 flex gap-3">
-            <AlertCircle className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-            <div className="text-sm text-muted-foreground">
-              Wir verlinken zu geprüften Quellen wie <strong className="text-foreground">Haus &amp; Grund</strong> und{" "}
-              <strong className="text-foreground">Mieterbund</strong> statt eigene Vorlagen zu generieren — wegen
-              BGH-Updates und Haftungsrisiko. So bleiben deine Verträge immer aktuell und rechtssicher.
-            </div>
+      {!loading && mine.length === 0 && (
+        <>
+          <EmptyState
+            icon={FileText}
+            title="Noch keine Vorlagen"
+            description="Lade die Starter-Sammlung (Mahnung, Mieterhöhung, Übergabeprotokoll, Kündigung, Hausordnung) — oder lege deine eigene Vorlage an."
+          />
+          <div className="grid md:grid-cols-2 gap-3">
+            {STARTERS.map(s => (
+              <Card key={s.title} className="glass hover:border-primary/40 transition cursor-pointer" onClick={() => useStarter(s)}>
+                <CardContent className="p-4 flex items-start gap-3">
+                  <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <Sparkles className="h-5 w-5 text-primary" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-medium">{s.title}</p>
+                    <Badge variant="outline" className="mt-1">{s.category}</Badge>
+                    <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{s.body_md.split("\n").slice(0, 2).join(" ")}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
-          {loading && <CardGridSkeleton count={4} />}
-          {!loading && items.length === 0 && (
-            <EmptyState icon={FileText} title="Noch keine Vorlagen geladen" description="Sobald die geprüften Quellen synchronisiert sind, findest du hier rechtssichere Verträge." />
-          )}
-          {Object.entries(grouped).map(([cat, list]) => (
-            <div key={cat} className="space-y-3">
-              <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">{cat}</h2>
-              <div className="grid md:grid-cols-2 gap-3">
-                {list.map(t => (
-                  <Card key={t.id} className="glass hover:border-primary/40 transition">
-                    <CardContent className="p-5">
-                      <div className="flex items-start gap-3">
-                        <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                          <FileText className="h-5 w-5 text-primary" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium">{t.title}</p>
-                          {t.description && <p className="text-sm text-muted-foreground mt-1">{t.description}</p>}
-                          <div className="flex flex-wrap gap-1.5 mt-3">
-                            {t.source && <Badge variant="secondary">{t.source}</Badge>}
-                            {t.format && <Badge variant="outline">{t.format}</Badge>}
-                            <Badge className={t.is_free ? "bg-emerald-500/15 text-emerald-600 border-emerald-500/30" : "bg-amber-500/15 text-amber-600 border-amber-500/30"}>
-                              {t.is_free ? "Kostenlos" : "Kostenpflichtig"}
-                            </Badge>
-                          </div>
-                          {t.url && (
-                            <a href={t.url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline mt-3">
-                              Öffnen <ExternalLink className="h-3.5 w-3.5" />
-                            </a>
-                          )}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          ))}
-        </TabsContent>
+        </>
+      )}
 
-        <TabsContent value="mine" className="space-y-4 mt-6">
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">Eigene Bausteine, Anschreiben, individuelle Klauseln — bleibt nur bei dir.</p>
-            <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setEdit({}); }}>
-              <DialogTrigger asChild>
-                <Button size="sm" className="bg-gradient-gold text-primary-foreground shadow-gold"><Plus className="h-4 w-4 mr-1" /> Neue Vorlage</Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-2xl">
-                <DialogHeader><DialogTitle>{edit.id ? "Vorlage bearbeiten" : "Neue Vorlage"}</DialogTitle></DialogHeader>
-                <div className="space-y-3">
-                  <div><Label>Titel *</Label><Input value={edit.title || ""} onChange={e => setEdit({ ...edit, title: e.target.value })} placeholder="z.B. Mahnung 1. Stufe" /></div>
-                  <div>
-                    <Label>Kategorie</Label>
-                    <select className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm" value={edit.category || ""} onChange={e => setEdit({ ...edit, category: e.target.value })}>
-                      <option value="">— wählen —</option>
-                      {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-                    </select>
+      {!loading && mine.length > 0 && (
+        <div className="grid md:grid-cols-2 gap-3">
+          {mine.map(t => (
+            <Card key={t.id} className="glass">
+              <CardContent className="p-5">
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <div className="min-w-0">
+                    <p className="font-medium truncate">{t.title}</p>
+                    {t.category && <Badge variant="outline" className="mt-1">{t.category}</Badge>}
                   </div>
-                  <div>
-                    <Label>Inhalt (Markdown / Platzhalter wie {"{name}"}, {"{datum}"})</Label>
-                    <Textarea rows={12} value={edit.body_md || ""} onChange={e => setEdit({ ...edit, body_md: e.target.value })} placeholder="Sehr geehrte/r {name},&#10;&#10;…" className="font-mono text-xs" />
-                  </div>
-                  <div className="rounded-md border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-amber-700 dark:text-amber-400">
-                    ⚠️ Eigene Vorlagen sind <strong>keine Rechtsberatung</strong>. Bei wichtigen Verträgen geprüfte Quellen oder Anwalt nutzen.
+                  <div className="flex gap-1 flex-shrink-0">
+                    <Button size="icon" variant="ghost" className="h-7 w-7" title="Auf Mieter/Objekt anwenden" onClick={() => { setApplyTemplate(t); setApplyOpen(true); }}><Wand2 className="h-3.5 w-3.5 text-primary" /></Button>
+                    <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => { setEdit(t); setOpen(true); }}><Pencil className="h-3.5 w-3.5" /></Button>
+                    <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => duplicate(t)}><Copy className="h-3.5 w-3.5" /></Button>
+                    <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => exportTxt(t)}><Download className="h-3.5 w-3.5" /></Button>
+                    <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => remove(t.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
                   </div>
                 </div>
-                <DialogFooter>
-                  <Button variant="ghost" onClick={() => setOpen(false)}>Abbrechen</Button>
-                  <Button onClick={saveTemplate} disabled={saving} className="bg-gradient-gold text-primary-foreground">{saving ? "Speichere…" : "Speichern"}</Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </div>
-
-          {mine.length === 0 ? (
-            <EmptyState icon={FileText} title="Noch keine eigenen Vorlagen" description="Lege dir wiederkehrende Anschreiben, Mahnungen oder Klauseln als Vorlage an." />
-          ) : (
-            <div className="grid md:grid-cols-2 gap-3">
-              {mine.map(t => (
-                <Card key={t.id} className="glass">
-                  <CardContent className="p-5">
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <div className="min-w-0">
-                        <p className="font-medium truncate">{t.title}</p>
-                        {t.category && <Badge variant="outline" className="mt-1">{t.category}</Badge>}
-                      </div>
-                      <div className="flex gap-1 flex-shrink-0">
-                        <Button size="icon" variant="ghost" className="h-7 w-7" title="Auf Mieter/Objekt anwenden" onClick={() => { setApplyTemplate(t); setApplyOpen(true); }}><Wand2 className="h-3.5 w-3.5 text-primary" /></Button>
-                        <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => { setEdit(t); setOpen(true); }}><Pencil className="h-3.5 w-3.5" /></Button>
-                        <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => duplicate(t)}><Copy className="h-3.5 w-3.5" /></Button>
-                        <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => exportTxt(t)}><Download className="h-3.5 w-3.5" /></Button>
-                        <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => remove(t.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
-                      </div>
-                    </div>
-                    <p className="text-xs text-muted-foreground line-clamp-3 whitespace-pre-wrap font-mono">{t.body_md || "—"}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-        </TabsContent>
-      </Tabs>
+                <p className="text-xs text-muted-foreground line-clamp-3 whitespace-pre-wrap font-mono">{t.body_md || "—"}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
 
       <ApplyDialog open={applyOpen} onOpenChange={setApplyOpen} template={applyTemplate} />
     </div>
@@ -293,10 +366,7 @@ function ApplyDialog({ open, onOpenChange, template }: { open: boolean; onOpenCh
     setOutput(out);
   }, [template, tenantId, propertyId, tenants, properties, profile]);
 
-  const copy = async () => {
-    await navigator.clipboard.writeText(output);
-    toast.success("Text kopiert");
-  };
+  const copy = async () => { await navigator.clipboard.writeText(output); toast.success("Text kopiert"); };
 
   const download = () => {
     const blob = new Blob([output], { type: "text/plain" });
@@ -309,7 +379,7 @@ function ApplyDialog({ open, onOpenChange, template }: { open: boolean; onOpenCh
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl">
-        <DialogHeader><DialogTitle>Vorlage anwenden · {template?.title}</DialogTitle></DialogHeader>
+        <DialogHeader><DialogTitle>Anwenden · {template?.title}</DialogTitle></DialogHeader>
         <div className="space-y-3">
           <div className="grid sm:grid-cols-2 gap-3">
             <div>
@@ -326,9 +396,6 @@ function ApplyDialog({ open, onOpenChange, template }: { open: boolean; onOpenCh
                 {properties.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
             </div>
-          </div>
-          <div className="text-[11px] text-muted-foreground">
-            Platzhalter: <code className="bg-muted px-1 rounded">{"{name}"}</code>, <code className="bg-muted px-1 rounded">{"{adresse}"}</code>, <code className="bg-muted px-1 rounded">{"{kaltmiete}"}</code>, <code className="bg-muted px-1 rounded">{"{datum}"}</code>, <code className="bg-muted px-1 rounded">{"{mietbeginn}"}</code>, <code className="bg-muted px-1 rounded">{"{vermieter}"}</code> u. a.
           </div>
           <Textarea rows={14} value={output} onChange={e => setOutput(e.target.value)} className="font-mono text-xs" />
         </div>
