@@ -1,10 +1,25 @@
-/** Cleans phone for wa.me (digits only, leading + dropped). */
+/** Normalize phone for wa.me.
+ *  - Strip everything except digits and leading "+"
+ *  - German format: "0170 ..." → "49170..." (drop leading 0, add 49)
+ *  - International "+xx ..." → "xx..."
+ *  - "00xx ..." → "xx..."
+ */
+function normalizePhone(phone: string): string | null {
+  let p = phone.trim().replace(/[^\d+]/g, "");
+  if (!p) return null;
+  if (p.startsWith("+")) p = p.slice(1);
+  else if (p.startsWith("00")) p = p.slice(2);
+  else if (p.startsWith("0")) p = "49" + p.slice(1); // German default
+  if (p.length < 8 || p.length > 15) return null;
+  return p;
+}
+
 export function waHref(phone?: string | null, text?: string): string | null {
   if (!phone) return null;
-  const digits = phone.replace(/[^\d+]/g, "").replace(/^\+/, "");
-  if (digits.length < 6) return null;
+  const n = normalizePhone(phone);
+  if (!n) return null;
   const t = text ? `?text=${encodeURIComponent(text)}` : "";
-  return `https://wa.me/${digits}${t}`;
+  return `https://wa.me/${n}${t}`;
 }
 
 export function mailHref(email?: string | null, subject?: string, body?: string): string | null {
