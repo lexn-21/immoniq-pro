@@ -575,6 +575,16 @@ export default function Templates() {
     setOpen(true);
   };
 
+  const addStarter = async (s: typeof STARTERS[number]) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return toast.error("Bitte anmelden");
+    if (mine.some(m => m.title === s.title)) return toast("Bereits in deinen Vorlagen.");
+    const { error } = await supabase.from("user_templates").insert({ ...s, user_id: user.id });
+    if (error) return toast.error(error.message);
+    toast.success(`„${s.title}" hinzugefügt.`);
+    load();
+  };
+
   return (
     <div className="space-y-6">
       <Card className="p-3 border-warning/30 bg-warning/5">
