@@ -644,29 +644,11 @@ export default function Templates() {
       {loading && <CardGridSkeleton count={4} />}
 
       {!loading && mine.length === 0 && (
-        <>
-          <EmptyState
-            icon={FileText}
-            title="Noch keine Vorlagen"
-            description="Lade die Starter-Sammlung (Mahnung, Mieterhöhung, Übergabeprotokoll, Kündigung, Hausordnung) — oder lege deine eigene Vorlage an."
-          />
-          <div className="grid md:grid-cols-2 gap-3">
-            {STARTERS.map(s => (
-              <Card key={s.title} className="glass hover:border-primary/40 transition cursor-pointer" onClick={() => useStarter(s)}>
-                <CardContent className="p-4 flex items-start gap-3">
-                  <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <Sparkles className="h-5 w-5 text-primary" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="font-medium">{s.title}</p>
-                    <Badge variant="outline" className="mt-1">{s.category}</Badge>
-                    <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{s.body_md.split("\n").slice(0, 2).join(" ")}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </>
+        <EmptyState
+          icon={FileText}
+          title="Noch keine eigenen Vorlagen"
+          description="Wähle unten aus der Starter-Bibliothek (Mietverträge, Mahnung, Mieterhöhung, Übergabeprotokoll, Kündigung, Hausordnung) oder lege eine eigene Vorlage an."
+        />
       )}
 
       {!loading && mine.length > 0 && (
@@ -693,6 +675,55 @@ export default function Templates() {
               </CardContent>
             </Card>
           ))}
+        </div>
+      )}
+
+      {!loading && (
+        <div className="space-y-3 pt-4 border-t border-border/40">
+          <div className="flex items-end justify-between flex-wrap gap-2">
+            <div>
+              <h2 className="text-lg font-semibold flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-primary" /> Starter-Bibliothek
+              </h2>
+              <p className="text-xs text-muted-foreground">
+                Rechtlich geprüfte Muster nach aktueller BGB-Lage — klicke „Hinzufügen", um sie deinen Vorlagen zu übernehmen und individuell anzupassen.
+              </p>
+            </div>
+            <Button variant="outline" size="sm" onClick={seedStarters}>
+              <Sparkles className="h-4 w-4 mr-1.5 text-primary" /> Alle fehlenden laden
+            </Button>
+          </div>
+          <div className="grid md:grid-cols-2 gap-3">
+            {STARTERS.map(s => {
+              const owned = mine.some(m => m.title === s.title);
+              return (
+                <Card key={s.title} className="glass hover:border-primary/40 transition">
+                  <CardContent className="p-4 flex items-start gap-3">
+                    <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <FileText className="h-5 w-5 text-primary" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium text-sm">{s.title}</p>
+                      <Badge variant="outline" className="mt-1">{s.category}</Badge>
+                      <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{s.body_md.split("\n").slice(0, 3).join(" ")}</p>
+                      <div className="flex gap-2 mt-3">
+                        <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => useStarter(s)}>
+                          <Pencil className="h-3 w-3 mr-1" /> Ansehen & anpassen
+                        </Button>
+                        {!owned ? (
+                          <Button size="sm" className="h-7 text-xs bg-gradient-gold text-primary-foreground" onClick={() => addStarter(s)}>
+                            <Plus className="h-3 w-3 mr-1" /> Hinzufügen
+                          </Button>
+                        ) : (
+                          <Badge variant="secondary" className="text-[10px]">✓ Übernommen</Badge>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
         </div>
       )}
 
