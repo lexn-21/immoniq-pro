@@ -209,8 +209,20 @@ const Expenses = () => {
     return out;
   }, [items, props]);
 
+  const openReceipt = async (path: string) => {
+    const { data, error } = await supabase.storage.from("receipts").createSignedUrl(path, 300);
+    if (error || !data?.signedUrl) return toast.error("Beleg konnte nicht geladen werden.");
+    window.open(data.signedUrl, "_blank", "noopener");
+  };
+
   return (
     <div className="space-y-6">
+      <DocScanner
+        open={scannerOpen}
+        onClose={() => setScannerOpen(false)}
+        suggestedName={`beleg-${new Date().toISOString().slice(0,10)}`}
+        onComplete={(f) => { setFile(f); setScannerOpen(false); toast.success("Scan übernommen"); }}
+      />
       <header className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
         <div>
           <h1 className="text-3xl font-bold">Ausgaben</h1>
@@ -443,6 +455,11 @@ const Expenses = () => {
                           {date(e.spent_on)} · {CAT_INFO[e.category].label}{e.properties?.name ? ` · ${e.properties.name}` : ""}{e.tenants?.full_name ? ` · 👤 ${e.tenants.full_name}` : ""}
                         </p>
                       </div>
+                      {e.receipt_path && (
+                        <Button variant="ghost" size="sm" className="h-8 px-2" onClick={() => openReceipt(e.receipt_path)} title="Beleg ansehen">
+                          <Eye className="h-3.5 w-3.5" />
+                        </Button>
+                      )}
                       <p className="font-semibold whitespace-nowrap tabular">−{eur(e.amount)}</p>
                     </div>
                   ))}
