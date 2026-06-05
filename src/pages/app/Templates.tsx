@@ -25,54 +25,105 @@ const CATEGORIES = ["Mietvertrag", "Kündigung", "Mahnung", "Übergabeprotokoll"
 
 const STARTERS: Array<{ title: string; category: string; body_md: string }> = [
   {
-    title: "Mietvertrag – Wohnraum (Standard)",
+    title: "Mietvertrag – Wohnraum (Standard, ausführlich)",
     category: "Mietvertrag",
     body_md: `MIETVERTRAG ÜBER WOHNRAUM
+(unbefristet, nach BGB §§ 535 ff. — rechtlich geprüftes Muster, ohne Gewähr)
 
 Zwischen
-{vermieter} (Vermieter)
+{vermieter}
+— nachfolgend "Vermieter" —
+
 und
-{name} (Mieter)
+
+{name}
+— nachfolgend "Mieter" —
 
 wird folgender Mietvertrag geschlossen:
 
+
 § 1 Mietsache
-Vermietet wird die Wohnung {objekt}, {adresse}.
-Mitvermietet sind: Keller, ggf. Stellplatz, Boden- bzw. Speicherraum (sofern vorhanden).
+(1) Vermietet wird die Wohnung in {adresse} ({objekt}), bestehend aus ____ Zimmern, Küche, Bad/WC, Flur, ____ Balkon/Loggia, ____ Keller. Die Wohnfläche beträgt ca. ____ m². Sie ist ohne Gewähr für Mietminderungs- oder Mieterhöhungsansprüche angegeben (BGH VIII ZR 266/14).
+(2) Mitvermietet werden: Kellerraum Nr. ____, Boden-/Speicherraum Nr. ____, Stellplatz/Garage Nr. ____ (sofern vorhanden).
+(3) Mitbenutzbar sind: Waschküche, Trockenraum, Fahrradraum, Garten, soweit vorhanden, im Rahmen der Hausordnung.
+(4) Die Wohnung wird vermietet zu Wohnzwecken für maximal ____ Personen. Eine andere Nutzung — insbesondere gewerbliche — bedarf der vorherigen schriftlichen Zustimmung des Vermieters.
 
-§ 2 Mietzeit
-Das Mietverhältnis beginnt am {mietbeginn} und läuft auf unbestimmte Zeit.
-Die Kündigung richtet sich nach §§ 573, 573c BGB.
+§ 2 Mietzeit, Kündigung
+(1) Das Mietverhältnis beginnt am {mietbeginn} und läuft auf unbestimmte Zeit.
+(2) Die ordentliche Kündigung richtet sich nach §§ 573, 573c BGB. Die Kündigungsfrist für den Mieter beträgt 3 Monate. Für den Vermieter verlängert sie sich nach 5 bzw. 8 Jahren Mietdauer auf 6 bzw. 9 Monate.
+(3) Die Kündigung bedarf der Schriftform (§ 568 BGB) und ist zu begründen, soweit gesetzlich erforderlich.
+(4) Das Recht zur außerordentlichen fristlosen Kündigung aus wichtigem Grund (§ 543 BGB) bleibt unberührt.
 
-§ 3 Miete und Nebenkosten
-Kaltmiete: {kaltmiete} monatlich
-Betriebskostenvorauszahlung: {nebenkosten} monatlich
-Die Miete ist monatlich im Voraus, spätestens am 3. Werktag eines Monats, zu zahlen.
+§ 3 Miete
+(1) Die Nettokaltmiete beträgt monatlich {kaltmiete} EUR.
+(2) Auf die Betriebskosten wird eine monatliche Vorauszahlung in Höhe von {nebenkosten} EUR geleistet.
+(3) Die Gesamtmiete beträgt damit ____ EUR und ist monatlich im Voraus, spätestens am 3. Werktag des Monats, kostenfrei für den Empfänger auf folgendes Konto zu zahlen:
+    Kontoinhaber: ____________
+    IBAN:        ____________
+    BIC/Bank:    ____________
+(4) Für die Rechtzeitigkeit der Zahlung kommt es auf den Tag der Wertstellung an, nicht auf den Tag des Zahlungsauftrags (BGH VIII ZR 222/15).
+(5) Bei Zahlungsverzug schuldet der Mieter Verzugszinsen in gesetzlicher Höhe (§ 288 BGB).
 
-§ 4 Kaution
-Der Mieter leistet eine Kaution in Höhe von {kaution} (max. 3 Nettokaltmieten, § 551 BGB).
-Die Kaution wird verzinslich angelegt.
+§ 4 Betriebskosten
+(1) Der Mieter trägt sämtliche Betriebskosten im Sinne von § 2 BetrKV. Dazu zählen insbesondere: Grundsteuer, Wasserversorgung, Entwässerung, Heizung und Warmwasser, Aufzug, Straßenreinigung und Müllabfuhr, Hausreinigung, Gartenpflege, Beleuchtung, Schornsteinreinigung, Sach- und Haftpflichtversicherung, Hauswart, Gemeinschaftsantenne/Breitbandkabel, Wartung Rauchmelder, sonstige Betriebskosten gemäß § 2 Nr. 17 BetrKV (z. B. Wartung Lüftung, Dachrinnenreinigung).
+(2) Verteilungsschlüssel ist die Wohnfläche, soweit nicht durch zwingende Vorschriften (HeizkostenV) oder ausdrückliche Vereinbarung etwas anderes bestimmt ist.
+(3) Über die Vorauszahlungen wird jährlich abgerechnet. Die Abrechnung muss dem Mieter spätestens 12 Monate nach Ende des Abrechnungszeitraums zugehen (§ 556 Abs. 3 BGB).
 
-§ 5 Betriebskosten
-Die Betriebskosten gemäß BetrKV werden jährlich abgerechnet. Verteilungsschlüssel: Wohnfläche, soweit nichts anderes vereinbart.
+§ 5 Kaution
+(1) Der Mieter leistet eine Mietsicherheit in Höhe von {kaution} EUR (höchstens drei Nettokaltmieten, § 551 Abs. 1 BGB).
+(2) Die Kaution kann in drei gleichen Monatsraten gezahlt werden; die erste Rate ist mit Mietbeginn fällig.
+(3) Der Vermieter legt die Kaution insolvenzfest und getrennt von seinem Vermögen zu üblichen Sparzinsen an (§ 551 Abs. 3 BGB). Die Zinsen stehen dem Mieter zu und erhöhen die Sicherheit.
+(4) Die Kaution wird nach Beendigung des Mietverhältnisses und Klärung aller wechselseitigen Ansprüche, in der Regel binnen 3–6 Monaten, abgerechnet.
 
 § 6 Schönheitsreparaturen
-Der Mieter führt Schönheitsreparaturen entsprechend dem üblichen Bedarf in vertragsgemäßem Umfang aus.
+(1) Schönheitsreparaturen sind keine starre Pflicht des Mieters. Sie werden nach den Maßstäben des § 28 Abs. 4 II. BV verstanden (Streichen/Tapezieren von Wänden und Decken, Streichen der Innentüren, Fenster und Heizkörper, Reinigung von Bodenbelägen).
+(2) Eine Übernahme durch den Mieter kommt nur in Betracht, wenn die Wohnung renoviert übergeben wurde oder ein angemessener Ausgleich vereinbart wurde (BGH VIII ZR 185/14). Anderenfalls trägt der Vermieter die Schönheitsreparaturen.
+(3) Starre Fristen sowie Endrenovierungsklauseln sind nach BGH-Rechtsprechung unwirksam und werden nicht vereinbart.
 
-§ 7 Tierhaltung, Untervermietung, Veränderungen
-Tierhaltung (außer Kleintiere), Untervermietung und bauliche Veränderungen bedürfen der vorherigen schriftlichen Zustimmung des Vermieters.
+§ 7 Instandhaltung, Kleinreparaturen
+(1) Der Mieter zeigt Mängel der Mietsache unverzüglich an (§ 536c BGB).
+(2) Der Mieter trägt Kosten für Kleinreparaturen an Gegenständen, die seinem direkten und häufigen Zugriff unterliegen (z. B. Wasserhähne, Steckdosen, Rollläden), bis zu einer Höhe von 100 EUR je Einzelfall, höchstens 8 % der Jahres-Nettokaltmiete pro Kalenderjahr (BGH-Maßstäbe).
+(3) Der Mieter haftet nicht für Verschleiß, der durch vertragsgemäßen Gebrauch entsteht.
 
-§ 8 Hausordnung
-Die Hausordnung ist Bestandteil dieses Vertrags.
+§ 8 Tierhaltung
+(1) Kleintiere (z. B. Ziervögel, Zierfische, Hamster) sind ohne Zustimmung erlaubt, soweit andere Hausbewohner nicht beeinträchtigt werden.
+(2) Hunde- und Katzenhaltung bedarf der vorherigen, im Einzelfall zu prüfenden Zustimmung des Vermieters (BGH VIII ZR 168/12). Die Zustimmung kann widerrufen werden, wenn das Tier zu Störungen führt.
 
-§ 9 Sonstiges
-Mündliche Nebenabreden bestehen nicht. Änderungen bedürfen der Schriftform.
-Sollten einzelne Bestimmungen unwirksam sein, bleibt der Vertrag im Übrigen wirksam.
+§ 9 Untervermietung
+Die Untervermietung bedarf der vorherigen schriftlichen Zustimmung des Vermieters. Ein Anspruch des Mieters auf Erlaubnis besteht bei berechtigtem Interesse (§ 553 BGB), insbesondere bei Aufnahme eines Lebenspartners oder bei wirtschaftlichen Gründen.
+
+§ 10 Bauliche Veränderungen
+Bauliche Veränderungen, Einbauten und Installationen (Antennen, Klimageräte, Markisen, Bodenbeläge mit fester Verklebung) bedürfen der vorherigen schriftlichen Zustimmung. Bei Auszug ist der ursprüngliche Zustand auf Verlangen des Vermieters wiederherzustellen.
+
+§ 11 Hausordnung
+Die als Anlage beigefügte Hausordnung ist Bestandteil dieses Vertrags. Sie ist von allen Bewohnern zu beachten. Ruhezeiten gelten täglich von 22:00 bis 6:00 Uhr sowie an Sonn- und Feiertagen ganztägig.
+
+§ 12 Energieausweis
+Dem Mieter wurde vor Vertragsschluss ein Energieausweis gemäß § 80 GEG vorgelegt. Energiekennwerte: ____ kWh/(m²·a), Energieträger: ____, Baujahr Heizung: ____.
+
+§ 13 Rauchwarnmelder
+In der Wohnung sind nach landesrechtlicher Vorschrift Rauchwarnmelder installiert. Die Wartung erfolgt durch [ ] den Vermieter [ ] den Mieter. Der Mieter darf die Funktion nicht beeinträchtigen.
+
+§ 14 Datenschutz
+Der Vermieter verarbeitet personenbezogene Daten des Mieters ausschließlich zur Durchführung dieses Mietverhältnisses auf Grundlage von Art. 6 Abs. 1 lit. b DSGVO. Die Daten werden nach Beendigung gelöscht, soweit keine gesetzlichen Aufbewahrungspflichten entgegenstehen.
+
+§ 15 Schlussbestimmungen
+(1) Mündliche Nebenabreden bestehen nicht. Änderungen und Ergänzungen bedürfen der Schriftform; dies gilt auch für die Aufhebung des Schriftformerfordernisses.
+(2) Sollten einzelne Bestimmungen unwirksam sein oder werden, bleibt der Vertrag im Übrigen wirksam. An die Stelle der unwirksamen Regelung tritt die gesetzliche.
+(3) Gerichtsstand ist der Ort der Mietsache.
+
+Anlagen:
+[ ] Hausordnung   [ ] Energieausweis   [ ] Wohnflächenberechnung   [ ] Übergabeprotokoll
+
 
 Ort, Datum: {datum}
 
+
 ___________________________          ___________________________
-Vermieter ({vermieter})              Mieter ({name})`,
+Vermieter ({vermieter})              Mieter ({name})
+
+
+Hinweis: Muster ohne Rechtsberatung — vor Verwendung an Einzelfall und Landesrecht anpassen lassen.`,
   },
   {
     title: "Staffelmietvertrag – Anlage",
