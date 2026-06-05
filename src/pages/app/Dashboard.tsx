@@ -12,6 +12,7 @@ import { GameDeck } from "@/components/GameDeck";
 import { LegalUpdatesWidget } from "@/components/LegalUpdatesWidget";
 import { LeitzinsWidget } from "@/components/LeitzinsWidget";
 import { TodayFeed } from "@/components/TodayFeed";
+import RefinanceAlert from "@/components/RefinanceAlert";
 import { motion } from "framer-motion";
 import {
   ArrowUpRight, Building2, Wallet, Receipt, TrendingUp, Plus,
@@ -188,6 +189,9 @@ const Dashboard = () => {
           </div>
         </header>
       </Item>
+
+      {/* Umfinanzierungs-Alert */}
+      <RefinanceAlert />
 
       {/* Heute-Feed: Auto-Mietvorschläge, Überfällige, Tasks, Tipps, Wins */}
       {!isEmpty && (
