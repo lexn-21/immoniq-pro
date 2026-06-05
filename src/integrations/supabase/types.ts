@@ -804,6 +804,68 @@ export type Database = {
           },
         ]
       }
+      financings: {
+        Row: {
+          amortization_rate: number | null
+          bank_name: string
+          created_at: string
+          current_balance: number | null
+          fixed_until: string | null
+          id: string
+          interest_rate: number
+          loan_amount: number
+          monthly_rate: number | null
+          notes: string | null
+          property_id: string | null
+          special_repayment_allowed: number | null
+          start_date: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amortization_rate?: number | null
+          bank_name: string
+          created_at?: string
+          current_balance?: number | null
+          fixed_until?: string | null
+          id?: string
+          interest_rate: number
+          loan_amount: number
+          monthly_rate?: number | null
+          notes?: string | null
+          property_id?: string | null
+          special_repayment_allowed?: number | null
+          start_date?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amortization_rate?: number | null
+          bank_name?: string
+          created_at?: string
+          current_balance?: number | null
+          fixed_until?: string | null
+          id?: string
+          interest_rate?: number
+          loan_amount?: number
+          monthly_rate?: number | null
+          notes?: string | null
+          property_id?: string | null
+          special_repayment_allowed?: number | null
+          start_date?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "financings_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       inbox_items: {
         Row: {
           ai_amount: number | null
