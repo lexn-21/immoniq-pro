@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Receipt, Paperclip, Info, AlertTriangle, Calendar, TrendingDown, Wallet, CheckCircle2, Building2 } from "lucide-react";
+import { Plus, Receipt, Paperclip, Info, AlertTriangle, Calendar, TrendingDown, Wallet, CheckCircle2, Building2, ScanLine, Download, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { toastError } from "@/lib/errors";
 import { eur, date } from "@/lib/format";
@@ -16,6 +16,7 @@ import EmptyState from "@/components/EmptyState";
 import { recordActivity } from "@/lib/activity";
 import { ListSkeleton } from "@/components/ListSkeleton";
 import { cn } from "@/lib/utils";
+import { DocScanner } from "@/components/DocScanner";
 
 const schema = z.object({
   property_id: z.string().uuid().optional().or(z.literal("")),
