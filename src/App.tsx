@@ -40,6 +40,7 @@ const Markt = lazy(() => import("./pages/Markt"));
 const MarktDetail = lazy(() => import("./pages/MarktDetail"));
 const MarktVergleich = lazy(() => import("./pages/MarktVergleich"));
 const Valuation = lazy(() => import("./pages/app/Valuation"));
+const Financing = lazy(() => import("./pages/app/Financing"));
 const Benchmark = lazy(() => import("./pages/app/Benchmark"));
 const Bookings = lazy(() => import("./pages/app/Bookings"));
 const Listings = lazy(() => import("./pages/app/Listings"));
@@ -136,6 +137,7 @@ const App = () => (
                 <Route path="advisor" element={<Advisor />} />
                 <Route path="vault" element={<Vault />} />
                 <Route path="valuation" element={<Valuation />} />
+                <Route path="financing" element={<Financing />} />
                 <Route path="benchmark" element={<Benchmark />} />
                 <Route path="bookings" element={<Bookings />} />
                 <Route path="listings" element={<Listings />} />
