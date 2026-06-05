@@ -90,6 +90,7 @@ const groups: NavGroup[] = [
     items: [
       { to: "/app/profile", label: "Mein Profil", icon: IdCard },
       { to: "/app/valuation", label: "Bewertung", icon: TrendingUp, personas: ["vermieter", "pro"] },
+      { to: "/app/financing", label: "Finanzierung", icon: Landmark, personas: ["vermieter", "pro"] },
       { to: "/app/calculator", label: "Rechner", icon: Calculator, personas: ["pro"] },
       { to: "/app/tax", label: "Steuer-Export", icon: Calculator, personas: ["vermieter", "pro"] },
     ],

@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Receipt, Paperclip, Info, AlertTriangle, Calendar, TrendingDown, Wallet, CheckCircle2, Building2 } from "lucide-react";
+import { Plus, Receipt, Paperclip, Info, AlertTriangle, Calendar, TrendingDown, Wallet, CheckCircle2, Building2, ScanLine, Download, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { toastError } from "@/lib/errors";
 import { eur, date } from "@/lib/format";
@@ -16,6 +16,7 @@ import EmptyState from "@/components/EmptyState";
 import { recordActivity } from "@/lib/activity";
 import { ListSkeleton } from "@/components/ListSkeleton";
 import { cn } from "@/lib/utils";
+import { DocScanner } from "@/components/DocScanner";
 
 const schema = z.object({
   property_id: z.string().uuid().optional().or(z.literal("")),
@@ -51,6 +52,7 @@ const Expenses = () => {
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const [scannerOpen, setScannerOpen] = useState(false);
   const [filter, setFilter] = useState<Filter>("month");
   const [propFilter, setPropFilter] = useState<string>("all");
   const [highlightId, setHighlightId] = useState<string | null>(null);
@@ -207,8 +209,20 @@ const Expenses = () => {
     return out;
   }, [items, props]);
 
+  const openReceipt = async (path: string) => {
+    const { data, error } = await supabase.storage.from("receipts").createSignedUrl(path, 300);
+    if (error || !data?.signedUrl) return toast.error("Beleg konnte nicht geladen werden.");
+    window.open(data.signedUrl, "_blank", "noopener");
+  };
+
   return (
     <div className="space-y-6">
+      <DocScanner
+        open={scannerOpen}
+        onClose={() => setScannerOpen(false)}
+        suggestedName={`beleg-${new Date().toISOString().slice(0,10)}`}
+        onComplete={(f) => { setFile(f); setScannerOpen(false); toast.success("Scan übernommen"); }}
+      />
       <header className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
         <div>
           <h1 className="text-3xl font-bold">Ausgaben</h1>
@@ -305,7 +319,12 @@ const Expenses = () => {
 
               <div>
                 <Label className="text-xs">Beleg (Foto / PDF)</Label>
-                <Input type="file" accept="image/*,application/pdf" onChange={(e) => setFile(e.target.files?.[0] ?? null)} className="mt-1" />
+                <div className="flex gap-2 mt-1">
+                  <Input type="file" accept="image/*,application/pdf" onChange={(e) => setFile(e.target.files?.[0] ?? null)} className="flex-1" />
+                  <Button type="button" variant="outline" size="default" onClick={() => setScannerOpen(true)} title="Mit Kamera scannen (Adobe-Style)">
+                    <ScanLine className="h-4 w-4" />
+                  </Button>
+                </div>
                 {file && <p className="text-[11px] text-success mt-1">✓ {file.name}</p>}
               </div>
             </div>
@@ -436,6 +455,11 @@ const Expenses = () => {
                           {date(e.spent_on)} · {CAT_INFO[e.category].label}{e.properties?.name ? ` · ${e.properties.name}` : ""}{e.tenants?.full_name ? ` · 👤 ${e.tenants.full_name}` : ""}
                         </p>
                       </div>
+                      {e.receipt_path && (
+                        <Button variant="ghost" size="sm" className="h-8 px-2" onClick={() => openReceipt(e.receipt_path)} title="Beleg ansehen">
+                          <Eye className="h-3.5 w-3.5" />
+                        </Button>
+                      )}
                       <p className="font-semibold whitespace-nowrap tabular">−{eur(e.amount)}</p>
                     </div>
                   ))}

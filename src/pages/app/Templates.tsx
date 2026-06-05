@@ -526,6 +526,14 @@ export default function Templates() {
 
   return (
     <div className="space-y-6">
+      <Card className="p-3 border-warning/30 bg-warning/5">
+        <p className="text-xs text-muted-foreground flex items-start gap-2">
+          <AlertCircle className="h-3.5 w-3.5 text-warning flex-shrink-0 mt-0.5" />
+          <span>
+            <strong className="text-foreground">Rechtshinweis:</strong> Alle Vorlagen sind sorgfältig erstellte Muster nach aktueller BGB-Lage — sie ersetzen keine Rechtsberatung. Vor Verwendung individuell anpassen lassen; ImmonIQ übernimmt keine Haftung für Rechtsfolgen.
+          </span>
+        </p>
+      </Card>
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">Vorlagen</h1>
