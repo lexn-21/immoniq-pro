@@ -52,6 +52,7 @@ const Expenses = () => {
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const [scannerOpen, setScannerOpen] = useState(false);
   const [filter, setFilter] = useState<Filter>("month");
   const [propFilter, setPropFilter] = useState<string>("all");
   const [highlightId, setHighlightId] = useState<string | null>(null);
@@ -306,7 +307,12 @@ const Expenses = () => {
 
               <div>
                 <Label className="text-xs">Beleg (Foto / PDF)</Label>
-                <Input type="file" accept="image/*,application/pdf" onChange={(e) => setFile(e.target.files?.[0] ?? null)} className="mt-1" />
+                <div className="flex gap-2 mt-1">
+                  <Input type="file" accept="image/*,application/pdf" onChange={(e) => setFile(e.target.files?.[0] ?? null)} className="flex-1" />
+                  <Button type="button" variant="outline" size="default" onClick={() => setScannerOpen(true)} title="Mit Kamera scannen (Adobe-Style)">
+                    <ScanLine className="h-4 w-4" />
+                  </Button>
+                </div>
                 {file && <p className="text-[11px] text-success mt-1">✓ {file.name}</p>}
               </div>
             </div>
