@@ -2558,6 +2558,41 @@ export type Database = {
           },
         ]
       }
+      tenant_issue_notes: {
+        Row: {
+          author_email: string | null
+          body: string
+          created_at: string
+          id: string
+          issue_id: string
+          user_id: string
+        }
+        Insert: {
+          author_email?: string | null
+          body: string
+          created_at?: string
+          id?: string
+          issue_id: string
+          user_id: string
+        }
+        Update: {
+          author_email?: string | null
+          body?: string
+          created_at?: string
+          id?: string
+          issue_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tenant_issue_notes_issue_id_fkey"
+            columns: ["issue_id"]
+            isOneToOne: false
+            referencedRelation: "tenant_issues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tenant_issues: {
         Row: {
           assignee: string | null
