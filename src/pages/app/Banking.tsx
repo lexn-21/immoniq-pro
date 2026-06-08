@@ -148,9 +148,34 @@ const Banking = () => {
     if (error || data?.error) {
       toast.error("Re-Match fehlgeschlagen", { description: data?.error ?? error?.message });
     } else {
-      toast.success(`✓ ${data.auto_matched ?? 0} verbucht · ${data.suggested ?? 0} Vorschläge`);
+      toast.success(`✓ ${data.auto_matched ?? 0} Mieten · ${data.auto_expenses ?? 0} Ausgaben · ${data.suggested ?? 0} Vorschläge`);
       load();
     }
+  };
+
+  const bookExpense = async (tx: any) => {
+    const form = expenseForm[tx.id] ?? {};
+    const property_id = form.property_id ?? (properties.length === 1 ? properties[0].id : tx.matched_property_id) ?? undefined;
+    const category = form.category ?? tx.category ?? "immediate";
+    if (!property_id) {
+      toast.error("Bitte Immobilie wählen");
+      return;
+    }
+    setBusyTx(tx.id);
+    const { data, error } = await supabase.functions.invoke("enable-banking", {
+      body: {
+        action: "book_expense",
+        transaction_id: tx.id,
+        property_id,
+        category,
+        classification: "maintenance",
+        nka_eligible: form.nka ?? (category === "utilities_passthrough"),
+        learn: true,
+      },
+    });
+    setBusyTx(null);
+    if (error || data?.error) toast.error("Fehler", { description: data?.error ?? error?.message });
+    else { toast.success("✓ Als Ausgabe verbucht & Regel gemerkt"); load(); }
   };
 
   const confirmMatch = async (txId: string, tenantId?: string) => {
