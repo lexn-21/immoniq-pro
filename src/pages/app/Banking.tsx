@@ -32,6 +32,8 @@ const Banking = () => {
   const [tenants, setTenants] = useState<any[]>([]);
   const [properties, setProperties] = useState<any[]>([]);
   const [rules, setRules] = useState<any[]>([]);
+  const [missingRents, setMissingRents] = useState<any[]>([]);
+  const [recurring, setRecurring] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [country, setCountry] = useState("DE");
