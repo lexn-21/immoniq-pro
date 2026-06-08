@@ -484,18 +484,28 @@ function ContractPanel({ tenant, property, reload }: { tenant: any; property: an
 }
 
 function ContactBar({ email, phone, name }: { email?: string | null; phone?: string | null; name?: string }) {
-  const wa = waHref(phone, `Hallo ${name ?? ""},`);
   const ma = mailHref(email);
-  if (!wa && !ma) return null;
+  if (!phone && !ma) return null;
+  const monthLabel = new Date().toLocaleDateString("de-DE", { month: "long", year: "numeric" });
   return (
-    <div className="flex gap-2 pt-2 border-t border-border/40">
-      {wa && (
-        <a href={wa} target="_blank" rel="noreferrer" className="flex-1">
-          <Button variant="outline" size="sm" className="w-full"><MessageCircle className="h-3.5 w-3.5 mr-1.5" /> WhatsApp</Button>
-        </a>
+    <div className="flex gap-2 pt-2 border-t border-border/40 flex-wrap">
+      {phone && (
+        <div className="flex-1 min-w-[140px]">
+          <WhatsappButton
+            phone={phone}
+            tenantName={name ?? ""}
+            defaultMessage={`Hallo ${name ?? ""}, `}
+            templates={[
+              { id: "rentReminder", label: "Miet-Erinnerung", args: [name ?? "", "—", monthLabel] },
+              { id: "meterReading", label: "Zählerstände", args: [name ?? ""] },
+              { id: "appointment", label: "Termin", args: [name ?? "", "tt.mm.", "Begehung"] },
+            ]}
+            className="w-full"
+          />
+        </div>
       )}
       {ma && (
-        <a href={ma} className="flex-1">
+        <a href={ma} className="flex-1 min-w-[140px]">
           <Button variant="outline" size="sm" className="w-full"><Mail className="h-3.5 w-3.5 mr-1.5" /> E-Mail</Button>
         </a>
       )}
