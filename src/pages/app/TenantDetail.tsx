@@ -19,6 +19,8 @@ import { toastError } from "@/lib/errors";
 import { CardGridSkeleton } from "@/components/ListSkeleton";
 import EmptyState from "@/components/EmptyState";
 import { waHref, mailHref } from "@/lib/contact";
+import { WhatsappButton } from "@/components/WhatsappButton";
+import { eur as eurFmt } from "@/lib/format";
 
 const DOC_KIND_LABEL: Record<string, string> = {
   contract: "Mietvertrag",
