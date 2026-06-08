@@ -262,6 +262,14 @@ export default function Tickets() {
                     </p>
                   </div>
                   <div className="flex gap-2 flex-wrap">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setNotesIssue(i)}
+                      aria-label="Notizen"
+                    >
+                      <MessageSquare className="h-4 w-4" />
+                    </Button>
                     {i.status !== "resolved" && (
                       <Popover>
                         <PopoverTrigger asChild>
