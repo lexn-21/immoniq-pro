@@ -167,6 +167,7 @@ const Banking = () => {
   );
 
   return (
+    <PlanGate requires="pro" feature="Bank-Sync" description="Bank verbinden, Mieten automatisch zuordnen und Ausgaben kategorisieren — Teil von ImmonIQ Pro.">
     <div className="space-y-6">
       <header className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
         <div>
