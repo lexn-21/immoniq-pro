@@ -65,6 +65,7 @@ const WgCasting = lazy(() => import("./pages/WgCasting"));
 const Feed = lazy(() => import("./pages/app/Feed"));
 const LandParcels = lazy(() => import("./pages/app/LandParcels"));
 const OrgUnits = lazy(() => import("./pages/app/OrgUnits"));
+const Banking = lazy(() => import("./pages/app/Banking"));
 
 const SmartInbox = lazy(() => import("./pages/app/SmartInbox"));
 const PassPublic = lazy(() => import("./pages/PassPublic"));
@@ -165,6 +166,7 @@ const App = () => (
                 <Route path="ads" element={<MyAds />} />
                 <Route path="admin/ads" element={<AdminAds />} />
                 <Route path="settings" element={<Settings />} />
+                <Route path="banking" element={<Banking />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
