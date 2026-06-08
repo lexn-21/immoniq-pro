@@ -3,9 +3,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calculator, Download, FileText, TrendingUp, TrendingDown, Building2 } from "lucide-react";
+import { Calculator, Download, FileText, TrendingUp, TrendingDown, Building2, FileDown } from "lucide-react";
 import { eur } from "@/lib/format";
 import { toast } from "sonner";
+import jsPDF from "jspdf";
 
 const CAT_LABEL: Record<string, string> = {
   immediate: "Erhaltungsaufwand", depreciable: "AfA-fähig", utilities_passthrough: "NK-umlagefähig",
@@ -76,6 +77,109 @@ const TaxBridge = () => {
     toast.success("Steuer-Export heruntergeladen.");
   };
 
+  const exportAnlageV_PDF = () => {
+    if (properties.length === 0) {
+      toast.error("Keine Immobilien vorhanden.");
+      return;
+    }
+    const doc = new jsPDF({ unit: "mm", format: "a4" });
+    const pageW = doc.internal.pageSize.getWidth();
+
+    properties.forEach((prop, idx) => {
+      if (idx > 0) doc.addPage();
+      const propPayments = yearPayments.filter(p => p.property_id === prop.id);
+      const propExpenses = yearExpenses.filter(e => e.property_id === prop.id);
+      const propIncome = propPayments.reduce((s, p) => s + Number(p.amount), 0);
+      const propByCat: Record<string, number> = propExpenses.reduce((acc: Record<string, number>, e) => {
+        acc[e.category] = (acc[e.category] ?? 0) + Number(e.amount);
+        return acc;
+      }, {} as Record<string, number>);
+      const propAfa = prop.purchase_price
+        ? Number(prop.purchase_price) * 0.8 * (Number(prop.afa_rate ?? 2) / 100)
+        : 0;
+      const propResult = propIncome - (propByCat.immediate ?? 0) - (propByCat.financing ?? 0) - propAfa;
+
+      // Header
+      doc.setFontSize(18); doc.setFont("helvetica", "bold");
+      doc.text("Anlage V", 15, 20);
+      doc.setFontSize(10); doc.setFont("helvetica", "normal");
+      doc.text(`Einkünfte aus Vermietung und Verpachtung · Steuerjahr ${year}`, 15, 26);
+      doc.setDrawColor(200); doc.line(15, 30, pageW - 15, 30);
+
+      // Objektdaten
+      doc.setFontSize(11); doc.setFont("helvetica", "bold");
+      doc.text("Objektangaben", 15, 38);
+      doc.setFont("helvetica", "normal"); doc.setFontSize(9);
+      doc.text(`Bezeichnung: ${prop.name ?? "—"}`, 15, 44);
+      doc.text(`Anschrift: ${[prop.street, prop.zip, prop.city].filter(Boolean).join(", ") || "—"}`, 15, 49);
+      doc.text(`Anschaffungsdatum: ${prop.purchase_date ?? "—"}`, 15, 54);
+      doc.text(`Anschaffungskosten: ${prop.purchase_price ? eur(prop.purchase_price) : "—"}`, 15, 59);
+      doc.text(`Wohnfläche: ${prop.area_sqm ?? "—"} m²`, 15, 64);
+
+      // Einnahmen (Zeile 9 ff)
+      let y = 76;
+      doc.setFontSize(11); doc.setFont("helvetica", "bold");
+      doc.text("Einnahmen (Zeile 9 ff. Anlage V)", 15, y);
+      y += 6;
+      doc.setFont("helvetica", "normal"); doc.setFontSize(9);
+      doc.text("Miete + Nebenkostenvorauszahlungen", 15, y);
+      doc.text(eur(propIncome), pageW - 15, y, { align: "right" });
+      y += 5;
+      doc.setDrawColor(180); doc.line(15, y, pageW - 15, y);
+      y += 4;
+      doc.setFont("helvetica", "bold");
+      doc.text("Summe Einnahmen", 15, y);
+      doc.text(eur(propIncome), pageW - 15, y, { align: "right" });
+
+      // Werbungskosten
+      y += 12;
+      doc.setFontSize(11);
+      doc.text("Werbungskosten (Zeile 33 ff. Anlage V)", 15, y);
+      y += 6;
+      doc.setFont("helvetica", "normal"); doc.setFontSize(9);
+      const rows: Array<[string, number, string]> = [
+        ["Erhaltungsaufwand (§ 9 EStG)", propByCat.immediate ?? 0, "Zeile 40"],
+        ["Schuldzinsen / Finanzierungskosten", propByCat.financing ?? 0, "Zeile 36"],
+        ["AfA Gebäude (linear)", propAfa, "Zeile 33"],
+        ["Sonstige Werbungskosten", propByCat.other ?? 0, "Zeile 50"],
+      ];
+      rows.forEach(([label, amt, ref]) => {
+        doc.text(label, 15, y);
+        doc.setTextColor(150); doc.text(ref, pageW - 50, y, { align: "right" });
+        doc.setTextColor(0); doc.text(eur(amt), pageW - 15, y, { align: "right" });
+        y += 5;
+      });
+      const sumWk = rows.reduce((s, r) => s + r[1], 0);
+      doc.setDrawColor(180); doc.line(15, y, pageW - 15, y);
+      y += 4;
+      doc.setFont("helvetica", "bold");
+      doc.text("Summe Werbungskosten", 15, y);
+      doc.text(eur(sumWk), pageW - 15, y, { align: "right" });
+
+      // Ergebnis
+      y += 12;
+      doc.setFontSize(12);
+      doc.setFillColor(propResult >= 0 ? 220 : 255, propResult >= 0 ? 245 : 230, propResult >= 0 ? 220 : 230);
+      doc.rect(15, y - 5, pageW - 30, 10, "F");
+      doc.text(propResult >= 0 ? "Überschuss" : "Verlust", 18, y + 1);
+      doc.text(eur(propResult), pageW - 18, y + 1, { align: "right" });
+
+      // Hinweis
+      y += 18;
+      doc.setFontSize(8); doc.setFont("helvetica", "italic"); doc.setTextColor(120);
+      doc.text("Hinweis: Pauschale 80/20-Aufteilung Gebäude/Grundstück.", 15, y);
+      doc.text("Für rechtssichere Steuererklärung: Steuerberater konsultieren.", 15, y + 4);
+
+      // Footer
+      doc.setFontSize(7); doc.setTextColor(150);
+      doc.text(`Erstellt mit ImmonIQ · ${new Date().toLocaleDateString("de-DE")}`, 15, 287);
+      doc.text(`Seite ${idx + 1} von ${properties.length}`, pageW - 15, 287, { align: "right" });
+    });
+
+    doc.save(`Anlage_V_${year}.pdf`);
+    toast.success(`Anlage V (${properties.length} Objekt${properties.length === 1 ? "" : "e"}) heruntergeladen.`);
+  };
+
   const years = Array.from({ length: 5 }, (_, i) => String(currentYear - i));
 
   return (
@@ -85,13 +189,16 @@ const TaxBridge = () => {
           <h1 className="text-3xl font-bold flex items-center gap-2"><Calculator className="h-7 w-7 text-primary" /> Steuer-Brücke</h1>
           <p className="text-muted-foreground text-sm mt-1">Anlage V Vorbereitung · Export für deinen Steuerberater (DATEV-kompatibel)</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Select value={year} onValueChange={setYear}>
             <SelectTrigger className="w-[120px]"><SelectValue /></SelectTrigger>
             <SelectContent>{years.map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}</SelectContent>
           </Select>
-          <Button onClick={exportCSV} className="bg-gradient-gold text-primary-foreground shadow-gold">
-            <Download className="h-4 w-4 mr-2" /> CSV exportieren
+          <Button onClick={exportAnlageV_PDF} className="bg-gradient-gold text-primary-foreground shadow-gold">
+            <FileDown className="h-4 w-4 mr-2" /> Anlage V PDF
+          </Button>
+          <Button onClick={exportCSV} variant="outline">
+            <Download className="h-4 w-4 mr-2" /> CSV (DATEV)
           </Button>
         </div>
       </header>

@@ -19,6 +19,7 @@ import { toastError } from "@/lib/errors";
 import { CardGridSkeleton } from "@/components/ListSkeleton";
 import EmptyState from "@/components/EmptyState";
 import { waHref, mailHref } from "@/lib/contact";
+import { WhatsappButton } from "@/components/WhatsappButton";
 
 const DOC_KIND_LABEL: Record<string, string> = {
   contract: "Mietvertrag",
@@ -127,25 +128,40 @@ export default function TenantDetail() {
             </p>
           </div>
         </div>
-        <Button variant="outline" size="sm" onClick={async () => {
-          const { data: auth } = await supabase.auth.getUser();
-          if (!auth.user || !tenant.unit_id) return;
-          const existing = await supabase.from("tenant_portal_links")
-            .select("token").eq("tenant_id", tenant.id).eq("revoked", false).maybeSingle();
-          let token = existing.data?.token;
-          if (!token) {
-            const ins = await supabase.from("tenant_portal_links").insert({
-              user_id: auth.user.id, tenant_id: tenant.id, unit_id: tenant.unit_id,
-            }).select("token").single();
-            if (ins.error) { toast.error(ins.error.message); return; }
-            token = ins.data.token;
-          }
-          const url = `${window.location.origin}/mieter/${token}`;
-          await navigator.clipboard.writeText(url);
-          toast.success("Mieter-Link kopiert", { description: url });
-        }}>
-          <Link2 className="h-3.5 w-3.5 mr-1.5" /> Portal-Link
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={async () => {
+            const { data: auth } = await supabase.auth.getUser();
+            if (!auth.user || !tenant.unit_id) return;
+            const existing = await supabase.from("tenant_portal_links")
+              .select("token").eq("tenant_id", tenant.id).eq("revoked", false).maybeSingle();
+            let token = existing.data?.token;
+            if (!token) {
+              const ins = await supabase.from("tenant_portal_links").insert({
+                user_id: auth.user.id, tenant_id: tenant.id, unit_id: tenant.unit_id,
+              }).select("token").single();
+              if (ins.error) { toast.error(ins.error.message); return; }
+              token = ins.data.token;
+            }
+            const url = `${window.location.origin}/mieter/${token}`;
+            await navigator.clipboard.writeText(url);
+            toast.success("Mieter-Portal-Link kopiert", { description: url, duration: 5000 });
+            // Optional: direkt per WhatsApp teilen wenn Telefon vorhanden
+            if (tenant.phone) {
+              const msg = `Hallo ${tenant.full_name}, hier ist dein persönlicher Mieter-Bereich für ${property?.name ?? "deine Wohnung"} — Zählerstände, Zahlungshistorie & Schadenmeldungen jederzeit online: ${url}`;
+              const { whatsappLink } = await import("@/lib/whatsapp");
+              const waUrl = whatsappLink(tenant.phone, msg);
+              if (waUrl) {
+                setTimeout(() => {
+                  if (confirm("Link per WhatsApp an Mieter senden?")) {
+                    window.open(waUrl, "_blank", "noopener,noreferrer");
+                  }
+                }, 300);
+              }
+            }
+          }}>
+            <Link2 className="h-3.5 w-3.5 mr-1.5" /> Portal-Link
+          </Button>
+        </div>
       </div>
 
       {/* KPI Row */}
@@ -483,18 +499,28 @@ function ContractPanel({ tenant, property, reload }: { tenant: any; property: an
 }
 
 function ContactBar({ email, phone, name }: { email?: string | null; phone?: string | null; name?: string }) {
-  const wa = waHref(phone, `Hallo ${name ?? ""},`);
   const ma = mailHref(email);
-  if (!wa && !ma) return null;
+  if (!phone && !ma) return null;
+  const monthLabel = new Date().toLocaleDateString("de-DE", { month: "long", year: "numeric" });
   return (
-    <div className="flex gap-2 pt-2 border-t border-border/40">
-      {wa && (
-        <a href={wa} target="_blank" rel="noreferrer" className="flex-1">
-          <Button variant="outline" size="sm" className="w-full"><MessageCircle className="h-3.5 w-3.5 mr-1.5" /> WhatsApp</Button>
-        </a>
+    <div className="flex gap-2 pt-2 border-t border-border/40 flex-wrap">
+      {phone && (
+        <div className="flex-1 min-w-[140px]">
+          <WhatsappButton
+            phone={phone}
+            tenantName={name ?? ""}
+            defaultMessage={`Hallo ${name ?? ""}, `}
+            templates={[
+              { id: "rentReminder", label: "Miet-Erinnerung", args: [name ?? "", "—", monthLabel] },
+              { id: "meterReading", label: "Zählerstände", args: [name ?? ""] },
+              { id: "appointment", label: "Termin", args: [name ?? "", "tt.mm.", "Begehung"] },
+            ]}
+            className="w-full"
+          />
+        </div>
       )}
       {ma && (
-        <a href={ma} className="flex-1">
+        <a href={ma} className="flex-1 min-w-[140px]">
           <Button variant="outline" size="sm" className="w-full"><Mail className="h-3.5 w-3.5 mr-1.5" /> E-Mail</Button>
         </a>
       )}
