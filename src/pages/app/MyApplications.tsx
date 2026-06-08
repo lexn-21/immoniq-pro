@@ -68,6 +68,8 @@ const MyApplications = () => {
         </Card>
       )}
 
+      <RecommendedListings />
+
       <section className="space-y-3">
         <h2 className="font-bold">Aktive Bewerbungen</h2>
         {loading ? (
