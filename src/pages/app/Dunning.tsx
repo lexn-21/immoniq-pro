@@ -83,13 +83,20 @@ const Dunning = () => {
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="text-3xl font-bold flex items-center gap-2">
-          <AlertTriangle className="h-7 w-7 text-primary" /> Mahnwesen
-        </h1>
-        <p className="text-muted-foreground text-sm mt-1">
-          Soll/Ist-Vergleich pro Mieter · Mahnschreiben rechtssicher in 3 Sekunden.
-        </p>
+      <header className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold flex items-center gap-2">
+            <AlertTriangle className="h-7 w-7 text-primary" /> Mahnwesen
+          </h1>
+          <p className="text-muted-foreground text-sm mt-1">
+            Soll/Ist-Vergleich pro Mieter · Mahnschreiben rechtssicher in 3 Sekunden.
+          </p>
+        </div>
+        {cntDue > 0 && (
+          <Button onClick={runAutoDunning} className="bg-gradient-gold text-primary-foreground shadow-gold">
+            <Zap className="h-4 w-4 mr-2" /> Auto-Mahnlauf ({cntDue})
+          </Button>
+        )}
       </header>
 
       <AIDisclaimer />
