@@ -68,6 +68,7 @@ const OrgUnits = lazy(() => import("./pages/app/OrgUnits"));
 const Banking = lazy(() => import("./pages/app/Banking"));
 
 const SmartInbox = lazy(() => import("./pages/app/SmartInbox"));
+const Tickets = lazy(() => import("./pages/app/Tickets"));
 const PassPublic = lazy(() => import("./pages/PassPublic"));
 const Messenger = lazy(() => import("./pages/app/Messenger"));
 const Profile = lazy(() => import("./pages/app/Profile"));
@@ -162,6 +163,7 @@ const App = () => (
                 <Route path="parcels" element={<LandParcels />} />
                 <Route path="org" element={<OrgUnits />} />
                 <Route path="inbox" element={<SmartInbox />} />
+                <Route path="tickets" element={<Tickets />} />
                 <Route path="messenger" element={<Messenger />} />
                 <Route path="ads" element={<MyAds />} />
                 <Route path="admin/ads" element={<AdminAds />} />
