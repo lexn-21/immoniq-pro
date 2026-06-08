@@ -4,7 +4,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { AlertTriangle, CheckCircle2, Clock, Wrench, Radio, ListChecks } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Clock, Wrench, Radio, ListChecks, Download } from "lucide-react";
+import { downloadCsv } from "@/lib/csv";
 import { showLocalNotification } from "@/lib/pushNotifications";
 import QuickTicketDialog from "@/components/QuickTicketDialog";
 import { toast } from "sonner";
@@ -114,11 +115,33 @@ export default function Tickets() {
 
   return (
     <div className="p-4 md:p-6 max-w-5xl mx-auto space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-start justify-between gap-3 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2"><Wrench className="h-6 w-6" /> Schäden & Tickets</h1>
           <p className="text-sm text-muted-foreground">Alle Mieter-Meldungen — KI-erkannt, sortiert, dokumentiert.</p>
         </div>
+        <Button
+          size="sm"
+          variant="outline"
+          disabled={filtered.length === 0}
+          onClick={() => downloadCsv(
+            `tickets-${new Date().toISOString().slice(0,10)}`,
+            filtered.map((i) => ({
+              Gemeldet: format(new Date(i.reported_at), "yyyy-MM-dd HH:mm"),
+              Status: i.status,
+              Schwere: severityLabel[i.severity] ?? i.severity,
+              Kategorie: categoryLabel[i.category] ?? i.category,
+              Titel: i.title,
+              Beschreibung: i.description ?? "",
+              Mieter: i.tenant?.full_name ?? "",
+              Objekt: i.unit?.property?.name ?? "",
+              Einheit: i.unit?.label ?? "",
+              Erledigt_am: i.resolved_at ? format(new Date(i.resolved_at), "yyyy-MM-dd HH:mm") : "",
+            })),
+          )}
+        >
+          <Download className="h-4 w-4 mr-1.5" /> CSV
+        </Button>
       </div>
 
       <div className="flex gap-2 flex-wrap">
