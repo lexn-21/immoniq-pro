@@ -15,6 +15,7 @@ import {
   Trees, Landmark, IdCard, MessageSquare, Sparkles, Banknote,
 } from "lucide-react";
 import { AskCopilot } from "@/components/AskCopilot";
+import { CommandPalette } from "@/components/CommandPalette";
 import { DocScanner } from "@/components/DocScanner";
 import { pendingIngest } from "@/lib/ingest";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
