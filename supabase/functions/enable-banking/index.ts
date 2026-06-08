@@ -302,22 +302,27 @@ async function autoMatch(supabase: any, userId: string) {
     .eq("user_id", userId).eq("match_status", "unmatched");
   if (!txs?.length) return { autoIn: 0, autoOut: 0, suggested: 0 };
 
-  const [tenantsRes, unitsRes, propsRes, rulesRes] = await Promise.all([
+  // Belege/Ausgaben der letzten 30 Tage laden — für Anti-Doppelbuchung
+  const since30 = new Date(Date.now() - 30 * 24 * 3600 * 1000).toISOString().slice(0, 10);
+  const [tenantsRes, unitsRes, propsRes, rulesRes, expRes] = await Promise.all([
     supabase.from("tenants").select("id,full_name,iban,unit_id,property_id").eq("user_id", userId),
     supabase.from("units").select("id,property_id,rent_cold,utilities").eq("user_id", userId),
     supabase.from("properties").select("id,name").eq("user_id", userId),
     supabase.from("bank_rules").select("*").eq("user_id", userId),
+    supabase.from("expenses").select("id,amount,spent_on,vendor,property_id,category")
+      .eq("user_id", userId).gte("spent_on", since30),
   ]);
   const tenants = tenantsRes.data ?? [];
   const units = unitsRes.data ?? [];
   const properties = propsRes.data ?? [];
   const rules = rulesRes.data ?? [];
+  const existingExpenses = expRes.data ?? [];
   const unitById: Record<string, any> = {};
   units.forEach((u: any) => { unitById[u.id] = u; });
   // Auto-property fallback: nur 1 Immobilie → immer diese
   const soleProperty = properties.length === 1 ? properties[0].id : null;
 
-  let autoIn = 0, autoOut = 0, suggested = 0;
+  let autoIn = 0, autoOut = 0, suggested = 0, autoLinked = 0;
 
   for (const tx of txs) {
     const credit = tx.amount_cents > 0;
