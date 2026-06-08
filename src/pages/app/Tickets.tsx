@@ -3,7 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, CheckCircle2, Clock, Wrench, Radio } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { AlertTriangle, CheckCircle2, Clock, Wrench, Radio, ListChecks } from "lucide-react";
 import { showLocalNotification } from "@/lib/pushNotifications";
 import { toast } from "sonner";
 import { toastError } from "@/lib/errors";
@@ -81,11 +82,33 @@ export default function Tickets() {
     load();
   };
 
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const toggleSel = (id: string) =>
+    setSelected((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const clearSel = () => setSelected(new Set());
+
+  const bulkUpdate = async (status: Issue["status"]) => {
+    if (selected.size === 0) return;
+    const ids = Array.from(selected);
+    const patch: any = { status };
+    if (status === "resolved") patch.resolved_at = new Date().toISOString();
+    const { error } = await supabase.from("tenant_issues").update(patch).in("id", ids);
+    if (error) return toastError(error);
+    toast.success(`${ids.length} Ticket(s) aktualisiert`);
+    clearSel();
+    load();
+  };
+
   const filtered = items.filter((i) => filter === "all" || i.status === filter);
   const counts = {
     open: items.filter((i) => i.status === "open").length,
     in_progress: items.filter((i) => i.status === "in_progress").length,
     resolved: items.filter((i) => i.status === "resolved").length,
+  };
+  const allSelected = filtered.length > 0 && filtered.every((i) => selected.has(i.id));
+  const toggleAll = () => {
+    if (allSelected) clearSel();
+    else setSelected(new Set(filtered.map((i) => i.id)));
   };
 
   return (
@@ -110,6 +133,23 @@ export default function Tickets() {
         ))}
       </div>
 
+      {filtered.length > 0 && (
+        <div className="flex items-center gap-3 flex-wrap rounded-md border bg-muted/30 px-3 py-2">
+          <label className="flex items-center gap-2 text-sm cursor-pointer">
+            <Checkbox checked={allSelected} onCheckedChange={toggleAll} />
+            <ListChecks className="h-4 w-4" />
+            {selected.size > 0 ? `${selected.size} ausgewählt` : "Alle auswählen"}
+          </label>
+          {selected.size > 0 && (
+            <div className="flex gap-2 ml-auto">
+              <Button size="sm" variant="outline" onClick={() => bulkUpdate("in_progress")}>Übernehmen</Button>
+              <Button size="sm" onClick={() => bulkUpdate("resolved")}>Erledigt</Button>
+              <Button size="sm" variant="ghost" onClick={clearSel}>Abbrechen</Button>
+            </div>
+          )}
+        </div>
+      )}
+
       {loading ? (
         <ListSkeleton />
       ) : filtered.length === 0 ? (
@@ -121,10 +161,16 @@ export default function Tickets() {
       ) : (
         <div className="space-y-3">
           {filtered.map((i) => (
-            <Card key={i.id}>
+            <Card key={i.id} className={selected.has(i.id) ? "ring-2 ring-primary" : ""}>
               <CardContent className="p-4 space-y-3">
-                <div className="flex items-start justify-between gap-3 flex-wrap">
-                  <div className="space-y-1 min-w-0">
+                <div className="flex items-start gap-3 flex-wrap">
+                  <Checkbox
+                    className="mt-1"
+                    checked={selected.has(i.id)}
+                    onCheckedChange={() => toggleSel(i.id)}
+                    aria-label="Auswählen"
+                  />
+                  <div className="space-y-1 min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
                       <Badge className={severityStyles[i.severity]} variant="outline">
                         <AlertTriangle className="h-3 w-3 mr-1" />
