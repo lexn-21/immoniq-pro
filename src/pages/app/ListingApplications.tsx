@@ -69,6 +69,14 @@ const ListingApplications = () => {
     setApps(a.data ?? []);
     if (l.data) document.title = `Bewerbungen · ${l.data.title}`;
     if (l.data?.kind === "wg_room") loadWgMembers();
+    const ids = (a.data ?? []).map((x: any) => x.id);
+    if (ids.length) {
+      const { data: bons } = await supabase.from("bonitaets_checks")
+        .select("*").in("application_id", ids).eq("status", "completed");
+      const map: Record<string, any> = {};
+      (bons ?? []).forEach((b: any) => { if (b.application_id) map[b.application_id] = b; });
+      setBonResults(map);
+    }
   };
 
   const loadWgMembers = async () => {
