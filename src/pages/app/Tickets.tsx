@@ -107,6 +107,7 @@ export default function Tickets() {
     patchIssue(id, { snooze_until: addDaysISO(days) });
 
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [notesIssue, setNotesIssue] = useState<Issue | null>(null);
   const toggleSel = (id: string) =>
     setSelected((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
   const clearSel = () => setSelected(new Set());
@@ -319,6 +320,11 @@ export default function Tickets() {
       )}
 
       <QuickTicketDialog onCreated={load} />
+      <TicketNotes
+        issueId={notesIssue?.id ?? null}
+        issueTitle={notesIssue?.title}
+        onClose={() => setNotesIssue(null)}
+      />
     </div>
   );
 }
