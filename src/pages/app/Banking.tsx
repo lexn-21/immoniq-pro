@@ -30,6 +30,8 @@ const Banking = () => {
   const [transactions, setTransactions] = useState<any[]>([]);
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [tenants, setTenants] = useState<any[]>([]);
+  const [properties, setProperties] = useState<any[]>([]);
+  const [rules, setRules] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [country, setCountry] = useState("DE");
@@ -40,6 +42,8 @@ const Banking = () => {
   const [syncing, setSyncing] = useState<string | null>(null);
   const [busyTx, setBusyTx] = useState<string | null>(null);
   const [rematching, setRematching] = useState(false);
+  // Pro Ausgabe-Vorschlag: lokal gewählte Zuordnung (property, category)
+  const [expenseForm, setExpenseForm] = useState<Record<string, { property_id?: string; category?: string; nka?: boolean }>>({});
 
   useEffect(() => { document.title = "Banking · ImmonIQ"; }, []);
 
