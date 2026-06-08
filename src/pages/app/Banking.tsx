@@ -44,6 +44,8 @@ const Banking = () => {
   const [syncing, setSyncing] = useState<string | null>(null);
   const [busyTx, setBusyTx] = useState<string | null>(null);
   const [rematching, setRematching] = useState(false);
+  const [remindingId, setRemindingId] = useState<string | null>(null);
+  const [remindedIds, setRemindedIds] = useState<Set<string>>(new Set());
   // Pro Ausgabe-Vorschlag: lokal gewählte Zuordnung (property, category)
   const [expenseForm, setExpenseForm] = useState<Record<string, { property_id?: string; category?: string; nka?: boolean }>>({});
 
@@ -202,6 +204,55 @@ const Banking = () => {
     setBusyTx(null);
     if (error) toast.error("Fehler"); else { toast.success("Ignoriert"); load(); }
   };
+
+  const sendReminder = async (row: any) => {
+    const tenant = tenants.find(t => t.id === row.tenant_id);
+    if (!tenant?.email) {
+      toast.error("Keine E-Mail hinterlegt", { description: `${row.tenant_name} hat keine E-Mail-Adresse.` });
+      return;
+    }
+    setRemindingId(row.tenant_id);
+    const { data, error } = await supabase.functions.invoke("send-transactional-email", {
+      body: {
+        templateName: "rent-reminder",
+        recipientEmail: tenant.email,
+        idempotencyKey: `rent-reminder-${row.tenant_id}-${new Date().toISOString().slice(0,7)}`,
+        templateData: {
+          tenant_name: row.tenant_name,
+          property_name: row.property_name,
+          amount_eur: Number(row.expected_amount).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+          iban: tenant.iban ?? null,
+          days_overdue: row.days_overdue,
+        },
+      },
+    });
+    setRemindingId(null);
+    if (error || data?.error) {
+      toast.error("Erinnerung nicht gesendet", { description: data?.error ?? error?.message });
+    } else {
+      setRemindedIds(prev => new Set(prev).add(row.tenant_id));
+      toast.success(`✓ Erinnerung an ${row.tenant_name} gesendet`);
+    }
+  };
+
+  const remindAll = async () => {
+    const targets = missingRents.filter((r: any) => {
+      const t = tenants.find(x => x.id === r.tenant_id);
+      return t?.email && !remindedIds.has(r.tenant_id);
+    });
+    if (targets.length === 0) {
+      toast.info("Keine Empfänger mit E-Mail vorhanden");
+      return;
+    }
+    toast.info(`Sende ${targets.length} Erinnerung${targets.length === 1 ? "" : "en"}…`);
+    let ok = 0;
+    for (const r of targets) {
+      // eslint-disable-next-line no-await-in-loop
+      await sendReminder(r).then(() => { ok++; }).catch(() => {});
+    }
+    toast.success(`✓ ${ok}/${targets.length} Erinnerungen versendet`);
+  };
+
 
   const filteredBanks = banks.filter(b =>
     !bankFilter || (b.name?.toLowerCase().includes(bankFilter.toLowerCase()))
