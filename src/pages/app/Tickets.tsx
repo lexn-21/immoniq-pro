@@ -6,10 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
-import { AlertTriangle, CheckCircle2, Clock, Wrench, Radio, ListChecks, Download, CalendarClock, BellOff, User2 } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Clock, Wrench, Radio, ListChecks, Download, CalendarClock, BellOff, User2, MessageSquare } from "lucide-react";
 import { downloadCsv } from "@/lib/csv";
 import { showLocalNotification } from "@/lib/pushNotifications";
 import QuickTicketDialog from "@/components/QuickTicketDialog";
+import TicketNotes from "@/components/tickets/TicketNotes";
 import { toast } from "sonner";
 import { toastError } from "@/lib/errors";
 import EmptyState from "@/components/EmptyState";
@@ -106,6 +107,7 @@ export default function Tickets() {
     patchIssue(id, { snooze_until: addDaysISO(days) });
 
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [notesIssue, setNotesIssue] = useState<Issue | null>(null);
   const toggleSel = (id: string) =>
     setSelected((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
   const clearSel = () => setSelected(new Set());
@@ -260,6 +262,14 @@ export default function Tickets() {
                     </p>
                   </div>
                   <div className="flex gap-2 flex-wrap">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setNotesIssue(i)}
+                      aria-label="Notizen"
+                    >
+                      <MessageSquare className="h-4 w-4" />
+                    </Button>
                     {i.status !== "resolved" && (
                       <Popover>
                         <PopoverTrigger asChild>
@@ -318,6 +328,11 @@ export default function Tickets() {
       )}
 
       <QuickTicketDialog onCreated={load} />
+      <TicketNotes
+        issueId={notesIssue?.id ?? null}
+        issueTitle={notesIssue?.title}
+        onClose={() => setNotesIssue(null)}
+      />
     </div>
   );
 }
