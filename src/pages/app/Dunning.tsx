@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, FileText, Mail, ShieldAlert, CheckCircle2, Printer } from "lucide-react";
+import { AlertTriangle, FileText, Mail, ShieldAlert, CheckCircle2, Printer, Zap } from "lucide-react";
 import { eur, date } from "@/lib/format";
 import { computeBalances, generateDunningHTML, openDunningWindow, type TenantBalance } from "@/lib/dunning";
 import { toast } from "sonner";
@@ -61,15 +61,42 @@ const Dunning = () => {
     if (!openDunningWindow(html)) toast.error("Pop-up blockiert. Bitte erlauben.");
   };
 
+  const runAutoDunning = () => {
+    const due = balances.filter((b) => b.level > 0);
+    if (due.length === 0) {
+      toast.info("Keine Mieter im Verzug — alles aktuell ✅");
+      return;
+    }
+    const letters = due.map((b) => generateDunningHTML(b, landlordName, user?.email ?? ""));
+    // Extract body of each letter and join with page breaks
+    const bodies = letters.map((html) => {
+      const m = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+      return m ? m[1] : html;
+    });
+    const head = letters[0].match(/<head[^>]*>([\s\S]*?)<\/head>/i)?.[1] ?? "";
+    const combined = `<!doctype html><html lang="de"><head>${head}<style>.page-break{page-break-before:always;}</style></head><body>${bodies
+      .map((b, i) => (i === 0 ? b : `<div class="page-break"></div>${b}`))
+      .join("")}</body></html>`;
+    if (!openDunningWindow(combined)) toast.error("Pop-up blockiert. Bitte erlauben.");
+    else toast.success(`${due.length} Mahnung${due.length === 1 ? "" : "en"} generiert`);
+  };
+
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="text-3xl font-bold flex items-center gap-2">
-          <AlertTriangle className="h-7 w-7 text-primary" /> Mahnwesen
-        </h1>
-        <p className="text-muted-foreground text-sm mt-1">
-          Soll/Ist-Vergleich pro Mieter · Mahnschreiben rechtssicher in 3 Sekunden.
-        </p>
+      <header className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold flex items-center gap-2">
+            <AlertTriangle className="h-7 w-7 text-primary" /> Mahnwesen
+          </h1>
+          <p className="text-muted-foreground text-sm mt-1">
+            Soll/Ist-Vergleich pro Mieter · Mahnschreiben rechtssicher in 3 Sekunden.
+          </p>
+        </div>
+        {cntDue > 0 && (
+          <Button onClick={runAutoDunning} className="bg-gradient-gold text-primary-foreground shadow-gold">
+            <Zap className="h-4 w-4 mr-2" /> Auto-Mahnlauf ({cntDue})
+          </Button>
+        )}
       </header>
 
       <AIDisclaimer />

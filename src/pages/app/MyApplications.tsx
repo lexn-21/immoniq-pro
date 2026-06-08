@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Briefcase, MessageSquare, Heart, Loader2, AlertCircle, RefreshCw } from "lucide-react";
 import { eur } from "@/lib/format";
 import ChatDialog from "@/components/market/ChatDialog";
+import RecommendedListings from "@/components/market/RecommendedListings";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const labelStatus: Record<string, string> = {
@@ -66,6 +67,8 @@ const MyApplications = () => {
           <Button size="sm" variant="outline" onClick={load}>Erneut versuchen</Button>
         </Card>
       )}
+
+      <RecommendedListings />
 
       <section className="space-y-3">
         <h2 className="font-bold">Aktive Bewerbungen</h2>
