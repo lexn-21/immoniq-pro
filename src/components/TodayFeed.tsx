@@ -357,7 +357,7 @@ export const TodayFeed = () => {
               <Card className="h-full p-5 bg-gradient-gold text-primary-foreground border-transparent shadow-gold flex flex-col justify-center">
                 <p className="text-[10px] uppercase tracking-wider font-bold opacity-80">Diesen Monat verbucht</p>
                 <p className="text-4xl font-bold tabular mt-1">+{eur(card.count)}</p>
-                <p className="text-sm opacity-90 mt-2">🔥 Weiter so — jede Buchung zählt für deine Steuer.</p>
+                
               </Card>
             )}
           </motion.div>
