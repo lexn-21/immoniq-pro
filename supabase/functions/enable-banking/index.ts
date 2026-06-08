@@ -188,6 +188,7 @@ Deno.serve(async (req) => {
         synced: totalInserted,
         auto_matched: matched.autoIn,
         auto_expenses: matched.autoOut,
+        auto_linked: matched.autoLinked,
         suggested: matched.suggested,
       });
     }
@@ -197,6 +198,7 @@ Deno.serve(async (req) => {
       return json({
         auto_matched: matched.autoIn,
         auto_expenses: matched.autoOut,
+        auto_linked: matched.autoLinked,
         suggested: matched.suggested,
       });
     }
