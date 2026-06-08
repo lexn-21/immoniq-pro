@@ -9,6 +9,7 @@ import { RouteErrorBoundary } from "@/components/RouteErrorBoundary";
 import { RouteSuspenseFallback } from "@/components/RouteSuspenseFallback";
 import CookieBanner from "./components/CookieBanner";
 import { OfflineIndicator } from "./components/OfflineIndicator";
+import { PWAInstallPrompt } from "./components/PWAInstallPrompt";
 
 // Eager: Erstkontakt-Seiten (Landing, Auth, 404).
 import Index from "./pages/Index";
@@ -175,6 +176,7 @@ const App = () => (
           </Suspense>
         </RouteErrorBoundary>
         <CookieBanner />
+        <PWAInstallPrompt />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
