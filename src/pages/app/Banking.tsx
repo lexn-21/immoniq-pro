@@ -344,6 +344,7 @@ const Banking = () => {
                 </div>
               </div>
             </Card>
+          )}
 
           {/* Fehlende Mieten diesen Monat */}
           {missingRents.length > 0 && (
