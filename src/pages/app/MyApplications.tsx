@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Briefcase, MessageSquare, Heart, Loader2, AlertCircle, RefreshCw } from "lucide-react";
 import { eur } from "@/lib/format";
 import ChatDialog from "@/components/market/ChatDialog";
+import RecommendedListings from "@/components/market/RecommendedListings";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const labelStatus: Record<string, string> = {
