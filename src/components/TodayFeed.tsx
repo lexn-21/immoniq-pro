@@ -152,7 +152,7 @@ export const TodayFeed = () => {
     }
 
     return out.filter(c => !dismissed.has(c.id));
-  }, [tenants, units, payments, tasks, user, dismissed]);
+  }, [tenants, units, payments, tasks, user, dismissed, bankingActive]);
 
   useEffect(() => { if (idx >= cards.length) setIdx(0); }, [cards.length, idx]);
 
