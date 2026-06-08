@@ -344,7 +344,40 @@ const Banking = () => {
                 </div>
               </div>
             </Card>
+
+          {/* Fehlende Mieten diesen Monat */}
+          {missingRents.length > 0 && (
+            <Card className="glass overflow-hidden border-destructive/40">
+              <div className="px-4 py-2.5 bg-destructive/10 flex items-center gap-2">
+                <AlertTriangle className="h-3.5 w-3.5 text-destructive" />
+                <p className="text-xs font-semibold uppercase tracking-wide text-destructive">
+                  Fehlende Miete diesen Monat ({missingRents.length})
+                </p>
+              </div>
+              <div className="divide-y divide-border">
+                {missingRents.map((r: any) => (
+                  <div key={r.tenant_id} className="px-4 py-3 flex items-center gap-3">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium truncate">{r.tenant_name}</p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {r.property_name ?? "—"} · {r.days_overdue > 0 ? `${r.days_overdue} Tag${r.days_overdue === 1 ? "" : "e"} überfällig` : "Stichtag heute"}
+                      </p>
+                    </div>
+                    <p className="font-semibold whitespace-nowrap tabular text-destructive">
+                      {eur(r.expected_amount)}
+                    </p>
+                    <Button size="sm" variant="outline" className="h-8" onClick={() => navigate(`/app/tenants/${r.tenant_id}`)}>
+                      Öffnen
+                    </Button>
+                  </div>
+                ))}
+              </div>
+              <div className="px-4 py-2 bg-muted/30 border-t text-[11px] text-muted-foreground">
+                Stichtag ab Tag 5 im Monat. Bei IBAN-Hinterlegung wird Eingang sofort erkannt — sonst hier prüfen.
+              </div>
+            </Card>
           )}
+
 
           {/* Eingangs-Vorschläge (Mieten) */}
           {suggestions.filter(s => s.amount_cents > 0).length > 0 && (
