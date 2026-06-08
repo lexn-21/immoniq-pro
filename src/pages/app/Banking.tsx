@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, Building2, RefreshCw, CheckCircle2, Banknote, Loader2, Sparkles, X, Check, Wand2, AlertTriangle, Repeat } from "lucide-react";
+import { Plus, Building2, RefreshCw, CheckCircle2, Banknote, Loader2, Sparkles, X, Check, Wand2, AlertTriangle, Repeat, Mail } from "lucide-react";
 import { toast } from "sonner";
 import EmptyState from "@/components/EmptyState";
 import { ListSkeleton } from "@/components/ListSkeleton";
@@ -44,6 +44,8 @@ const Banking = () => {
   const [syncing, setSyncing] = useState<string | null>(null);
   const [busyTx, setBusyTx] = useState<string | null>(null);
   const [rematching, setRematching] = useState(false);
+  const [remindingId, setRemindingId] = useState<string | null>(null);
+  const [remindedIds, setRemindedIds] = useState<Set<string>>(new Set());
   // Pro Ausgabe-Vorschlag: lokal gewählte Zuordnung (property, category)
   const [expenseForm, setExpenseForm] = useState<Record<string, { property_id?: string; category?: string; nka?: boolean }>>({});
 
@@ -80,7 +82,7 @@ const Banking = () => {
       supabase.from("bank_accounts").select("*"),
       supabase.from("bank_transactions").select("*").order("booking_date", { ascending: false }).limit(50),
       supabase.from("bank_transactions").select("*").eq("match_status", "suggested").order("booking_date", { ascending: false }),
-      supabase.from("tenants").select("id,full_name,iban,unit_id"),
+      supabase.from("tenants").select("id,full_name,iban,unit_id,email"),
       supabase.from("properties").select("id,name"),
       supabase.rpc("missing_rents", { _grace_day: 5 }),
       supabase.rpc("recurring_transactions", { _months: 6 }),
@@ -202,6 +204,55 @@ const Banking = () => {
     setBusyTx(null);
     if (error) toast.error("Fehler"); else { toast.success("Ignoriert"); load(); }
   };
+
+  const sendReminder = async (row: any) => {
+    const tenant = tenants.find(t => t.id === row.tenant_id);
+    if (!tenant?.email) {
+      toast.error("Keine E-Mail hinterlegt", { description: `${row.tenant_name} hat keine E-Mail-Adresse.` });
+      return;
+    }
+    setRemindingId(row.tenant_id);
+    const { data, error } = await supabase.functions.invoke("send-transactional-email", {
+      body: {
+        templateName: "rent-reminder",
+        recipientEmail: tenant.email,
+        idempotencyKey: `rent-reminder-${row.tenant_id}-${new Date().toISOString().slice(0,7)}`,
+        templateData: {
+          tenant_name: row.tenant_name,
+          property_name: row.property_name,
+          amount_eur: Number(row.expected_amount).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+          iban: tenant.iban ?? null,
+          days_overdue: row.days_overdue,
+        },
+      },
+    });
+    setRemindingId(null);
+    if (error || data?.error) {
+      toast.error("Erinnerung nicht gesendet", { description: data?.error ?? error?.message });
+    } else {
+      setRemindedIds(prev => new Set(prev).add(row.tenant_id));
+      toast.success(`✓ Erinnerung an ${row.tenant_name} gesendet`);
+    }
+  };
+
+  const remindAll = async () => {
+    const targets = missingRents.filter((r: any) => {
+      const t = tenants.find(x => x.id === r.tenant_id);
+      return t?.email && !remindedIds.has(r.tenant_id);
+    });
+    if (targets.length === 0) {
+      toast.info("Keine Empfänger mit E-Mail vorhanden");
+      return;
+    }
+    toast.info(`Sende ${targets.length} Erinnerung${targets.length === 1 ? "" : "en"}…`);
+    let ok = 0;
+    for (const r of targets) {
+      // eslint-disable-next-line no-await-in-loop
+      await sendReminder(r).then(() => { ok++; }).catch(() => {});
+    }
+    toast.success(`✓ ${ok}/${targets.length} Erinnerungen versendet`);
+  };
+
 
   const filteredBanks = banks.filter(b =>
     !bankFilter || (b.name?.toLowerCase().includes(bankFilter.toLowerCase()))
@@ -350,29 +401,57 @@ const Banking = () => {
           {/* Fehlende Mieten diesen Monat */}
           {missingRents.length > 0 && (
             <Card className="glass overflow-hidden border-destructive/40">
-              <div className="px-4 py-2.5 bg-destructive/10 flex items-center gap-2">
-                <AlertTriangle className="h-3.5 w-3.5 text-destructive" />
-                <p className="text-xs font-semibold uppercase tracking-wide text-destructive">
+              <div className="px-4 py-2.5 bg-destructive/10 flex items-center justify-between gap-2">
+                <p className="text-xs font-semibold uppercase tracking-wide text-destructive flex items-center gap-2">
+                  <AlertTriangle className="h-3.5 w-3.5" />
                   Fehlende Miete diesen Monat ({missingRents.length})
                 </p>
+                {missingRents.some((r: any) => tenants.find(t => t.id === r.tenant_id)?.email) && (
+                  <Button size="sm" variant="outline" className="h-7 text-xs" onClick={remindAll} disabled={remindingId !== null}>
+                    {remindingId ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Mail className="h-3.5 w-3.5" />}
+                    <span className="ml-1.5">Alle erinnern</span>
+                  </Button>
+                )}
               </div>
               <div className="divide-y divide-border">
-                {missingRents.map((r: any) => (
-                  <div key={r.tenant_id} className="px-4 py-3 flex items-center gap-3">
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium truncate">{r.tenant_name}</p>
-                      <p className="text-xs text-muted-foreground truncate">
-                        {r.property_name ?? "—"} · {r.days_overdue > 0 ? `${r.days_overdue} Tag${r.days_overdue === 1 ? "" : "e"} überfällig` : "Stichtag heute"}
+                {missingRents.map((r: any) => {
+                  const t = tenants.find(x => x.id === r.tenant_id);
+                  const hasEmail = !!t?.email;
+                  const sent = remindedIds.has(r.tenant_id);
+                  return (
+                    <div key={r.tenant_id} className="px-4 py-3 flex items-center gap-3 flex-wrap sm:flex-nowrap">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium truncate">{r.tenant_name}</p>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {r.property_name ?? "—"} · {r.days_overdue > 0 ? `${r.days_overdue} Tag${r.days_overdue === 1 ? "" : "e"} überfällig` : "Stichtag heute"}
+                          {!hasEmail ? " · keine E-Mail" : ""}
+                        </p>
+                      </div>
+                      <p className="font-semibold whitespace-nowrap tabular text-destructive">
+                        {eur(r.expected_amount)}
                       </p>
+                      <Button
+                        size="sm"
+                        variant={sent ? "ghost" : "default"}
+                        className="h-8"
+                        disabled={!hasEmail || remindingId === r.tenant_id || sent}
+                        onClick={() => sendReminder(r)}
+                        title={hasEmail ? "Freundliche Zahlungserinnerung per E-Mail senden" : "Keine E-Mail beim Mieter hinterlegt"}
+                      >
+                        {remindingId === r.tenant_id ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        ) : sent ? (
+                          <><Check className="h-3.5 w-3.5" /><span className="ml-1.5 text-xs">Gesendet</span></>
+                        ) : (
+                          <><Mail className="h-3.5 w-3.5" /><span className="ml-1.5 text-xs">Erinnern</span></>
+                        )}
+                      </Button>
+                      <Button size="sm" variant="outline" className="h-8" onClick={() => navigate(`/app/tenants/${r.tenant_id}`)}>
+                        Öffnen
+                      </Button>
                     </div>
-                    <p className="font-semibold whitespace-nowrap tabular text-destructive">
-                      {eur(r.expected_amount)}
-                    </p>
-                    <Button size="sm" variant="outline" className="h-8" onClick={() => navigate(`/app/tenants/${r.tenant_id}`)}>
-                      Öffnen
-                    </Button>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
               <div className="px-4 py-2 bg-muted/30 border-t text-[11px] text-muted-foreground">
                 Stichtag ab Tag 5 im Monat. Bei IBAN-Hinterlegung wird Eingang sofort erkannt — sonst hier prüfen.
