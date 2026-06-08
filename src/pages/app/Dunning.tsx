@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, FileText, Mail, ShieldAlert, CheckCircle2, Printer } from "lucide-react";
+import { AlertTriangle, FileText, Mail, ShieldAlert, CheckCircle2, Printer, Zap } from "lucide-react";
 import { eur, date } from "@/lib/format";
 import { computeBalances, generateDunningHTML, openDunningWindow, type TenantBalance } from "@/lib/dunning";
 import { toast } from "sonner";
