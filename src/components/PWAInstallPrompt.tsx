@@ -74,7 +74,7 @@ export function PWAInstallPrompt() {
             <p className="font-semibold text-sm">ImmonIQ als App installieren</p>
             <p className="text-xs text-muted-foreground mt-0.5">
               {iosHint
-                ? "Tippe auf „Teilen" und „Zum Home-Bildschirm" — schneller Start, Offline-Tresor, Push."
+                ? 'Tippe auf „Teilen" und „Zum Home-Bildschirm" — schneller Start, Offline-Tresor, Push.'
                 : "Schneller Start, Offline-Tresor, Push-Benachrichtigungen."}
             </p>
             {!iosHint && (
