@@ -229,12 +229,32 @@ const Expenses = () => {
           <h1 className="text-3xl font-bold">Ausgaben</h1>
           <p className="text-muted-foreground text-sm mt-1">Belege, Werbungskosten & Anschaffungen — automatisch im Steuerbericht.</p>
         </div>
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button size="lg" className="bg-gradient-gold text-primary-foreground shadow-gold w-full sm:w-auto">
-              <Plus className="h-5 w-5 mr-2" /> Ausgabe erfassen
-            </Button>
-          </DialogTrigger>
+        <div className="flex gap-2 w-full sm:w-auto">
+          <Button
+            variant="outline"
+            size="lg"
+            disabled={items.length === 0}
+            onClick={() => downloadCsv(
+              `ausgaben-${new Date().toISOString().slice(0,10)}`,
+              items.map((e: any) => ({
+                Datum: e.spent_on,
+                Betrag_EUR: Number(e.amount ?? 0).toFixed(2),
+                Kategorie: CAT_INFO[e.category]?.label ?? e.category,
+                Lieferant: e.vendor ?? "",
+                Beschreibung: e.description ?? "",
+                Objekt: e.properties?.name ?? "",
+                Mieter: e.tenants?.full_name ?? "",
+              })),
+            )}
+          >
+            <FileDown className="h-4 w-4 mr-1.5" /> CSV
+          </Button>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <Button size="lg" className="bg-gradient-gold text-primary-foreground shadow-gold flex-1 sm:flex-none">
+                <Plus className="h-5 w-5 mr-2" /> Ausgabe erfassen
+              </Button>
+            </DialogTrigger>
           <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Ausgabe erfassen</DialogTitle>
@@ -336,6 +356,7 @@ const Expenses = () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+        </div>
       </header>
 
       {!loading && items.length > 0 && (
