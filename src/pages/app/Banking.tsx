@@ -73,18 +73,23 @@ const Banking = () => {
 
   const load = async () => {
     setLoading(true);
-    const [c, a, t, s, te] = await Promise.all([
+    const [c, a, t, s, te, pr] = await Promise.all([
       supabase.from("bank_connections").select("*").order("created_at", { ascending: false }),
       supabase.from("bank_accounts").select("*"),
       supabase.from("bank_transactions").select("*").order("booking_date", { ascending: false }).limit(50),
       supabase.from("bank_transactions").select("*").eq("match_status", "suggested").order("booking_date", { ascending: false }),
       supabase.from("tenants").select("id,full_name,iban,unit_id"),
+      supabase.from("properties").select("id,name"),
     ]);
     setConnections(c.data ?? []);
     setAccounts(a.data ?? []);
     setTransactions(t.data ?? []);
     setSuggestions(s.data ?? []);
     setTenants(te.data ?? []);
+    setProperties(pr.data ?? []);
+    // Rules separat (Pro-Function-Call, kein Crash wenn 404)
+    supabase.functions.invoke("enable-banking", { body: { action: "list_rules" } })
+      .then(({ data }) => setRules(data?.rules ?? [])).catch(() => {});
     setLoading(false);
   };
 
