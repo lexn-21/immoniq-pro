@@ -523,6 +523,7 @@ const AppLayout = () => {
         />
 
         <AskCopilot />
+        <CommandPalette />
       </div>
     </TooltipProvider>
   );
