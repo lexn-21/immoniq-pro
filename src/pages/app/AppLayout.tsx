@@ -143,6 +143,7 @@ const AppLayout = () => {
   const [createOpen, setCreateOpen] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [scannerOpen, setScannerOpen] = useState(false);
+  const ticketCounts = useTicketCounts();
   const [persona, setPersona] = useState<Persona>(() =>
     (typeof window !== "undefined" && (localStorage.getItem("immoniq_persona") as Persona)) || "vermieter"
   );
@@ -270,6 +271,20 @@ const AppLayout = () => {
                         <>
                           <n.icon className="h-[18px] w-[18px]" />
                           <span className="flex-1 truncate">{n.label}</span>
+                          {n.to === "/app/tickets" && ticketCounts && (ticketCounts.overdue > 0 || ticketCounts.open > 0) && (
+                            <span
+                              className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
+                                ticketCounts.overdue > 0
+                                  ? "bg-red-500/15 text-red-600"
+                                  : "bg-primary/15 text-primary"
+                              }`}
+                              title={ticketCounts.overdue > 0
+                                ? `${ticketCounts.overdue} überfällig`
+                                : `${ticketCounts.open} offen`}
+                            >
+                              {ticketCounts.overdue > 0 ? ticketCounts.overdue : ticketCounts.open}
+                            </span>
+                          )}
                           {isActive && (
                             <motion.div
                               layoutId="active-nav-pill"
