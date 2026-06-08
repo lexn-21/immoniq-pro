@@ -272,6 +272,21 @@ const ListingApplications = () => {
                         <p className="text-[10px] text-muted-foreground mt-2 italic">KI-Vorschlag — bitte selbst prüfen, keine Rechtsberatung.</p>
                       </div>
                     )}
+
+                    {bonResults[a.id] && (
+                      <div className="mt-3 p-3 rounded-lg border border-success/30 bg-success/5">
+                        <div className="flex items-center gap-2">
+                          <ShieldCheck className="h-3.5 w-3.5 text-success" />
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-success">Bonität</span>
+                          <Badge variant="outline" className="ml-auto text-xs font-bold">
+                            Score {bonResults[a.id].score} · {bonResults[a.id].rating}
+                          </Badge>
+                        </div>
+                        <p className="text-[10px] text-muted-foreground mt-2 italic">
+                          Mock-Provider · {new Date(bonResults[a.id].completed_at).toLocaleDateString("de-DE")}
+                        </p>
+                      </div>
+                    )}
                   </div>
                   <div className="flex flex-col gap-1.5 sm:w-40">
                     {a.ai_score == null && (
@@ -279,6 +294,13 @@ const ListingApplications = () => {
                         className="border-primary/40 text-primary hover:bg-primary/5">
                         {scoring === a.id ? <Loader2 className="h-3 w-3 mr-1 animate-spin" /> : <Sparkles className="h-3 w-3 mr-1" />}
                         KI-Score
+                      </Button>
+                    )}
+                    {!bonResults[a.id] && (
+                      <Button size="sm" variant="outline" onClick={() => runBonitaet(a.id)} disabled={bonCheck === a.id}
+                        className="border-success/40 text-success hover:bg-success/5">
+                        {bonCheck === a.id ? <Loader2 className="h-3 w-3 mr-1 animate-spin" /> : <FileSearch className="h-3 w-3 mr-1" />}
+                        Bonität prüfen
                       </Button>
                     )}
                     <Button size="sm" variant="outline" onClick={() => setChatApp(a)}>
