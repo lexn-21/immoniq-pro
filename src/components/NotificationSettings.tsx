@@ -4,8 +4,10 @@ import { useAuth } from "@/hooks/useAuth";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Bell, Inbox, MailCheck, Megaphone, Receipt } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Bell, Inbox, MailCheck, Megaphone, Receipt, Smartphone } from "lucide-react";
 import { toast } from "sonner";
+import { isPushSupported, pushPermission, requestPushPermission, showLocalNotification } from "@/lib/pushNotifications";
 
 type Prefs = {
   email_new_application: boolean;
@@ -66,15 +68,53 @@ export default function NotificationSettings() {
     }
   };
 
+  const [permission, setPermission] = useState<NotificationPermission>("default");
+  const supported = isPushSupported();
+
+  useEffect(() => { if (supported) setPermission(pushPermission()); }, [supported]);
+
+  const enablePush = async () => {
+    const res = await requestPushPermission();
+    setPermission(res);
+    if (res === "granted") {
+      await showLocalNotification("ImmonIQ aktiviert ✓", {
+        body: "Du bekommst ab jetzt Push-Benachrichtigungen, wenn die App offen ist.",
+      });
+      toast.success("Push-Benachrichtigungen aktiv");
+    } else if (res === "denied") {
+      toast.error("Im Browser blockiert — bitte in den Einstellungen erlauben.");
+    }
+  };
+
   return (
     <Card className="p-6 glass">
       <div className="flex items-center gap-3 mb-4">
         <Bell className="h-5 w-5 text-primary" />
-        <h2 className="font-bold">E-Mail-Benachrichtigungen</h2>
+        <h2 className="font-bold">Benachrichtigungen</h2>
       </div>
       <p className="text-xs text-muted-foreground mb-5">
         Du entscheidest, was in dein Postfach landet. Rechtlich notwendige Mails (Login, Sicherheit) bekommst du immer.
       </p>
+
+      {supported && (
+        <div className="flex items-start gap-3 p-3 rounded-lg border border-primary/30 bg-primary/5 mb-4">
+          <Smartphone className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+          <div className="flex-1 min-w-0">
+            <div className="font-medium text-sm">Push auf diesem Gerät</div>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Sofort-Benachrichtigung bei neuen Bewerbungen, fälligen Mieten und Tickets — auch wenn die App nur im Hintergrund läuft.
+            </p>
+          </div>
+          {permission === "granted" ? (
+            <span className="text-xs font-bold text-success">Aktiv ✓</span>
+          ) : permission === "denied" ? (
+            <span className="text-xs text-muted-foreground">Blockiert</span>
+          ) : (
+            <Button size="sm" onClick={enablePush}>Aktivieren</Button>
+          )}
+        </div>
+      )}
+
       <div className="space-y-4">
         {ITEMS.map(({ key, icon: Icon, title, desc }) => (
           <div key={key} className="flex items-start gap-3 p-3 rounded-lg border border-border/40 hover:border-primary/30 transition">
