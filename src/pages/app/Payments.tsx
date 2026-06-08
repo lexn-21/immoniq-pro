@@ -335,6 +335,7 @@ const Payments = () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+        </div>
       </header>
 
       {/* KPI-Karten */}
