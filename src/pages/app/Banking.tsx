@@ -122,9 +122,43 @@ const Banking = () => {
     if (error || data?.error) {
       toast.error("Sync fehlgeschlagen", { description: data?.error ?? error?.message });
     } else {
-      toast.success(`✓ ${data.synced ?? 0} neue Transaktionen`);
+      const parts = [`${data.synced ?? 0} neue Transaktionen`];
+      if (data.auto_matched) parts.push(`${data.auto_matched} automatisch verbucht`);
+      if (data.suggested) parts.push(`${data.suggested} Vorschläge`);
+      toast.success("✓ " + parts.join(" · "));
       load();
     }
+  };
+
+  const rematch = async () => {
+    setRematching(true);
+    const { data, error } = await supabase.functions.invoke("enable-banking", { body: { action: "rematch" } });
+    setRematching(false);
+    if (error || data?.error) {
+      toast.error("Re-Match fehlgeschlagen", { description: data?.error ?? error?.message });
+    } else {
+      toast.success(`✓ ${data.auto_matched ?? 0} verbucht · ${data.suggested ?? 0} Vorschläge`);
+      load();
+    }
+  };
+
+  const confirmMatch = async (txId: string, tenantId?: string) => {
+    setBusyTx(txId);
+    const { data, error } = await supabase.functions.invoke("enable-banking", {
+      body: { action: "confirm_match", transaction_id: txId, tenant_id: tenantId },
+    });
+    setBusyTx(null);
+    if (error || data?.error) toast.error("Fehler", { description: data?.error ?? error?.message });
+    else { toast.success("✓ Als Miete verbucht"); load(); }
+  };
+
+  const ignoreMatch = async (txId: string) => {
+    setBusyTx(txId);
+    const { error } = await supabase.functions.invoke("enable-banking", {
+      body: { action: "unmatch", transaction_id: txId },
+    });
+    setBusyTx(null);
+    if (error) toast.error("Fehler"); else { toast.success("Ignoriert"); load(); }
   };
 
   const filteredBanks = banks.filter(b =>
