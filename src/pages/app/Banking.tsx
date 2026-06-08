@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import EmptyState from "@/components/EmptyState";
 import { ListSkeleton } from "@/components/ListSkeleton";
 import { eur, date } from "@/lib/format";
+import { PlanGate } from "@/components/PlanGate";
 
 const COUNTRIES = [
   { code: "DE", label: "🇩🇪 Deutschland" },
@@ -166,6 +167,7 @@ const Banking = () => {
   );
 
   return (
+    <PlanGate requires="pro" feature="Bank-Sync" description="Bank verbinden, Mieten automatisch zuordnen und Ausgaben kategorisieren — Teil von ImmonIQ Pro.">
     <div className="space-y-6">
       <header className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
         <div>
@@ -400,6 +402,7 @@ const Banking = () => {
         </>
       )}
     </div>
+    </PlanGate>
   );
 };
 
