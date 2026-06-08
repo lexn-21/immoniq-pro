@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import EmptyState from "@/components/EmptyState";
 import { ListSkeleton } from "@/components/ListSkeleton";
 import { eur, date } from "@/lib/format";
+import { PlanGate } from "@/components/PlanGate";
 
 const COUNTRIES = [
   { code: "DE", label: "🇩🇪 Deutschland" },
