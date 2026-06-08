@@ -2704,6 +2704,7 @@ export type Database = {
           deposit: number | null
           email: string | null
           full_name: string
+          iban: string | null
           id: string
           lease_end: string | null
           lease_start: string | null
@@ -2720,6 +2721,7 @@ export type Database = {
           deposit?: number | null
           email?: string | null
           full_name: string
+          iban?: string | null
           id?: string
           lease_end?: string | null
           lease_start?: string | null
@@ -2736,6 +2738,7 @@ export type Database = {
           deposit?: number | null
           email?: string | null
           full_name?: string
+          iban?: string | null
           id?: string
           lease_end?: string | null
           lease_start?: string | null

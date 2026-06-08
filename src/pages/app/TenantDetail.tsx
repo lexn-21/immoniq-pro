@@ -248,7 +248,7 @@ export default function TenantDetail() {
   );
 }
 
-function Row({ label, value, icon: Icon }: { label: string; value: string; icon?: any }) {
+function Row({ label, value, icon: Icon }: { label: string; value: React.ReactNode; icon?: any }) {
   return (
     <div className="flex flex-col gap-0.5 p-3 rounded-lg bg-muted/30">
       <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</span>
@@ -412,6 +412,7 @@ function ContractPanel({ tenant, property, reload }: { tenant: any; property: an
     deposit: tenant.deposit ?? "",
     move_in: tenant.move_in ?? "",
     move_out: tenant.move_out ?? "",
+    iban: tenant.iban ?? "",
   });
 
   const save = async () => {
@@ -426,6 +427,7 @@ function ContractPanel({ tenant, property, reload }: { tenant: any; property: an
       deposit: f.deposit === "" ? null : Number(f.deposit),
       move_in: f.move_in || null,
       move_out: f.move_out || null,
+      iban: f.iban.replace(/\s/g, "").toUpperCase() || null,
     };
     const { error } = await supabase.from("tenants").update(payload).eq("id", tenant.id);
     setBusy(false);
@@ -451,6 +453,7 @@ function ContractPanel({ tenant, property, reload }: { tenant: any; property: an
           <Row label="Telefon" value={tenant.phone || "—"} icon={Phone} />
           <Row label="Kaution" value={tenant.deposit ? eur(tenant.deposit) : "—"} />
           <Row label="Kaltmiete (Objekt)" value={eur(property?.cold_rent || 0)} />
+          <Row label="IBAN" value={tenant.iban ? <span className="font-mono text-xs">{tenant.iban}</span> : "—"} />
         </div>
         <ContactBar email={tenant.email} phone={tenant.phone} name={tenant.full_name} />
       </Card>
@@ -469,6 +472,7 @@ function ContractPanel({ tenant, property, reload }: { tenant: any; property: an
         <div><Label>Einzug</Label><Input type="date" value={f.move_in} onChange={e => setF({ ...f, move_in: e.target.value })} /></div>
         <div><Label>Auszug</Label><Input type="date" value={f.move_out} onChange={e => setF({ ...f, move_out: e.target.value })} /></div>
         <div className="sm:col-span-2"><Label>Kaution (€)</Label><Input type="number" step="0.01" value={f.deposit} onChange={e => setF({ ...f, deposit: e.target.value })} /></div>
+        <div className="sm:col-span-2"><Label>IBAN <span className="text-muted-foreground text-[10px]">(für automatische Zuordnung von Banküberweisungen)</span></Label><Input value={f.iban} onChange={e => setF({ ...f, iban: e.target.value })} placeholder="DE..." className="font-mono" /></div>
       </div>
       <div className="flex gap-2 justify-end pt-2">
         <Button variant="ghost" onClick={() => setEditing(false)} disabled={busy}>Abbrechen</Button>

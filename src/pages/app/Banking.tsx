@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, Building2, RefreshCw, CheckCircle2, Banknote, Loader2 } from "lucide-react";
+import { Plus, Building2, RefreshCw, CheckCircle2, Banknote, Loader2, Sparkles, X, Check, Wand2 } from "lucide-react";
 import { toast } from "sonner";
 import EmptyState from "@/components/EmptyState";
 import { ListSkeleton } from "@/components/ListSkeleton";
@@ -27,6 +27,8 @@ const Banking = () => {
   const [connections, setConnections] = useState<any[]>([]);
   const [accounts, setAccounts] = useState<any[]>([]);
   const [transactions, setTransactions] = useState<any[]>([]);
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [tenants, setTenants] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [country, setCountry] = useState("DE");
@@ -35,6 +37,8 @@ const Banking = () => {
   const [loadingBanks, setLoadingBanks] = useState(false);
   const [connecting, setConnecting] = useState(false);
   const [syncing, setSyncing] = useState<string | null>(null);
+  const [busyTx, setBusyTx] = useState<string | null>(null);
+  const [rematching, setRematching] = useState(false);
 
   useEffect(() => { document.title = "Banking · ImmonIQ"; }, []);
 
@@ -64,14 +68,18 @@ const Banking = () => {
 
   const load = async () => {
     setLoading(true);
-    const [c, a, t] = await Promise.all([
+    const [c, a, t, s, te] = await Promise.all([
       supabase.from("bank_connections").select("*").order("created_at", { ascending: false }),
       supabase.from("bank_accounts").select("*"),
       supabase.from("bank_transactions").select("*").order("booking_date", { ascending: false }).limit(50),
+      supabase.from("bank_transactions").select("*").eq("match_status", "suggested").order("booking_date", { ascending: false }),
+      supabase.from("tenants").select("id,full_name,iban,unit_id"),
     ]);
     setConnections(c.data ?? []);
     setAccounts(a.data ?? []);
     setTransactions(t.data ?? []);
+    setSuggestions(s.data ?? []);
+    setTenants(te.data ?? []);
     setLoading(false);
   };
 
@@ -114,9 +122,43 @@ const Banking = () => {
     if (error || data?.error) {
       toast.error("Sync fehlgeschlagen", { description: data?.error ?? error?.message });
     } else {
-      toast.success(`✓ ${data.synced ?? 0} neue Transaktionen`);
+      const parts = [`${data.synced ?? 0} neue Transaktionen`];
+      if (data.auto_matched) parts.push(`${data.auto_matched} automatisch verbucht`);
+      if (data.suggested) parts.push(`${data.suggested} Vorschläge`);
+      toast.success("✓ " + parts.join(" · "));
       load();
     }
+  };
+
+  const rematch = async () => {
+    setRematching(true);
+    const { data, error } = await supabase.functions.invoke("enable-banking", { body: { action: "rematch" } });
+    setRematching(false);
+    if (error || data?.error) {
+      toast.error("Re-Match fehlgeschlagen", { description: data?.error ?? error?.message });
+    } else {
+      toast.success(`✓ ${data.auto_matched ?? 0} verbucht · ${data.suggested ?? 0} Vorschläge`);
+      load();
+    }
+  };
+
+  const confirmMatch = async (txId: string, tenantId?: string) => {
+    setBusyTx(txId);
+    const { data, error } = await supabase.functions.invoke("enable-banking", {
+      body: { action: "confirm_match", transaction_id: txId, tenant_id: tenantId },
+    });
+    setBusyTx(null);
+    if (error || data?.error) toast.error("Fehler", { description: data?.error ?? error?.message });
+    else { toast.success("✓ Als Miete verbucht"); load(); }
+  };
+
+  const ignoreMatch = async (txId: string) => {
+    setBusyTx(txId);
+    const { error } = await supabase.functions.invoke("enable-banking", {
+      body: { action: "unmatch", transaction_id: txId },
+    });
+    setBusyTx(null);
+    if (error) toast.error("Fehler"); else { toast.success("Ignoriert"); load(); }
   };
 
   const filteredBanks = banks.filter(b =>
@@ -244,17 +286,104 @@ const Banking = () => {
             })}
           </div>
 
+          {/* Hinweis: IBAN bei Mietern eintragen */}
+          {tenants.length > 0 && tenants.every(t => !t.iban) && (
+            <Card className="p-4 glass border-warning/40 bg-warning/5">
+              <div className="flex items-start gap-3">
+                <Sparkles className="h-5 w-5 text-warning flex-shrink-0 mt-0.5" />
+                <div className="flex-1 text-sm">
+                  <p className="font-semibold">Tipp: IBAN bei deinen Mietern hinterlegen</p>
+                  <p className="text-muted-foreground text-xs mt-0.5">
+                    Dann werden Mieteingänge zu 100 % automatisch verbucht. Sonst läuft das Matching nur über Betrag + Name.
+                  </p>
+                  <Button size="sm" variant="outline" className="mt-2" onClick={() => navigate("/app/tenants")}>
+                    Zu den Mietern
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          )}
+
+          {/* Vorschläge zur Bestätigung */}
+          {suggestions.length > 0 && (
+            <Card className="glass overflow-hidden border-primary/30">
+              <div className="px-4 py-2.5 bg-gradient-gold/10 flex items-center justify-between">
+                <p className="text-xs font-semibold uppercase tracking-wide flex items-center gap-2">
+                  <Sparkles className="h-3.5 w-3.5" /> Vorschläge ({suggestions.length})
+                </p>
+                <Button size="sm" variant="ghost" onClick={rematch} disabled={rematching}>
+                  {rematching ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Wand2 className="h-3.5 w-3.5" />}
+                  <span className="ml-1.5 text-xs">Neu prüfen</span>
+                </Button>
+              </div>
+              <div className="divide-y divide-border">
+                {suggestions.map(t => {
+                  const tenant = tenants.find(x => x.id === t.matched_tenant_id);
+                  return (
+                    <div key={t.id} className="px-4 py-3 space-y-2">
+                      <div className="flex items-center gap-3">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium truncate">{t.counterparty_name ?? "—"}</p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {date(t.booking_date)}{t.purpose ? ` · ${t.purpose}` : ""}
+                          </p>
+                        </div>
+                        <p className="font-semibold whitespace-nowrap tabular text-success">
+                          +{eur(t.amount_cents / 100)}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-[11px] text-muted-foreground">→</span>
+                        <Select
+                          value={t.matched_tenant_id ?? ""}
+                          onValueChange={(v) => confirmMatch(t.id, v)}
+                        >
+                          <SelectTrigger className="h-8 text-xs flex-1 min-w-[160px]">
+                            <SelectValue placeholder="Mieter wählen…" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {tenants.map(te => (
+                              <SelectItem key={te.id} value={te.id} className="text-xs">{te.full_name}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Button size="sm" disabled={busyTx === t.id || !tenant}
+                          onClick={() => confirmMatch(t.id)}
+                          className="h-8 bg-gradient-gold text-primary-foreground">
+                          <Check className="h-3.5 w-3.5 mr-1" /> Verbuchen
+                        </Button>
+                        <Button size="sm" variant="ghost" disabled={busyTx === t.id} onClick={() => ignoreMatch(t.id)} className="h-8">
+                          <X className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </Card>
+          )}
+
           {transactions.length > 0 && (
             <Card className="glass overflow-hidden">
-              <div className="px-4 py-2.5 bg-muted/40">
+              <div className="px-4 py-2.5 bg-muted/40 flex items-center justify-between">
                 <p className="text-xs font-semibold uppercase tracking-wide">Letzte Transaktionen</p>
               </div>
               <div className="divide-y divide-border">
                 {transactions.map(t => (
                   <div key={t.id} className="px-4 py-3 flex items-center gap-3">
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium truncate">
+                      <p className="text-sm font-medium truncate flex items-center gap-1.5">
                         {t.counterparty_name ?? "—"}
+                        {(t.match_status === "auto" || t.match_status === "confirmed") && (
+                          <span className="text-[10px] bg-success/15 text-success px-1.5 py-0.5 rounded font-medium whitespace-nowrap">
+                            ✓ verbucht
+                          </span>
+                        )}
+                        {t.match_status === "suggested" && (
+                          <span className="text-[10px] bg-warning/15 text-warning px-1.5 py-0.5 rounded font-medium">
+                            Vorschlag
+                          </span>
+                        )}
                       </p>
                       <p className="text-xs text-muted-foreground truncate">
                         {date(t.booking_date)}{t.purpose ? ` · ${t.purpose}` : ""}
