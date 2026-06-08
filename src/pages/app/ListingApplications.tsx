@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { eur } from "@/lib/format";
 import { toast } from "sonner";
-import { ArrowLeft, Star, X, Check, MessageSquare, ShieldCheck, Sparkles, Loader2, TrendingUp, Users, Copy, Plus, Trash2, Mail } from "lucide-react";
+import { ArrowLeft, Star, X, Check, MessageSquare, ShieldCheck, Sparkles, Loader2, TrendingUp, Users, Copy, Plus, Trash2, Mail, FileSearch } from "lucide-react";
 import ChatDialog from "@/components/market/ChatDialog";
 import LegalSnippet from "@/components/LegalSnippet";
 import { AIDisclaimer } from "@/components/AIDisclaimer";
@@ -24,9 +24,25 @@ const ListingApplications = () => {
   const [apps, setApps] = useState<any[]>([]);
   const [chatApp, setChatApp] = useState<any>(null);
   const [scoring, setScoring] = useState<string | null>(null);
+  const [bonCheck, setBonCheck] = useState<string | null>(null);
+  const [bonResults, setBonResults] = useState<Record<string, any>>({});
   const [wgOpen, setWgOpen] = useState(false);
   const [wgMembers, setWgMembers] = useState<any[]>([]);
   const [newMember, setNewMember] = useState({ name: "", email: "" });
+
+  const runBonitaet = async (appId: string) => {
+    setBonCheck(appId);
+    try {
+      const { data, error } = await supabase.functions.invoke("bonitaet-check", { body: { application_id: appId } });
+      if (error) throw error;
+      setBonResults((p) => ({ ...p, [appId]: data }));
+      toast.success(`Bonität: Score ${data.score} (${data.rating})`);
+    } catch (e: any) {
+      toast.error(e.message ?? "Bonitäts-Check fehlgeschlagen");
+    } finally {
+      setBonCheck(null);
+    }
+  };
 
   const aiScore = async (appId: string) => {
     setScoring(appId);
@@ -53,6 +69,14 @@ const ListingApplications = () => {
     setApps(a.data ?? []);
     if (l.data) document.title = `Bewerbungen · ${l.data.title}`;
     if (l.data?.kind === "wg_room") loadWgMembers();
+    const ids = (a.data ?? []).map((x: any) => x.id);
+    if (ids.length) {
+      const { data: bons } = await supabase.from("bonitaets_checks")
+        .select("*").in("application_id", ids).eq("status", "completed");
+      const map: Record<string, any> = {};
+      (bons ?? []).forEach((b: any) => { if (b.application_id) map[b.application_id] = b; });
+      setBonResults(map);
+    }
   };
 
   const loadWgMembers = async () => {
@@ -248,6 +272,21 @@ const ListingApplications = () => {
                         <p className="text-[10px] text-muted-foreground mt-2 italic">KI-Vorschlag — bitte selbst prüfen, keine Rechtsberatung.</p>
                       </div>
                     )}
+
+                    {bonResults[a.id] && (
+                      <div className="mt-3 p-3 rounded-lg border border-success/30 bg-success/5">
+                        <div className="flex items-center gap-2">
+                          <ShieldCheck className="h-3.5 w-3.5 text-success" />
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-success">Bonität</span>
+                          <Badge variant="outline" className="ml-auto text-xs font-bold">
+                            Score {bonResults[a.id].score} · {bonResults[a.id].rating}
+                          </Badge>
+                        </div>
+                        <p className="text-[10px] text-muted-foreground mt-2 italic">
+                          Mock-Provider · {new Date(bonResults[a.id].completed_at).toLocaleDateString("de-DE")}
+                        </p>
+                      </div>
+                    )}
                   </div>
                   <div className="flex flex-col gap-1.5 sm:w-40">
                     {a.ai_score == null && (
@@ -255,6 +294,13 @@ const ListingApplications = () => {
                         className="border-primary/40 text-primary hover:bg-primary/5">
                         {scoring === a.id ? <Loader2 className="h-3 w-3 mr-1 animate-spin" /> : <Sparkles className="h-3 w-3 mr-1" />}
                         KI-Score
+                      </Button>
+                    )}
+                    {!bonResults[a.id] && (
+                      <Button size="sm" variant="outline" onClick={() => runBonitaet(a.id)} disabled={bonCheck === a.id}
+                        className="border-success/40 text-success hover:bg-success/5">
+                        {bonCheck === a.id ? <Loader2 className="h-3 w-3 mr-1 animate-spin" /> : <FileSearch className="h-3 w-3 mr-1" />}
+                        Bonität prüfen
                       </Button>
                     )}
                     <Button size="sm" variant="outline" onClick={() => setChatApp(a)}>

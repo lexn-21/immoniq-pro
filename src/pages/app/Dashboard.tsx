@@ -12,6 +12,7 @@ import { GameDeck } from "@/components/GameDeck";
 import { LegalUpdatesWidget } from "@/components/LegalUpdatesWidget";
 import { LeitzinsWidget } from "@/components/LeitzinsWidget";
 import { TodayFeed } from "@/components/TodayFeed";
+import { MarketPulseWidget } from "@/components/market/MarketPulseWidget";
 import RefinanceAlert from "@/components/RefinanceAlert";
 import { motion } from "framer-motion";
 import {
@@ -253,6 +254,10 @@ const Dashboard = () => {
 
       <Item>
         <LeitzinsWidget />
+      </Item>
+
+      <Item>
+        <MarketPulseWidget />
       </Item>
 
       {loading ? (
