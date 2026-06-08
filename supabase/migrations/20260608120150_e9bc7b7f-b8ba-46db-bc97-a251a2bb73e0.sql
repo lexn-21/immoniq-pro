@@ -1,0 +1,1 @@
+ALTER TABLE public.tenant_issues REPLICA IDENTITY FULL; ALTER PUBLICATION supabase_realtime ADD TABLE public.tenant_issues;
