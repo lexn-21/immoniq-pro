@@ -447,7 +447,7 @@ async function autoMatch(supabase: any, userId: string) {
       suggested++;
     }
   }
-  return { autoIn, autoOut, suggested };
+  return { autoIn, autoOut, suggested, autoLinked };
 }
 
 // ── Vendor-Heuristik ─────────────────────────────────────────────────
