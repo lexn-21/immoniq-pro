@@ -26,7 +26,7 @@ const LAWS: Law[] = [
   { ref: "§ 9 EStG", title: "Werbungskosten", summary: "Aufwendungen zur Erwerbung, Sicherung und Erhaltung der Einnahmen.", url: "https://www.gesetze-im-internet.de/estg/__9.html", topic: "estg" },
   { ref: "§ 147 AO", title: "Aufbewahrungsfristen", summary: "Bücher, Rechnungen, Belege: 10 Jahre. Handelsbriefe: 6 Jahre.", url: "https://www.gesetze-im-internet.de/ao_1977/__147.html", topic: "ao" },
   { ref: "§ 149 AO", title: "Abgabe der Steuererklärungen", summary: "Frist: 31.7. des Folgejahres, mit StB verlängert.", url: "https://www.gesetze-im-internet.de/ao_1977/__149.html", topic: "ao" },
-  { ref: "§ 47 BauO NRW", title: "Rauchwarnmelder-Pflicht NRW", summary: "Installation + jährliche Wartung durch Eigentümer oder Mieter.", url: "https://recht.nrw.de/lmi/owa/br_text_anzeigen?v_id=74820180625161151068", topic: "bauordnung" },
+  { ref: "§ 47 BauO NRW", title: "Rauchwarnmelder-Pflicht NRW", summary: "Installation + jährliche Wartung durch Eigentümer oder Mieter (§ 47 Abs. 3 BauO NRW 2018).", url: "https://recht.nrw.de/lmi/owa/br_vbl_detail_text?anw_nr=6&vd_id=17665", topic: "bauordnung" },
   { ref: "§ 5 WoGG", title: "Mietspiegel", summary: "Einfacher oder qualifizierter Mietspiegel als Referenz für Vergleichsmiete.", url: "https://www.gesetze-im-internet.de/wogg/__5.html", topic: "wohngfg" },
   { ref: "§ 7 GrStG", title: "Steuerpflichtiger", summary: "Eigentümer zum 1.1. des Kalenderjahres ist steuerpflichtig.", url: "https://www.gesetze-im-internet.de/grstg_1973/__7.html", topic: "grstg" },
 ];

@@ -13,24 +13,22 @@ type Props = {
 
 /** Direktlinks zu offiziellen kommunalen Mietspiegeln. */
 const OFFICIAL_MIETSPIEGEL: Record<string, { name: string; url: string }> = {
-  berlin: { name: "Mietspiegel Berlin (offiziell)", url: "https://www.berlin.de/sen/wohnen/mietspiegel/" },
+  berlin: { name: "Mietspiegel Berlin (offiziell)", url: "https://mietspiegel.berlin.de/" },
   münchen: { name: "Mietspiegel München (offiziell)", url: "https://stadt.muenchen.de/infos/mietspiegel.html" },
   munchen: { name: "Mietspiegel München (offiziell)", url: "https://stadt.muenchen.de/infos/mietspiegel.html" },
-  hamburg: { name: "Mietenspiegel Hamburg (offiziell)", url: "https://www.hamburg.de/politik-und-verwaltung/behoerden/bsw/themen/wohnen/mietenspiegel" },
-  köln: { name: "Mietspiegel Köln (offiziell)", url: "https://www.stadt-koeln.de/leben-in-koeln/wohnen/mietspiegel" },
-  koln: { name: "Mietspiegel Köln (offiziell)", url: "https://www.stadt-koeln.de/leben-in-koeln/wohnen/mietspiegel" },
-  frankfurt: { name: "Mietspiegel Frankfurt (offiziell)", url: "https://frankfurt.de/service-und-rathaus/zahlen-und-fakten/mietspiegel" },
-  stuttgart: { name: "Mietspiegel Stuttgart (offiziell)", url: "https://www.stuttgart.de/leben/wohnen/mietspiegel" },
-  düsseldorf: { name: "Mietspiegel Düsseldorf (offiziell)", url: "https://www.duesseldorf.de/wohnungsamt/mietspiegel" },
-  dusseldorf: { name: "Mietspiegel Düsseldorf (offiziell)", url: "https://www.duesseldorf.de/wohnungsamt/mietspiegel" },
-  leipzig: { name: "Mietspiegel Leipzig (offiziell)", url: "https://www.leipzig.de/buergerservice-und-verwaltung/unsere-stadt/statistik-und-zahlen/mietspiegel" },
-  dresden: { name: "Mietspiegel Dresden (offiziell)", url: "https://www.dresden.de/de/wirtschaft/wirtschaftsstandort/zahlen-und-fakten/mietspiegel.php" },
-  bremen: { name: "Mietspiegel Bremen (offiziell)", url: "https://www.bauumwelt.bremen.de/bauen/wohnungsbau/mietspiegel-30298" },
-  hannover: { name: "Mietspiegel Hannover (offiziell)", url: "https://www.hannover.de/Leben-in-der-Region-Hannover/Planen,-Bauen,-Wohnen/Wohnen-in-Hannover/Mietspiegel" },
-  nürnberg: { name: "Mietspiegel Nürnberg (offiziell)", url: "https://www.nuernberg.de/internet/wohnen/mietspiegel.html" },
-  nurnberg: { name: "Mietspiegel Nürnberg (offiziell)", url: "https://www.nuernberg.de/internet/wohnen/mietspiegel.html" },
-  essen: { name: "Mietspiegel Essen (offiziell)", url: "https://www.essen.de/leben/wohnen_und_immobilien/mietspiegel.de.html" },
-  dortmund: { name: "Mietspiegel Dortmund (offiziell)", url: "https://www.dortmund.de/themen/bauen-und-wohnen/wohnen/mietspiegel/" },
+  hamburg: { name: "Mietenspiegel Hamburg (offiziell)", url: "https://www.hamburg.de/mietenspiegel/" },
+  köln: { name: "Mietspiegel Köln (offiziell)", url: "https://www.stadt-koeln.de/artikel/06421/index.html" },
+  koln: { name: "Mietspiegel Köln (offiziell)", url: "https://www.stadt-koeln.de/artikel/06421/index.html" },
+  frankfurt: { name: "Mietspiegel Frankfurt (offiziell)", url: "https://frankfurt.de/themen/planen-bauen-und-wohnen/wohnen/informationen-zum-wohnungsmarkt/mietspiegel" },
+  stuttgart: { name: "Mietspiegel Stuttgart (offiziell)", url: "https://www.stuttgart.de/leben/wohnen/rund-ums-wohnen/mietpreise-und-mietspiegel" },
+  düsseldorf: { name: "Mietspiegel Düsseldorf (offiziell)", url: "https://miete-duesseldorf.de/" },
+  dusseldorf: { name: "Mietspiegel Düsseldorf (offiziell)", url: "https://miete-duesseldorf.de/" },
+  leipzig: { name: "Mietspiegel Leipzig (offiziell)", url: "https://www.leipzig.de/buergerservice-und-verwaltung/aemter-und-behoerdengaenge/behoerden-und-dienstleistungen/dienstleistung/mietspiegel-der-stadt-leipzig-5360b46eb0425" },
+  dresden: { name: "Mietspiegel Dresden (offiziell)", url: "https://www.dresden.de/de/leben/wohnen/wohnungsmarkt/mietspiegel.php" },
+  hannover: { name: "Mietspiegel Hannover (offiziell)", url: "https://www.hannover.de/Leben-in-der-Region-Hannover/Planen,-Bauen,-Wohnen/Wohnen-Immobilien/Mietspiegel/Mietspiegel-f%C3%BCr-Hannover" },
+  nürnberg: { name: "Mietenspiegel Nürnberg (offiziell)", url: "https://www.nuernberg.de/internet/wohnen/mietenspiegel.html" },
+  nurnberg: { name: "Mietenspiegel Nürnberg (offiziell)", url: "https://www.nuernberg.de/internet/wohnen/mietenspiegel.html" },
+  dortmund: { name: "Mietspiegel Dortmund (offiziell)", url: "https://www.dortmund.de/themen/wohnen/mietspiegel/" },
 };
 
 function officialLink(city?: string | null): { name: string; url: string; isOfficial: boolean } {
