@@ -2560,13 +2560,16 @@ export type Database = {
       }
       tenant_issues: {
         Row: {
+          assignee: string | null
           category: string
           created_at: string
           description: string | null
+          due_date: string | null
           id: string
           reported_at: string
           resolved_at: string | null
           severity: Database["public"]["Enums"]["issue_severity"]
+          snooze_until: string | null
           status: Database["public"]["Enums"]["issue_status"]
           tenant_id: string
           title: string
@@ -2575,13 +2578,16 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          assignee?: string | null
           category: string
           created_at?: string
           description?: string | null
+          due_date?: string | null
           id?: string
           reported_at?: string
           resolved_at?: string | null
           severity?: Database["public"]["Enums"]["issue_severity"]
+          snooze_until?: string | null
           status?: Database["public"]["Enums"]["issue_status"]
           tenant_id: string
           title: string
@@ -2590,13 +2596,16 @@ export type Database = {
           user_id: string
         }
         Update: {
+          assignee?: string | null
           category?: string
           created_at?: string
           description?: string | null
+          due_date?: string | null
           id?: string
           reported_at?: string
           resolved_at?: string | null
           severity?: Database["public"]["Enums"]["issue_severity"]
+          snooze_until?: string | null
           status?: Database["public"]["Enums"]["issue_status"]
           tenant_id?: string
           title?: string
