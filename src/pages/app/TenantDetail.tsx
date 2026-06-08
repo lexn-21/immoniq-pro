@@ -20,6 +20,7 @@ import { CardGridSkeleton } from "@/components/ListSkeleton";
 import EmptyState from "@/components/EmptyState";
 import { waHref, mailHref } from "@/lib/contact";
 import { WhatsappButton } from "@/components/WhatsappButton";
+import TenantTicketsPanel from "@/components/tickets/TenantTicketsPanel";
 
 const DOC_KIND_LABEL: Record<string, string> = {
   contract: "Mietvertrag",
@@ -213,9 +214,10 @@ export default function TenantDetail() {
       )}
 
       <Tabs defaultValue="contract" className="space-y-4">
-        <TabsList className="grid w-full max-w-2xl grid-cols-4">
+        <TabsList className="grid w-full max-w-2xl grid-cols-5">
           <TabsTrigger value="contract">Vertrag</TabsTrigger>
           <TabsTrigger value="payments">Zahlungen</TabsTrigger>
+          <TabsTrigger value="tickets">Tickets</TabsTrigger>
           <TabsTrigger value="docs">Dokumente</TabsTrigger>
           <TabsTrigger value="notes">Notizen</TabsTrigger>
         </TabsList>
@@ -248,6 +250,11 @@ export default function TenantDetail() {
               </ul>
             )}
           </Card>
+        </TabsContent>
+
+        {/* Tickets */}
+        <TabsContent value="tickets">
+          <TenantTicketsPanel tenantId={tenant.id} />
         </TabsContent>
 
         {/* Dokumente */}
