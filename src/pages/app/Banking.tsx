@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, Building2, RefreshCw, CheckCircle2, Banknote, Loader2, Sparkles, X, Check, Wand2, AlertTriangle, Repeat } from "lucide-react";
+import { Plus, Building2, RefreshCw, CheckCircle2, Banknote, Loader2, Sparkles, X, Check, Wand2, AlertTriangle, Repeat, Mail } from "lucide-react";
 import { toast } from "sonner";
 import EmptyState from "@/components/EmptyState";
 import { ListSkeleton } from "@/components/ListSkeleton";
@@ -401,29 +401,57 @@ const Banking = () => {
           {/* Fehlende Mieten diesen Monat */}
           {missingRents.length > 0 && (
             <Card className="glass overflow-hidden border-destructive/40">
-              <div className="px-4 py-2.5 bg-destructive/10 flex items-center gap-2">
-                <AlertTriangle className="h-3.5 w-3.5 text-destructive" />
-                <p className="text-xs font-semibold uppercase tracking-wide text-destructive">
+              <div className="px-4 py-2.5 bg-destructive/10 flex items-center justify-between gap-2">
+                <p className="text-xs font-semibold uppercase tracking-wide text-destructive flex items-center gap-2">
+                  <AlertTriangle className="h-3.5 w-3.5" />
                   Fehlende Miete diesen Monat ({missingRents.length})
                 </p>
+                {missingRents.some((r: any) => tenants.find(t => t.id === r.tenant_id)?.email) && (
+                  <Button size="sm" variant="outline" className="h-7 text-xs" onClick={remindAll} disabled={remindingId !== null}>
+                    {remindingId ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Mail className="h-3.5 w-3.5" />}
+                    <span className="ml-1.5">Alle erinnern</span>
+                  </Button>
+                )}
               </div>
               <div className="divide-y divide-border">
-                {missingRents.map((r: any) => (
-                  <div key={r.tenant_id} className="px-4 py-3 flex items-center gap-3">
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium truncate">{r.tenant_name}</p>
-                      <p className="text-xs text-muted-foreground truncate">
-                        {r.property_name ?? "—"} · {r.days_overdue > 0 ? `${r.days_overdue} Tag${r.days_overdue === 1 ? "" : "e"} überfällig` : "Stichtag heute"}
+                {missingRents.map((r: any) => {
+                  const t = tenants.find(x => x.id === r.tenant_id);
+                  const hasEmail = !!t?.email;
+                  const sent = remindedIds.has(r.tenant_id);
+                  return (
+                    <div key={r.tenant_id} className="px-4 py-3 flex items-center gap-3 flex-wrap sm:flex-nowrap">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium truncate">{r.tenant_name}</p>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {r.property_name ?? "—"} · {r.days_overdue > 0 ? `${r.days_overdue} Tag${r.days_overdue === 1 ? "" : "e"} überfällig` : "Stichtag heute"}
+                          {!hasEmail ? " · keine E-Mail" : ""}
+                        </p>
+                      </div>
+                      <p className="font-semibold whitespace-nowrap tabular text-destructive">
+                        {eur(r.expected_amount)}
                       </p>
+                      <Button
+                        size="sm"
+                        variant={sent ? "ghost" : "default"}
+                        className="h-8"
+                        disabled={!hasEmail || remindingId === r.tenant_id || sent}
+                        onClick={() => sendReminder(r)}
+                        title={hasEmail ? "Freundliche Zahlungserinnerung per E-Mail senden" : "Keine E-Mail beim Mieter hinterlegt"}
+                      >
+                        {remindingId === r.tenant_id ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        ) : sent ? (
+                          <><Check className="h-3.5 w-3.5" /><span className="ml-1.5 text-xs">Gesendet</span></>
+                        ) : (
+                          <><Mail className="h-3.5 w-3.5" /><span className="ml-1.5 text-xs">Erinnern</span></>
+                        )}
+                      </Button>
+                      <Button size="sm" variant="outline" className="h-8" onClick={() => navigate(`/app/tenants/${r.tenant_id}`)}>
+                        Öffnen
+                      </Button>
                     </div>
-                    <p className="font-semibold whitespace-nowrap tabular text-destructive">
-                      {eur(r.expected_amount)}
-                    </p>
-                    <Button size="sm" variant="outline" className="h-8" onClick={() => navigate(`/app/tenants/${r.tenant_id}`)}>
-                      Öffnen
-                    </Button>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
               <div className="px-4 py-2 bg-muted/30 border-t text-[11px] text-muted-foreground">
                 Stichtag ab Tag 5 im Monat. Bei IBAN-Hinterlegung wird Eingang sofort erkannt — sonst hier prüfen.
