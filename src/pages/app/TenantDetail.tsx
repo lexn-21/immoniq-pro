@@ -471,6 +471,7 @@ function ContractPanel({ tenant, property, reload }: { tenant: any; property: an
         <div><Label>Einzug</Label><Input type="date" value={f.move_in} onChange={e => setF({ ...f, move_in: e.target.value })} /></div>
         <div><Label>Auszug</Label><Input type="date" value={f.move_out} onChange={e => setF({ ...f, move_out: e.target.value })} /></div>
         <div className="sm:col-span-2"><Label>Kaution (€)</Label><Input type="number" step="0.01" value={f.deposit} onChange={e => setF({ ...f, deposit: e.target.value })} /></div>
+        <div className="sm:col-span-2"><Label>IBAN <span className="text-muted-foreground text-[10px]">(für automatische Zuordnung von Banküberweisungen)</span></Label><Input value={f.iban} onChange={e => setF({ ...f, iban: e.target.value })} placeholder="DE..." className="font-mono" /></div>
       </div>
       <div className="flex gap-2 justify-end pt-2">
         <Button variant="ghost" onClick={() => setEditing(false)} disabled={busy}>Abbrechen</Button>
