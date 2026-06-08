@@ -27,6 +27,8 @@ const Banking = () => {
   const [connections, setConnections] = useState<any[]>([]);
   const [accounts, setAccounts] = useState<any[]>([]);
   const [transactions, setTransactions] = useState<any[]>([]);
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [tenants, setTenants] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [country, setCountry] = useState("DE");
@@ -35,6 +37,8 @@ const Banking = () => {
   const [loadingBanks, setLoadingBanks] = useState(false);
   const [connecting, setConnecting] = useState(false);
   const [syncing, setSyncing] = useState<string | null>(null);
+  const [busyTx, setBusyTx] = useState<string | null>(null);
+  const [rematching, setRematching] = useState(false);
 
   useEffect(() => { document.title = "Banking · ImmonIQ"; }, []);
 
