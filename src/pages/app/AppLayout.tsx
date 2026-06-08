@@ -25,6 +25,7 @@ import {
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
+import { useTicketCounts } from "@/hooks/useTicketCounts";
 
 type Persona = "privat" | "vermieter" | "suchender" | "pro";
 
