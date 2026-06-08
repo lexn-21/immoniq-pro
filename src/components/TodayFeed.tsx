@@ -54,16 +54,18 @@ export const TodayFeed = () => {
 
   const load = async () => {
     if (!user) return;
-    const [t, u, p, ts] = await Promise.all([
+    const [t, u, p, ts, bc] = await Promise.all([
       supabase.from("tenants").select("id, full_name, unit_id, property_id, lease_end"),
       supabase.from("units").select("id, rent_cold, utilities, property_id"),
       supabase.from("payments").select("id, tenant_id, amount, paid_on, month, kind").gte("paid_on", new Date(Date.now() - 95 * 86400000).toISOString().slice(0, 10)),
       supabase.from("tasks").select("id, title, due_date, done").eq("done", false).order("due_date", { ascending: true }).limit(5),
+      supabase.from("bank_connections").select("id, status").eq("status", "active").limit(1),
     ]);
     setTenants((t.data as Tenant[]) ?? []);
     setUnits((u.data as Unit[]) ?? []);
     setPayments((p.data as Payment[]) ?? []);
     setTasks((ts.data as Task[]) ?? []);
+    setBankingActive(((bc.data as any[]) ?? []).length > 0);
     setLoading(false);
   };
 
