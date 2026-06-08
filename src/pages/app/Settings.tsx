@@ -23,8 +23,19 @@ const Settings = () => {
   useEffect(() => { document.title = "Einstellungen · ImmonIQ"; }, []);
   useEffect(() => {
     if (!user) return;
-    supabase.from("profiles").select("display_name").eq("user_id", user.id).maybeSingle()
-      .then(({ data }) => setName(data?.display_name ?? ""));
+    (async () => {
+      try {
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("display_name")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        if (error) console.warn("[Settings] profile load:", error.message);
+        setName(data?.display_name ?? "");
+      } catch (e) {
+        console.error("[Settings] profile load failed", e);
+      }
+    })();
   }, [user]);
 
   const save = async () => {
