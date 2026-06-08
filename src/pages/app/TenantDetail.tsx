@@ -248,7 +248,7 @@ export default function TenantDetail() {
   );
 }
 
-function Row({ label, value, icon: Icon }: { label: string; value: string; icon?: any }) {
+function Row({ label, value, icon: Icon }: { label: string; value: React.ReactNode; icon?: any }) {
   return (
     <div className="flex flex-col gap-0.5 p-3 rounded-lg bg-muted/30">
       <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</span>
