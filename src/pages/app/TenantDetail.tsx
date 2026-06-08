@@ -412,6 +412,7 @@ function ContractPanel({ tenant, property, reload }: { tenant: any; property: an
     deposit: tenant.deposit ?? "",
     move_in: tenant.move_in ?? "",
     move_out: tenant.move_out ?? "",
+    iban: tenant.iban ?? "",
   });
 
   const save = async () => {
