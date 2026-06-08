@@ -418,6 +418,17 @@ const AppLayout = () => {
                           >
                             <n.icon className="h-5 w-5" />
                             <span className="flex-1">{n.label}</span>
+                            {n.to === "/app/tickets" && ticketCounts && (ticketCounts.overdue > 0 || ticketCounts.open > 0) && (
+                              <span
+                                className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
+                                  ticketCounts.overdue > 0
+                                    ? "bg-red-500/15 text-red-600"
+                                    : "bg-primary/15 text-primary"
+                                }`}
+                              >
+                                {ticketCounts.overdue > 0 ? ticketCounts.overdue : ticketCounts.open}
+                              </span>
+                            )}
                             {n.badge && (
                               <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-primary/15 text-primary">{n.badge}</span>
                             )}
