@@ -57,6 +57,7 @@ const groups: NavGroup[] = [
     items: [
       { to: "/app/properties", label: "Objekte", icon: Building2 },
       { to: "/app/tenants", label: "Mieter", icon: Users, personas: ["vermieter", "pro"] },
+      { to: "/app/tickets", label: "Tickets", icon: Wrench, personas: ["vermieter", "pro"] },
       { to: "/app/payments", label: "Einnahmen", icon: Wallet },
       { to: "/app/expenses", label: "Ausgaben", icon: Receipt },
       { to: "/app/banking", label: "Banking", icon: Banknote },
