@@ -3,9 +3,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calculator, Download, FileText, TrendingUp, TrendingDown, Building2 } from "lucide-react";
+import { Calculator, Download, FileText, TrendingUp, TrendingDown, Building2, FileDown } from "lucide-react";
 import { eur } from "@/lib/format";
 import { toast } from "sonner";
+import jsPDF from "jspdf";
 
 const CAT_LABEL: Record<string, string> = {
   immediate: "Erhaltungsaufwand", depreciable: "AfA-fähig", utilities_passthrough: "NK-umlagefähig",
