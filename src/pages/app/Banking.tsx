@@ -402,6 +402,7 @@ const Banking = () => {
         </>
       )}
     </div>
+    </PlanGate>
   );
 };
 
