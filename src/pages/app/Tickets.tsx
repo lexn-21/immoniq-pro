@@ -238,6 +238,19 @@ export default function Tickets() {
                       <Badge variant="secondary">{categoryLabel[i.category] || i.category}</Badge>
                       {i.status === "in_progress" && <Badge variant="outline"><Clock className="h-3 w-3 mr-1" />In Arbeit</Badge>}
                       {i.status === "resolved" && <Badge className="bg-green-500/15 text-green-700 border-green-500/30" variant="outline"><CheckCircle2 className="h-3 w-3 mr-1" />Erledigt</Badge>}
+                      {isOverdue(i) && (
+                        <Badge variant="outline" className="bg-red-500/10 text-red-600 border-red-500/30">
+                          <CalendarClock className="h-3 w-3 mr-1" />Überfällig {format(new Date(i.due_date!), "dd. MMM", { locale: de })}
+                        </Badge>
+                      )}
+                      {!isOverdue(i) && i.due_date && i.status !== "resolved" && (
+                        <Badge variant="outline">
+                          <CalendarClock className="h-3 w-3 mr-1" />Fällig {format(new Date(i.due_date), "dd. MMM", { locale: de })}
+                        </Badge>
+                      )}
+                      {i.assignee && (
+                        <Badge variant="outline"><User2 className="h-3 w-3 mr-1" />{i.assignee}</Badge>
+                      )}
                     </div>
                     <h3 className="font-semibold">{i.title}</h3>
                     {i.description && <p className="text-sm text-muted-foreground line-clamp-3">{i.description}</p>}
@@ -246,7 +259,50 @@ export default function Tickets() {
                       {format(new Date(i.reported_at), "dd. MMM yyyy, HH:mm", { locale: de })}
                     </p>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 flex-wrap">
+                    {i.status !== "resolved" && (
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button size="sm" variant="outline" aria-label="Planen">
+                            <CalendarClock className="h-4 w-4" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent align="end" className="w-64 space-y-3">
+                          <div>
+                            <p className="text-xs font-medium mb-1">Fällig bis</p>
+                            <Input
+                              type="date"
+                              defaultValue={i.due_date ?? ""}
+                              onBlur={(e) => {
+                                const v = e.target.value || null;
+                                if (v !== (i.due_date ?? null)) patchIssue(i.id, { due_date: v });
+                              }}
+                            />
+                          </div>
+                          <div>
+                            <p className="text-xs font-medium mb-1">Zuständig</p>
+                            <Input
+                              placeholder="z. B. Klempner Schulz · 0151 …"
+                              defaultValue={i.assignee ?? ""}
+                              onBlur={(e) => {
+                                const v = e.target.value.trim() || null;
+                                if (v !== (i.assignee ?? null)) patchIssue(i.id, { assignee: v });
+                              }}
+                            />
+                          </div>
+                          <div>
+                            <p className="text-xs font-medium mb-1 flex items-center gap-1"><BellOff className="h-3 w-3" />Snooze</p>
+                            <div className="flex gap-1.5">
+                              <Button size="sm" variant="outline" className="flex-1" onClick={() => snooze(i.id, 1)}>1 Tag</Button>
+                              <Button size="sm" variant="outline" className="flex-1" onClick={() => snooze(i.id, 7)}>7 Tage</Button>
+                              {i.snooze_until && (
+                                <Button size="sm" variant="ghost" onClick={() => patchIssue(i.id, { snooze_until: null })}>×</Button>
+                              )}
+                            </div>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    )}
                     {i.status === "open" && (
                       <Button size="sm" variant="outline" onClick={() => setStatus(i.id, "in_progress")}>Übernehmen</Button>
                     )}
