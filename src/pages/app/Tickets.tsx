@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { AlertTriangle, CheckCircle2, Clock, Wrench, Radio, ListChecks } from "lucide-react";
 import { showLocalNotification } from "@/lib/pushNotifications";
+import QuickTicketDialog from "@/components/QuickTicketDialog";
 import { toast } from "sonner";
 import { toastError } from "@/lib/errors";
 import EmptyState from "@/components/EmptyState";
