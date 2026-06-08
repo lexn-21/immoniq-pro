@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, Building2, RefreshCw, CheckCircle2, Banknote, Loader2, Sparkles, X, Check, Wand2 } from "lucide-react";
+import { Plus, Building2, RefreshCw, CheckCircle2, Banknote, Loader2, Sparkles, X, Check, Wand2, AlertTriangle, Repeat } from "lucide-react";
 import { toast } from "sonner";
 import EmptyState from "@/components/EmptyState";
 import { ListSkeleton } from "@/components/ListSkeleton";
