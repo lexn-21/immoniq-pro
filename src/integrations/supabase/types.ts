@@ -522,6 +522,93 @@ export type Database = {
         }
         Relationships: []
       }
+      bank_rules: {
+        Row: {
+          auto_book: boolean
+          created_at: string
+          description: string | null
+          expense_category:
+            | Database["public"]["Enums"]["expense_category"]
+            | null
+          expense_classification:
+            | Database["public"]["Enums"]["expense_classification"]
+            | null
+          hit_count: number
+          id: string
+          last_hit_at: string | null
+          match_kind: string
+          match_value: string
+          nka_eligible: boolean
+          property_id: string | null
+          target_kind: string
+          unit_id: string | null
+          updated_at: string
+          user_id: string
+          vendor: string | null
+        }
+        Insert: {
+          auto_book?: boolean
+          created_at?: string
+          description?: string | null
+          expense_category?:
+            | Database["public"]["Enums"]["expense_category"]
+            | null
+          expense_classification?:
+            | Database["public"]["Enums"]["expense_classification"]
+            | null
+          hit_count?: number
+          id?: string
+          last_hit_at?: string | null
+          match_kind: string
+          match_value: string
+          nka_eligible?: boolean
+          property_id?: string | null
+          target_kind?: string
+          unit_id?: string | null
+          updated_at?: string
+          user_id: string
+          vendor?: string | null
+        }
+        Update: {
+          auto_book?: boolean
+          created_at?: string
+          description?: string | null
+          expense_category?:
+            | Database["public"]["Enums"]["expense_category"]
+            | null
+          expense_classification?:
+            | Database["public"]["Enums"]["expense_classification"]
+            | null
+          hit_count?: number
+          id?: string
+          last_hit_at?: string | null
+          match_kind?: string
+          match_value?: string
+          nka_eligible?: boolean
+          property_id?: string | null
+          target_kind?: string
+          unit_id?: string | null
+          updated_at?: string
+          user_id?: string
+          vendor?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bank_rules_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bank_rules_unit_id_fkey"
+            columns: ["unit_id"]
+            isOneToOne: false
+            referencedRelation: "units"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bank_transactions: {
         Row: {
           account_id: string

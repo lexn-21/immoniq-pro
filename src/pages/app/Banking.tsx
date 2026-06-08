@@ -30,6 +30,8 @@ const Banking = () => {
   const [transactions, setTransactions] = useState<any[]>([]);
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [tenants, setTenants] = useState<any[]>([]);
+  const [properties, setProperties] = useState<any[]>([]);
+  const [rules, setRules] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [country, setCountry] = useState("DE");
@@ -40,6 +42,8 @@ const Banking = () => {
   const [syncing, setSyncing] = useState<string | null>(null);
   const [busyTx, setBusyTx] = useState<string | null>(null);
   const [rematching, setRematching] = useState(false);
+  // Pro Ausgabe-Vorschlag: lokal gewählte Zuordnung (property, category)
+  const [expenseForm, setExpenseForm] = useState<Record<string, { property_id?: string; category?: string; nka?: boolean }>>({});
 
   useEffect(() => { document.title = "Banking · ImmonIQ"; }, []);
 
@@ -69,18 +73,23 @@ const Banking = () => {
 
   const load = async () => {
     setLoading(true);
-    const [c, a, t, s, te] = await Promise.all([
+    const [c, a, t, s, te, pr] = await Promise.all([
       supabase.from("bank_connections").select("*").order("created_at", { ascending: false }),
       supabase.from("bank_accounts").select("*"),
       supabase.from("bank_transactions").select("*").order("booking_date", { ascending: false }).limit(50),
       supabase.from("bank_transactions").select("*").eq("match_status", "suggested").order("booking_date", { ascending: false }),
       supabase.from("tenants").select("id,full_name,iban,unit_id"),
+      supabase.from("properties").select("id,name"),
     ]);
     setConnections(c.data ?? []);
     setAccounts(a.data ?? []);
     setTransactions(t.data ?? []);
     setSuggestions(s.data ?? []);
     setTenants(te.data ?? []);
+    setProperties(pr.data ?? []);
+    // Rules separat (Pro-Function-Call, kein Crash wenn 404)
+    supabase.functions.invoke("enable-banking", { body: { action: "list_rules" } })
+      .then(({ data }) => setRules(data?.rules ?? [])).catch(() => {});
     setLoading(false);
   };
 
@@ -124,7 +133,8 @@ const Banking = () => {
       toast.error("Sync fehlgeschlagen", { description: data?.error ?? error?.message });
     } else {
       const parts = [`${data.synced ?? 0} neue Transaktionen`];
-      if (data.auto_matched) parts.push(`${data.auto_matched} automatisch verbucht`);
+      if (data.auto_matched) parts.push(`${data.auto_matched} Mieten verbucht`);
+      if (data.auto_expenses) parts.push(`${data.auto_expenses} Ausgaben verbucht`);
       if (data.suggested) parts.push(`${data.suggested} Vorschläge`);
       toast.success("✓ " + parts.join(" · "));
       load();
@@ -138,9 +148,34 @@ const Banking = () => {
     if (error || data?.error) {
       toast.error("Re-Match fehlgeschlagen", { description: data?.error ?? error?.message });
     } else {
-      toast.success(`✓ ${data.auto_matched ?? 0} verbucht · ${data.suggested ?? 0} Vorschläge`);
+      toast.success(`✓ ${data.auto_matched ?? 0} Mieten · ${data.auto_expenses ?? 0} Ausgaben · ${data.suggested ?? 0} Vorschläge`);
       load();
     }
+  };
+
+  const bookExpense = async (tx: any) => {
+    const form = expenseForm[tx.id] ?? {};
+    const property_id = form.property_id ?? (properties.length === 1 ? properties[0].id : tx.matched_property_id) ?? undefined;
+    const category = form.category ?? tx.category ?? "immediate";
+    if (!property_id) {
+      toast.error("Bitte Immobilie wählen");
+      return;
+    }
+    setBusyTx(tx.id);
+    const { data, error } = await supabase.functions.invoke("enable-banking", {
+      body: {
+        action: "book_expense",
+        transaction_id: tx.id,
+        property_id,
+        category,
+        classification: "maintenance",
+        nka_eligible: form.nka ?? (category === "utilities_passthrough"),
+        learn: true,
+      },
+    });
+    setBusyTx(null);
+    if (error || data?.error) toast.error("Fehler", { description: data?.error ?? error?.message });
+    else { toast.success("✓ Als Ausgabe verbucht & Regel gemerkt"); load(); }
   };
 
   const confirmMatch = async (txId: string, tenantId?: string) => {
@@ -306,12 +341,12 @@ const Banking = () => {
             </Card>
           )}
 
-          {/* Vorschläge zur Bestätigung */}
-          {suggestions.length > 0 && (
+          {/* Eingangs-Vorschläge (Mieten) */}
+          {suggestions.filter(s => s.amount_cents > 0).length > 0 && (
             <Card className="glass overflow-hidden border-primary/30">
               <div className="px-4 py-2.5 bg-gradient-gold/10 flex items-center justify-between">
                 <p className="text-xs font-semibold uppercase tracking-wide flex items-center gap-2">
-                  <Sparkles className="h-3.5 w-3.5" /> Vorschläge ({suggestions.length})
+                  <Sparkles className="h-3.5 w-3.5" /> Mieteingänge ({suggestions.filter(s => s.amount_cents > 0).length})
                 </p>
                 <Button size="sm" variant="ghost" onClick={rematch} disabled={rematching}>
                   {rematching ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Wand2 className="h-3.5 w-3.5" />}
@@ -319,7 +354,7 @@ const Banking = () => {
                 </Button>
               </div>
               <div className="divide-y divide-border">
-                {suggestions.map(t => {
+                {suggestions.filter(s => s.amount_cents > 0).map(t => {
                   const tenant = tenants.find(x => x.id === t.matched_tenant_id);
                   return (
                     <div key={t.id} className="px-4 py-3 space-y-2">
@@ -361,6 +396,85 @@ const Banking = () => {
                     </div>
                   );
                 })}
+              </div>
+            </Card>
+          )}
+
+          {/* Ausgaben-Vorschläge (mit Lern-Memory) */}
+          {suggestions.filter(s => s.amount_cents < 0).length > 0 && (
+            <Card className="glass overflow-hidden border-warning/30">
+              <div className="px-4 py-2.5 bg-warning/10 flex items-center justify-between">
+                <p className="text-xs font-semibold uppercase tracking-wide flex items-center gap-2">
+                  <Sparkles className="h-3.5 w-3.5" /> Ausgaben ({suggestions.filter(s => s.amount_cents < 0).length})
+                </p>
+                {rules.length > 0 && (
+                  <span className="text-[10px] text-muted-foreground">{rules.length} Regel{rules.length === 1 ? "" : "n"} gelernt</span>
+                )}
+              </div>
+              <div className="divide-y divide-border">
+                {suggestions.filter(s => s.amount_cents < 0).map(t => {
+                  const form = expenseForm[t.id] ?? {};
+                  const propId = form.property_id ?? (properties.length === 1 ? properties[0].id : t.matched_property_id) ?? "";
+                  const cat = form.category ?? t.category ?? "immediate";
+                  return (
+                    <div key={t.id} className="px-4 py-3 space-y-2">
+                      <div className="flex items-center gap-3">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium truncate">{t.counterparty_name ?? "—"}</p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {date(t.booking_date)}{t.purpose ? ` · ${t.purpose}` : ""}
+                          </p>
+                        </div>
+                        <p className="font-semibold whitespace-nowrap tabular text-destructive">
+                          {eur(t.amount_cents / 100)}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {properties.length > 1 && (
+                          <Select
+                            value={propId}
+                            onValueChange={(v) => setExpenseForm(f => ({ ...f, [t.id]: { ...f[t.id], property_id: v } }))}
+                          >
+                            <SelectTrigger className="h-8 text-xs flex-1 min-w-[140px]">
+                              <SelectValue placeholder="Immobilie…" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {properties.map(p => (
+                                <SelectItem key={p.id} value={p.id} className="text-xs">{p.name}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        )}
+                        <Select
+                          value={cat}
+                          onValueChange={(v) => setExpenseForm(f => ({ ...f, [t.id]: { ...f[t.id], category: v } }))}
+                        >
+                          <SelectTrigger className="h-8 text-xs flex-1 min-w-[140px]">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="immediate" className="text-xs">Sofort abzugsfähig</SelectItem>
+                            <SelectItem value="utilities_passthrough" className="text-xs">Umlagefähig (NK)</SelectItem>
+                            <SelectItem value="depreciable" className="text-xs">Abschreibung</SelectItem>
+                            <SelectItem value="financing" className="text-xs">Finanzierung</SelectItem>
+                            <SelectItem value="other" className="text-xs">Sonstige</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Button size="sm" disabled={busyTx === t.id}
+                          onClick={() => bookExpense(t)}
+                          className="h-8 bg-gradient-gold text-primary-foreground">
+                          <Check className="h-3.5 w-3.5 mr-1" /> Verbuchen & merken
+                        </Button>
+                        <Button size="sm" variant="ghost" disabled={busyTx === t.id} onClick={() => ignoreMatch(t.id)} className="h-8">
+                          <X className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="px-4 py-2 bg-muted/30 border-t text-[11px] text-muted-foreground">
+                💡 Klick „Verbuchen & merken" — beim nächsten Sync wird dieselbe Gegenseite automatisch gebucht.
               </div>
             </Card>
           )}

@@ -1,5 +1,7 @@
-// Enable Banking integration — PSD2 Account Information + Auto-Matching
-// Actions: list_banks | start_auth | complete_auth | sync | rematch | confirm_match | unmatch
+// Enable Banking — PSD2 Account Information + Auto-Matching (Mieten & Ausgaben)
+// Actions: list_banks | start_auth | complete_auth | sync | rematch
+//          | confirm_match | unmatch
+//          | book_expense | learn_rule | list_rules | delete_rule
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
@@ -182,12 +184,21 @@ Deno.serve(async (req) => {
 
       await supabase.from("bank_connections").update({ last_sync_at: new Date().toISOString() }).eq("id", connection_id);
 
-      return json({ synced: totalInserted, auto_matched: matched.auto, suggested: matched.suggested });
+      return json({
+        synced: totalInserted,
+        auto_matched: matched.autoIn,
+        auto_expenses: matched.autoOut,
+        suggested: matched.suggested,
+      });
     }
 
     if (action === "rematch") {
       const matched = await autoMatch(supabase, user.id);
-      return json({ auto_matched: matched.auto, suggested: matched.suggested });
+      return json({
+        auto_matched: matched.autoIn,
+        auto_expenses: matched.autoOut,
+        suggested: matched.suggested,
+      });
     }
 
     if (action === "confirm_match") {
@@ -208,8 +219,72 @@ Deno.serve(async (req) => {
         match_status: "ignored",
         matched_tenant_id: null,
         matched_property_id: null,
+        matched_expense_id: null,
         match_confidence: null,
       }).eq("id", transaction_id).eq("user_id", user.id);
+      return json({ ok: true });
+    }
+
+    // ── EXPENSES ───────────────────────────────────────────
+    if (action === "book_expense") {
+      const {
+        transaction_id,
+        property_id,
+        unit_id,
+        category = "immediate",
+        classification = "maintenance",
+        vendor,
+        description,
+        nka_eligible = false,
+        learn = true,
+      } = params;
+      if (!transaction_id) throw new Error("Missing transaction_id");
+      const { data: tx } = await supabase.from("bank_transactions").select("*")
+        .eq("id", transaction_id).eq("user_id", user.id).single();
+      if (!tx) throw new Error("Transaction not found");
+      if (tx.amount_cents >= 0) throw new Error("Transaction is not a debit");
+
+      const expenseId = await bookExpense(supabase, user.id, tx, {
+        property_id, unit_id, category, classification, vendor, description, nka_eligible,
+      });
+
+      if (learn) {
+        await learnRule(supabase, user.id, tx, {
+          target_kind: "expense",
+          property_id, unit_id, category, classification, vendor, description, nka_eligible,
+        });
+      }
+      return json({ ok: true, expense_id: expenseId });
+    }
+
+    if (action === "learn_rule") {
+      const { match_kind, match_value, ...rest } = params;
+      if (!match_kind || !match_value) throw new Error("Missing match_kind/value");
+      const { data, error } = await supabase.from("bank_rules").insert({
+        user_id: user.id,
+        match_kind, match_value: String(match_value).toLowerCase().trim(),
+        target_kind: rest.target_kind ?? "expense",
+        expense_category: rest.expense_category ?? "immediate",
+        expense_classification: rest.expense_classification ?? "maintenance",
+        property_id: rest.property_id ?? null,
+        unit_id: rest.unit_id ?? null,
+        vendor: rest.vendor ?? null,
+        description: rest.description ?? null,
+        nka_eligible: !!rest.nka_eligible,
+        auto_book: rest.auto_book !== false,
+      }).select().single();
+      if (error) throw error;
+      return json({ ok: true, rule: data });
+    }
+
+    if (action === "list_rules") {
+      const { data } = await supabase.from("bank_rules").select("*").order("hit_count", { ascending: false });
+      return json({ rules: data ?? [] });
+    }
+
+    if (action === "delete_rule") {
+      const { rule_id } = params;
+      await supabase.from("bank_rules").delete().eq("id", rule_id).eq("user_id", user.id);
       return json({ ok: true });
     }
 
@@ -224,73 +299,249 @@ Deno.serve(async (req) => {
 async function autoMatch(supabase: any, userId: string) {
   const { data: txs } = await supabase
     .from("bank_transactions").select("*")
-    .eq("user_id", userId).eq("match_status", "unmatched")
-    .gt("amount_cents", 0);
-  if (!txs?.length) return { auto: 0, suggested: 0 };
+    .eq("user_id", userId).eq("match_status", "unmatched");
+  if (!txs?.length) return { autoIn: 0, autoOut: 0, suggested: 0 };
 
-  const { data: tenants } = await supabase
-    .from("tenants").select("id,full_name,iban,unit_id,property_id").eq("user_id", userId);
-  const { data: units } = await supabase
-    .from("units").select("id,property_id,rent_cold,utilities").eq("user_id", userId);
+  const [tenantsRes, unitsRes, propsRes, rulesRes] = await Promise.all([
+    supabase.from("tenants").select("id,full_name,iban,unit_id,property_id").eq("user_id", userId),
+    supabase.from("units").select("id,property_id,rent_cold,utilities").eq("user_id", userId),
+    supabase.from("properties").select("id,name").eq("user_id", userId),
+    supabase.from("bank_rules").select("*").eq("user_id", userId),
+  ]);
+  const tenants = tenantsRes.data ?? [];
+  const units = unitsRes.data ?? [];
+  const properties = propsRes.data ?? [];
+  const rules = rulesRes.data ?? [];
   const unitById: Record<string, any> = {};
-  (units ?? []).forEach((u: any) => { unitById[u.id] = u; });
+  units.forEach((u: any) => { unitById[u.id] = u; });
+  // Auto-property fallback: nur 1 Immobilie → immer diese
+  const soleProperty = properties.length === 1 ? properties[0].id : null;
 
-  let auto = 0, suggested = 0;
+  let autoIn = 0, autoOut = 0, suggested = 0;
+
   for (const tx of txs) {
-    const ibanNorm = (tx.counterparty_iban ?? "").replace(/\s/g, "").toUpperCase();
-    const name = (tx.counterparty_name ?? "").toLowerCase();
-    const purpose = (tx.purpose ?? "").toLowerCase();
-    const amt = tx.amount_cents;
+    const credit = tx.amount_cents > 0;
 
-    let best: { tenant: any; confidence: number } | null = null;
+    // ── EINGÄNGE (Miete) ─────────────────────────────────
+    if (credit) {
+      const ibanNorm = (tx.counterparty_iban ?? "").replace(/\s/g, "").toUpperCase();
+      const name = (tx.counterparty_name ?? "").toLowerCase();
+      const purpose = (tx.purpose ?? "").toLowerCase();
+      const amt = tx.amount_cents;
+      let best: { tenant: any; confidence: number } | null = null;
 
-    if (ibanNorm) {
-      const t = (tenants ?? []).find((t: any) =>
-        (t.iban ?? "").replace(/\s/g, "").toUpperCase() === ibanNorm);
-      if (t) best = { tenant: t, confidence: 1.0 };
-    }
-
-    if (!best) {
-      for (const t of tenants ?? []) {
-        const u = unitById[t.unit_id];
-        if (!u) continue;
-        const cold = Math.round((u.rent_cold ?? 0) * 100);
-        const warm = cold + Math.round((u.utilities ?? 0) * 100);
-        if (amt === cold || amt === warm) {
+      if (ibanNorm) {
+        const t = tenants.find((t: any) =>
+          (t.iban ?? "").replace(/\s/g, "").toUpperCase() === ibanNorm);
+        if (t) best = { tenant: t, confidence: 1.0 };
+      }
+      if (!best) {
+        for (const t of tenants) {
+          const u = unitById[t.unit_id];
+          if (!u) continue;
+          const cold = Math.round((u.rent_cold ?? 0) * 100);
+          const warm = cold + Math.round((u.utilities ?? 0) * 100);
+          if (amt === cold || amt === warm) {
+            const lastName = (t.full_name ?? "").split(" ").pop()?.toLowerCase() ?? "";
+            const nameHit = lastName.length > 2 && (name.includes(lastName) || purpose.includes(lastName));
+            best = { tenant: t, confidence: nameHit ? 0.95 : 0.7 };
+            if (nameHit) break;
+          }
+        }
+      }
+      if (!best && (name || purpose)) {
+        for (const t of tenants) {
           const lastName = (t.full_name ?? "").split(" ").pop()?.toLowerCase() ?? "";
-          const nameHit = lastName.length > 2 && (name.includes(lastName) || purpose.includes(lastName));
-          best = { tenant: t, confidence: nameHit ? 0.95 : 0.7 };
-          if (nameHit) break;
+          if (lastName.length > 2 && (name.includes(lastName) || purpose.includes(lastName))) {
+            best = { tenant: t, confidence: 0.5 };
+            break;
+          }
         }
+      }
+      if (!best) continue;
+
+      if (best.confidence >= 0.9) {
+        try { await bookPayment(supabase, userId, tx, best.tenant.id, best.confidence); autoIn++; }
+        catch (e) { console.error("bookPayment err", e); }
+      } else {
+        await supabase.from("bank_transactions").update({
+          match_status: "suggested",
+          matched_tenant_id: best.tenant.id,
+          matched_property_id: best.tenant.property_id,
+          match_confidence: best.confidence,
+        }).eq("id", tx.id);
+        suggested++;
+      }
+      continue;
+    }
+
+    // ── AUSGABEN ─────────────────────────────────────────
+    // 1) Gelernte Regel (höchste Priorität)
+    const rule = findMatchingRule(tx, rules);
+    if (rule) {
+      if (rule.target_kind === "ignore") {
+        await supabase.from("bank_transactions").update({
+          match_status: "ignored", match_confidence: 1.0,
+        }).eq("id", tx.id);
+        await bumpRule(supabase, rule.id);
+        continue;
+      }
+      if (rule.auto_book) {
+        try {
+          await bookExpense(supabase, userId, tx, {
+            property_id: rule.property_id ?? soleProperty,
+            unit_id: rule.unit_id,
+            category: rule.expense_category,
+            classification: rule.expense_classification,
+            vendor: rule.vendor ?? tx.counterparty_name,
+            description: rule.description,
+            nka_eligible: rule.nka_eligible,
+          }, 1.0);
+          await bumpRule(supabase, rule.id);
+          autoOut++;
+          continue;
+        } catch (e) { console.error("rule bookExpense err", e); }
       }
     }
 
-    if (!best && (name || purpose)) {
-      for (const t of tenants ?? []) {
-        const lastName = (t.full_name ?? "").split(" ").pop()?.toLowerCase() ?? "";
-        if (lastName.length > 2 && (name.includes(lastName) || purpose.includes(lastName))) {
-          best = { tenant: t, confidence: 0.5 };
-          break;
-        }
-      }
-    }
-
-    if (!best) continue;
-
-    if (best.confidence >= 0.9) {
-      try { await bookPayment(supabase, userId, tx, best.tenant.id, best.confidence); auto++; }
-      catch (e) { console.error("bookPayment err", e); }
-    } else {
+    // 2) Heuristik (Vendor-Keywords)
+    const guess = guessCategory(tx);
+    if (guess) {
       await supabase.from("bank_transactions").update({
         match_status: "suggested",
-        matched_tenant_id: best.tenant.id,
-        matched_property_id: best.tenant.property_id,
-        match_confidence: best.confidence,
+        matched_property_id: soleProperty,
+        match_confidence: guess.confidence,
+        category: guess.category,
       }).eq("id", tx.id);
       suggested++;
     }
   }
-  return { auto, suggested };
+  return { autoIn, autoOut, suggested };
+}
+
+// ── Vendor-Heuristik ─────────────────────────────────────────────────
+type Guess = { category: string; classification: string; nka_eligible: boolean; confidence: number };
+function guessCategory(tx: any): Guess | null {
+  const hay = `${tx.counterparty_name ?? ""} ${tx.purpose ?? ""}`.toLowerCase();
+  if (!hay.trim()) return null;
+  const rules: { keys: string[]; out: Guess }[] = [
+    { keys: ["versicher", "allianz", "huk", "axa", "ergo", "wgv"],
+      out: { category: "immediate", classification: "maintenance", nka_eligible: true, confidence: 0.85 } },
+    { keys: ["stadtwerke", "vattenfall", "e.on", "eon ", "ewe", "rwe", "enbw", " strom", "gas ", "fernwärme"],
+      out: { category: "utilities_passthrough", classification: "maintenance", nka_eligible: true, confidence: 0.9 } },
+    { keys: ["wasser", "abwasser", "stadtentwässer", "stadtwerk"],
+      out: { category: "utilities_passthrough", classification: "maintenance", nka_eligible: true, confidence: 0.9 } },
+    { keys: ["grundsteuer", "finanzamt"],
+      out: { category: "immediate", classification: "maintenance", nka_eligible: false, confidence: 0.9 } },
+    { keys: ["hausverwaltung", "hausmeister", "schornsteinfeger"],
+      out: { category: "immediate", classification: "maintenance", nka_eligible: true, confidence: 0.85 } },
+    { keys: ["handwerk", "reparatur", "sanitär", "elektro", "klempner", "heizung", "maler"],
+      out: { category: "immediate", classification: "maintenance", nka_eligible: false, confidence: 0.7 } },
+    { keys: ["darlehen", "kredit", "zins", "tilgung", "annuit", " kfw"],
+      out: { category: "financing", classification: "maintenance", nka_eligible: false, confidence: 0.85 } },
+    { keys: ["müll", "abfall", "entsorg"],
+      out: { category: "utilities_passthrough", classification: "maintenance", nka_eligible: true, confidence: 0.9 } },
+  ];
+  for (const r of rules) if (r.keys.some(k => hay.includes(k))) return r.out;
+  return null;
+}
+
+function findMatchingRule(tx: any, rules: any[]): any | null {
+  const iban = (tx.counterparty_iban ?? "").replace(/\s/g, "").toLowerCase();
+  const name = (tx.counterparty_name ?? "").toLowerCase();
+  const purpose = (tx.purpose ?? "").toLowerCase();
+  // IBAN exakt > Name contains > Purpose contains
+  for (const r of rules) {
+    if (r.match_kind === "iban" && iban && r.match_value === iban) return r;
+  }
+  for (const r of rules) {
+    if (r.match_kind === "name" && r.match_value && name.includes(r.match_value)) return r;
+  }
+  for (const r of rules) {
+    if (r.match_kind === "purpose" && r.match_value && purpose.includes(r.match_value)) return r;
+  }
+  return null;
+}
+
+async function bumpRule(supabase: any, ruleId: string) {
+  // best-effort
+  await supabase.rpc("noop").catch(() => null);
+  await supabase.from("bank_rules").update({
+    last_hit_at: new Date().toISOString(),
+  }).eq("id", ruleId);
+  // increment via SQL (rpc not present) — fallback two-step:
+  const { data } = await supabase.from("bank_rules").select("hit_count").eq("id", ruleId).single();
+  if (data) await supabase.from("bank_rules").update({ hit_count: (data.hit_count ?? 0) + 1 }).eq("id", ruleId);
+}
+
+async function learnRule(supabase: any, userId: string, tx: any, opts: any) {
+  // Bevorzugt IBAN, sonst Counterparty-Name
+  const iban = (tx.counterparty_iban ?? "").replace(/\s/g, "").toLowerCase();
+  const name = (tx.counterparty_name ?? "").toLowerCase().trim();
+  let match_kind: "iban" | "name" | null = null;
+  let match_value = "";
+  if (iban) { match_kind = "iban"; match_value = iban; }
+  else if (name.length >= 3) { match_kind = "name"; match_value = name; }
+  if (!match_kind) return;
+
+  // Dedupe: gleicher User + Kind + Value → update statt insert
+  const { data: existing } = await supabase.from("bank_rules").select("id")
+    .eq("user_id", userId).eq("match_kind", match_kind).eq("match_value", match_value).maybeSingle();
+  if (existing) {
+    await supabase.from("bank_rules").update({
+      target_kind: opts.target_kind ?? "expense",
+      expense_category: opts.category,
+      expense_classification: opts.classification,
+      property_id: opts.property_id ?? null,
+      unit_id: opts.unit_id ?? null,
+      vendor: opts.vendor ?? null,
+      description: opts.description ?? null,
+      nka_eligible: !!opts.nka_eligible,
+    }).eq("id", existing.id);
+  } else {
+    await supabase.from("bank_rules").insert({
+      user_id: userId,
+      match_kind, match_value,
+      target_kind: opts.target_kind ?? "expense",
+      expense_category: opts.category,
+      expense_classification: opts.classification,
+      property_id: opts.property_id ?? null,
+      unit_id: opts.unit_id ?? null,
+      vendor: opts.vendor ?? null,
+      description: opts.description ?? null,
+      nka_eligible: !!opts.nka_eligible,
+      auto_book: true,
+    });
+  }
+}
+
+async function bookExpense(supabase: any, userId: string, tx: any, opts: any, confidence = 1.0) {
+  const amount = Math.abs(tx.amount_cents / 100).toFixed(2);
+  // Dedupe: gleiche Transaktion nicht doppelt verbuchen
+  if (tx.matched_expense_id) return tx.matched_expense_id;
+
+  const { data: exp, error } = await supabase.from("expenses").insert({
+    user_id: userId,
+    property_id: opts.property_id ?? null,
+    unit_id: opts.unit_id ?? null,
+    spent_on: tx.booking_date,
+    amount,
+    vendor: opts.vendor ?? tx.counterparty_name ?? null,
+    description: opts.description ?? tx.purpose ?? null,
+    category: opts.category ?? "immediate",
+    classification: opts.classification ?? "maintenance",
+    nka_eligible: !!opts.nka_eligible,
+  }).select("id").single();
+  if (error) throw error;
+
+  await supabase.from("bank_transactions").update({
+    match_status: confidence >= 1.0 ? "auto" : "confirmed",
+    matched_expense_id: exp.id,
+    matched_property_id: opts.property_id ?? null,
+    match_confidence: confidence,
+    category: opts.category ?? "immediate",
+  }).eq("id", tx.id);
+  return exp.id;
 }
 
 async function bookPayment(supabase: any, userId: string, tx: any, tenantId: string, confidence = 1.0) {
