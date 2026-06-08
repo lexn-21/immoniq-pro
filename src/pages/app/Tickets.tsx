@@ -4,7 +4,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { AlertTriangle, CheckCircle2, Clock, Wrench, Radio, ListChecks, Download } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Input } from "@/components/ui/input";
+import { AlertTriangle, CheckCircle2, Clock, Wrench, Radio, ListChecks, Download, CalendarClock, BellOff, User2 } from "lucide-react";
 import { downloadCsv } from "@/lib/csv";
 import { showLocalNotification } from "@/lib/pushNotifications";
 import QuickTicketDialog from "@/components/QuickTicketDialog";
@@ -26,9 +28,18 @@ interface Issue {
   status: "open" | "in_progress" | "resolved";
   reported_at: string;
   resolved_at: string | null;
+  due_date: string | null;
+  snooze_until: string | null;
+  assignee: string | null;
   tenant?: { full_name: string } | null;
   unit?: { label: string; property?: { name: string } | null } | null;
 }
+
+const todayISO = () => new Date().toISOString().slice(0, 10);
+const addDaysISO = (n: number) => {
+  const d = new Date(); d.setDate(d.getDate() + n);
+  return d.toISOString().slice(0, 10);
+};
 
 const severityStyles: Record<string, string> = {
   critical: "bg-red-500/15 text-red-600 border-red-500/30",
