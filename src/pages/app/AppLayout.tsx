@@ -12,7 +12,7 @@ import {
   Lock, Wrench, Bell, Search, Scale,
   TrendingUp, Megaphone, Inbox,
   FileText, Plus, Home, Menu, X, CalendarCheck, Search as SearchIcon, ScanLine, PartyPopper,
-  Trees, Landmark, IdCard, MessageSquare, Sparkles,
+  Trees, Landmark, IdCard, MessageSquare, Sparkles, Banknote,
 } from "lucide-react";
 import { AskCopilot } from "@/components/AskCopilot";
 import { DocScanner } from "@/components/DocScanner";
@@ -59,6 +59,7 @@ const groups: NavGroup[] = [
       { to: "/app/tenants", label: "Mieter", icon: Users, personas: ["vermieter", "pro"] },
       { to: "/app/payments", label: "Einnahmen", icon: Wallet },
       { to: "/app/expenses", label: "Ausgaben", icon: Receipt },
+      { to: "/app/banking", label: "Banking", icon: Banknote },
       { to: "/app/nebenkosten", label: "Nebenkosten", icon: Calculator, personas: ["vermieter", "pro"] },
       { to: "/app/parcels", label: "Grundstücke", icon: Trees, personas: ["pro"] },
       { to: "/app/org", label: "Organisation", icon: Landmark, personas: ["pro"] },
