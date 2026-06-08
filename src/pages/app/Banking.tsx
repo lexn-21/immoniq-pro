@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, Building2, RefreshCw, CheckCircle2, Banknote, Loader2, Sparkles, X, Check, Wand2 } from "lucide-react";
+import { Plus, Building2, RefreshCw, CheckCircle2, Banknote, Loader2, Sparkles, X, Check, Wand2, AlertTriangle, Repeat } from "lucide-react";
 import { toast } from "sonner";
 import EmptyState from "@/components/EmptyState";
 import { ListSkeleton } from "@/components/ListSkeleton";
@@ -32,6 +32,8 @@ const Banking = () => {
   const [tenants, setTenants] = useState<any[]>([]);
   const [properties, setProperties] = useState<any[]>([]);
   const [rules, setRules] = useState<any[]>([]);
+  const [missingRents, setMissingRents] = useState<any[]>([]);
+  const [recurring, setRecurring] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [country, setCountry] = useState("DE");
@@ -73,13 +75,15 @@ const Banking = () => {
 
   const load = async () => {
     setLoading(true);
-    const [c, a, t, s, te, pr] = await Promise.all([
+    const [c, a, t, s, te, pr, mr, rec] = await Promise.all([
       supabase.from("bank_connections").select("*").order("created_at", { ascending: false }),
       supabase.from("bank_accounts").select("*"),
       supabase.from("bank_transactions").select("*").order("booking_date", { ascending: false }).limit(50),
       supabase.from("bank_transactions").select("*").eq("match_status", "suggested").order("booking_date", { ascending: false }),
       supabase.from("tenants").select("id,full_name,iban,unit_id"),
       supabase.from("properties").select("id,name"),
+      supabase.rpc("missing_rents", { _grace_day: 5 }),
+      supabase.rpc("recurring_transactions", { _months: 6 }),
     ]);
     setConnections(c.data ?? []);
     setAccounts(a.data ?? []);
@@ -87,7 +91,8 @@ const Banking = () => {
     setSuggestions(s.data ?? []);
     setTenants(te.data ?? []);
     setProperties(pr.data ?? []);
-    // Rules separat (Pro-Function-Call, kein Crash wenn 404)
+    setMissingRents(mr.data ?? []);
+    setRecurring(rec.data ?? []);
     supabase.functions.invoke("enable-banking", { body: { action: "list_rules" } })
       .then(({ data }) => setRules(data?.rules ?? [])).catch(() => {});
     setLoading(false);
@@ -135,6 +140,7 @@ const Banking = () => {
       const parts = [`${data.synced ?? 0} neue Transaktionen`];
       if (data.auto_matched) parts.push(`${data.auto_matched} Mieten verbucht`);
       if (data.auto_expenses) parts.push(`${data.auto_expenses} Ausgaben verbucht`);
+      if (data.auto_linked) parts.push(`${data.auto_linked} Belege verlinkt`);
       if (data.suggested) parts.push(`${data.suggested} Vorschläge`);
       toast.success("✓ " + parts.join(" · "));
       load();
@@ -341,6 +347,40 @@ const Banking = () => {
             </Card>
           )}
 
+          {/* Fehlende Mieten diesen Monat */}
+          {missingRents.length > 0 && (
+            <Card className="glass overflow-hidden border-destructive/40">
+              <div className="px-4 py-2.5 bg-destructive/10 flex items-center gap-2">
+                <AlertTriangle className="h-3.5 w-3.5 text-destructive" />
+                <p className="text-xs font-semibold uppercase tracking-wide text-destructive">
+                  Fehlende Miete diesen Monat ({missingRents.length})
+                </p>
+              </div>
+              <div className="divide-y divide-border">
+                {missingRents.map((r: any) => (
+                  <div key={r.tenant_id} className="px-4 py-3 flex items-center gap-3">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium truncate">{r.tenant_name}</p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {r.property_name ?? "—"} · {r.days_overdue > 0 ? `${r.days_overdue} Tag${r.days_overdue === 1 ? "" : "e"} überfällig` : "Stichtag heute"}
+                      </p>
+                    </div>
+                    <p className="font-semibold whitespace-nowrap tabular text-destructive">
+                      {eur(r.expected_amount)}
+                    </p>
+                    <Button size="sm" variant="outline" className="h-8" onClick={() => navigate(`/app/tenants/${r.tenant_id}`)}>
+                      Öffnen
+                    </Button>
+                  </div>
+                ))}
+              </div>
+              <div className="px-4 py-2 bg-muted/30 border-t text-[11px] text-muted-foreground">
+                Stichtag ab Tag 5 im Monat. Bei IBAN-Hinterlegung wird Eingang sofort erkannt — sonst hier prüfen.
+              </div>
+            </Card>
+          )}
+
+
           {/* Eingangs-Vorschläge (Mieten) */}
           {suggestions.filter(s => s.amount_cents > 0).length > 0 && (
             <Card className="glass overflow-hidden border-primary/30">
@@ -475,6 +515,36 @@ const Banking = () => {
               </div>
               <div className="px-4 py-2 bg-muted/30 border-t text-[11px] text-muted-foreground">
                 💡 Klick „Verbuchen & merken" — beim nächsten Sync wird dieselbe Gegenseite automatisch gebucht.
+              </div>
+            </Card>
+          )}
+
+          {/* Wiederkehrende Zahlungen */}
+          {recurring.length > 0 && (
+            <Card className="glass overflow-hidden">
+              <div className="px-4 py-2.5 bg-muted/40 flex items-center gap-2">
+                <Repeat className="h-3.5 w-3.5" />
+                <p className="text-xs font-semibold uppercase tracking-wide">
+                  Wiederkehrende Zahlungen ({recurring.length})
+                </p>
+              </div>
+              <div className="divide-y divide-border">
+                {recurring.slice(0, 8).map((r: any, i: number) => (
+                  <div key={`${r.counterparty}-${i}`} className="px-4 py-2.5 flex items-center gap-3">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium truncate">{r.counterparty}</p>
+                      <p className="text-[11px] text-muted-foreground">
+                        {r.occurrences}× · zuletzt {date(r.last_seen)}
+                      </p>
+                    </div>
+                    <p className={`font-semibold whitespace-nowrap tabular text-sm ${r.direction === "in" ? "text-success" : ""}`}>
+                      {r.direction === "in" ? "+" : ""}{eur(r.avg_amount_cents / 100)}
+                    </p>
+                  </div>
+                ))}
+              </div>
+              <div className="px-4 py-2 bg-muted/30 border-t text-[11px] text-muted-foreground">
+                Erkannt aus den letzten 6 Monaten · gleicher Empfänger + ähnlicher Betrag ≥ 2 Monate.
               </div>
             </Card>
           )}
