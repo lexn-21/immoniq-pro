@@ -202,6 +202,8 @@ export default function Tickets() {
           ))}
         </div>
       )}
+
+      <QuickTicketDialog onCreated={load} />
     </div>
   );
 }
