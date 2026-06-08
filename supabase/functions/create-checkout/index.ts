@@ -37,10 +37,9 @@ Deno.serve(async (req) => {
       mode: isRecurring ? "subscription" : "payment",
       ui_mode: "embedded_page",
       return_url: returnUrl,
-      managed_payments: { enabled: true } as any,
       ...(customerEmail && { customer_email: customerEmail }),
       ...(userId && {
-        metadata: { userId, managed_payments: "true" },
+        metadata: { userId },
         ...(isRecurring && { subscription_data: { metadata: { userId } } }),
       }),
     });
