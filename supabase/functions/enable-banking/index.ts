@@ -381,6 +381,32 @@ async function autoMatch(supabase: any, userId: string) {
     }
 
     // ── AUSGABEN ─────────────────────────────────────────
+    // 0) Anti-Doppelbuchung: existiert bereits eine manuell erfasste Ausgabe
+    //    mit gleichem Betrag (±0,02 €) und Datum ±5 Tage → verlinken statt neu anlegen
+    {
+      const txAmt = Math.abs(tx.amount_cents / 100);
+      const txDate = new Date(tx.booking_date).getTime();
+      const vendorNorm = (tx.counterparty_name ?? "").toLowerCase();
+      const matchExp = existingExpenses.find((e: any) => {
+        if (Math.abs(parseFloat(e.amount) - txAmt) > 0.02) return false;
+        const diff = Math.abs(new Date(e.spent_on).getTime() - txDate) / 86400000;
+        if (diff > 5) return false;
+        // Bonus wenn vendor übereinstimmt
+        return true;
+      });
+      if (matchExp) {
+        await supabase.from("bank_transactions").update({
+          match_status: "auto",
+          matched_expense_id: matchExp.id,
+          matched_property_id: matchExp.property_id,
+          match_confidence: 0.95,
+          category: matchExp.category,
+        }).eq("id", tx.id);
+        autoLinked++;
+        continue;
+      }
+    }
+
     // 1) Gelernte Regel (höchste Priorität)
     const rule = findMatchingRule(tx, rules);
     if (rule) {
