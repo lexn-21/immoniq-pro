@@ -95,6 +95,16 @@ export default function Tickets() {
     load();
   };
 
+  const patchIssue = async (id: string, patch: Partial<Issue>) => {
+    const { error } = await supabase.from("tenant_issues").update(patch).eq("id", id);
+    if (error) return toastError(error);
+    setItems((prev) => prev.map((i) => (i.id === id ? { ...i, ...patch } as Issue : i)));
+    toast.success("Aktualisiert");
+  };
+
+  const snooze = (id: string, days: number) =>
+    patchIssue(id, { snooze_until: addDaysISO(days) });
+
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const toggleSel = (id: string) =>
     setSelected((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
@@ -113,9 +123,23 @@ export default function Tickets() {
   };
 
   const filtered = items.filter((i) => filter === "all" || i.status === filter);
+  const today = todayISO();
+  const isSnoozed = (i: Issue) => !!i.snooze_until && i.snooze_until > today && i.status !== "resolved";
+  const isOverdue = (i: Issue) => !!i.due_date && i.due_date < today && i.status !== "resolved";
+  const urgencyScore = (i: Issue) => {
+    if (i.status === "resolved") return 1000 + new Date(i.resolved_at || i.reported_at).getTime() / 1e10;
+    const sev = i.severity === "critical" ? 0 : i.severity === "major" ? 1 : 2;
+    const due = i.due_date ? new Date(i.due_date).getTime() : Date.now() + 1e12;
+    const snoozePenalty = isSnoozed(i) ? 1e9 : 0;
+    return sev * 1e6 + due / 1e6 + snoozePenalty;
+  };
+  const filtered = items
+    .filter((i) => filter === "all" || i.status === filter)
+    .filter((i) => filter === "all" || !isSnoozed(i))
+    .sort((a, b) => urgencyScore(a) - urgencyScore(b));
   const counts = {
-    open: items.filter((i) => i.status === "open").length,
-    in_progress: items.filter((i) => i.status === "in_progress").length,
+    open: items.filter((i) => i.status === "open" && !isSnoozed(i)).length,
+    in_progress: items.filter((i) => i.status === "in_progress" && !isSnoozed(i)).length,
     resolved: items.filter((i) => i.status === "resolved").length,
   };
   const allSelected = filtered.length > 0 && filtered.every((i) => selected.has(i.id));
