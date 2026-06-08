@@ -518,6 +518,36 @@ const Banking = () => {
             </Card>
           )}
 
+          {/* Wiederkehrende Zahlungen */}
+          {recurring.length > 0 && (
+            <Card className="glass overflow-hidden">
+              <div className="px-4 py-2.5 bg-muted/40 flex items-center gap-2">
+                <Repeat className="h-3.5 w-3.5" />
+                <p className="text-xs font-semibold uppercase tracking-wide">
+                  Wiederkehrende Zahlungen ({recurring.length})
+                </p>
+              </div>
+              <div className="divide-y divide-border">
+                {recurring.slice(0, 8).map((r: any, i: number) => (
+                  <div key={`${r.counterparty}-${i}`} className="px-4 py-2.5 flex items-center gap-3">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium truncate">{r.counterparty}</p>
+                      <p className="text-[11px] text-muted-foreground">
+                        {r.occurrences}× · zuletzt {date(r.last_seen)}
+                      </p>
+                    </div>
+                    <p className={`font-semibold whitespace-nowrap tabular text-sm ${r.direction === "in" ? "text-success" : ""}`}>
+                      {r.direction === "in" ? "+" : ""}{eur(r.avg_amount_cents / 100)}
+                    </p>
+                  </div>
+                ))}
+              </div>
+              <div className="px-4 py-2 bg-muted/30 border-t text-[11px] text-muted-foreground">
+                Erkannt aus den letzten 6 Monaten · gleicher Empfänger + ähnlicher Betrag ≥ 2 Monate.
+              </div>
+            </Card>
+          )}
+
           {transactions.length > 0 && (
             <Card className="glass overflow-hidden">
               <div className="px-4 py-2.5 bg-muted/40 flex items-center justify-between">
