@@ -113,7 +113,7 @@ export const useSubscription = (): PlanState => {
     load();
 
     const channel = supabase
-      .channel(`sub-${user.id}`)
+      .channel(`sub-${user.id}-${crypto.randomUUID()}`)
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "subscriptions", filter: `user_id=eq.${user.id}` },
