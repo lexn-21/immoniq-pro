@@ -45,6 +45,7 @@ export const TodayFeed = () => {
   const [units, setUnits] = useState<Unit[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [bankingActive, setBankingActive] = useState(false);
   const [loading, setLoading] = useState(true);
   const [idx, setIdx] = useState(0);
   const [booking, setBooking] = useState<string | null>(null);
@@ -53,16 +54,18 @@ export const TodayFeed = () => {
 
   const load = async () => {
     if (!user) return;
-    const [t, u, p, ts] = await Promise.all([
+    const [t, u, p, ts, bc] = await Promise.all([
       supabase.from("tenants").select("id, full_name, unit_id, property_id, lease_end"),
       supabase.from("units").select("id, rent_cold, utilities, property_id"),
       supabase.from("payments").select("id, tenant_id, amount, paid_on, month, kind").gte("paid_on", new Date(Date.now() - 95 * 86400000).toISOString().slice(0, 10)),
       supabase.from("tasks").select("id, title, due_date, done").eq("done", false).order("due_date", { ascending: true }).limit(5),
+      supabase.from("bank_connections").select("id, status").eq("status", "active").limit(1),
     ]);
     setTenants((t.data as Tenant[]) ?? []);
     setUnits((u.data as Unit[]) ?? []);
     setPayments((p.data as Payment[]) ?? []);
     setTasks((ts.data as Task[]) ?? []);
+    setBankingActive(((bc.data as any[]) ?? []).length > 0);
     setLoading(false);
   };
 
@@ -113,19 +116,22 @@ export const TodayFeed = () => {
       });
     }
 
-    // 2) Auto-Mietvorschläge laufender Monat
-    activeTenants.forEach(t => {
-      if (paidThisMonth.has(t.id) || !t.unit_id) return;
-      const unit = unitsById.get(t.unit_id);
-      if (!unit) return;
-      const amount = Number(unit.rent_cold ?? 0) + Number(unit.utilities ?? 0);
-      if (amount <= 0) return;
-      out.push({
-        kind: "rent_suggest", id: `suggest-${t.id}-${curMonth}`,
-        tenant: t, unit, amount,
-        monthLabel: monthLabelDe(curMonthDate), monthKey: curMonth,
+    // 2) Auto-Mietvorschläge laufender Monat — nur wenn KEIN Banking verbunden
+    // (mit Banking läuft Auto-Match, manuelles Buchen wäre redundant)
+    if (!bankingActive) {
+      activeTenants.forEach(t => {
+        if (paidThisMonth.has(t.id) || !t.unit_id) return;
+        const unit = unitsById.get(t.unit_id);
+        if (!unit) return;
+        const amount = Number(unit.rent_cold ?? 0) + Number(unit.utilities ?? 0);
+        if (amount <= 0) return;
+        out.push({
+          kind: "rent_suggest", id: `suggest-${t.id}-${curMonth}`,
+          tenant: t, unit, amount,
+          monthLabel: monthLabelDe(curMonthDate), monthKey: curMonth,
+        });
       });
-    });
+    }
 
     // 3) Heutige/überfällige Aufgaben
     const todayISO = today.toISOString().slice(0, 10);
@@ -146,7 +152,7 @@ export const TodayFeed = () => {
     }
 
     return out.filter(c => !dismissed.has(c.id));
-  }, [tenants, units, payments, tasks, user, dismissed]);
+  }, [tenants, units, payments, tasks, user, dismissed, bankingActive]);
 
   useEffect(() => { if (idx >= cards.length) setIdx(0); }, [cards.length, idx]);
 
