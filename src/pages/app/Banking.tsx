@@ -133,7 +133,8 @@ const Banking = () => {
       toast.error("Sync fehlgeschlagen", { description: data?.error ?? error?.message });
     } else {
       const parts = [`${data.synced ?? 0} neue Transaktionen`];
-      if (data.auto_matched) parts.push(`${data.auto_matched} automatisch verbucht`);
+      if (data.auto_matched) parts.push(`${data.auto_matched} Mieten verbucht`);
+      if (data.auto_expenses) parts.push(`${data.auto_expenses} Ausgaben verbucht`);
       if (data.suggested) parts.push(`${data.suggested} Vorschläge`);
       toast.success("✓ " + parts.join(" · "));
       load();
