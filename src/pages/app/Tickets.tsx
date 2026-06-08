@@ -3,7 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, CheckCircle2, Clock, Wrench } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Clock, Wrench, Radio } from "lucide-react";
+import { showLocalNotification } from "@/lib/pushNotifications";
 import { toast } from "sonner";
 import { toastError } from "@/lib/errors";
 import EmptyState from "@/components/EmptyState";
@@ -52,7 +53,24 @@ export default function Tickets() {
     setItems((data as any) || []);
     setLoading(false);
   };
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+    // Realtime: neue Tickets sofort sichtbar + Push-Notification
+    const ch = supabase
+      .channel("tenant_issues_rt")
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "tenant_issues" }, (payload) => {
+        const issue = payload.new as Issue;
+        setItems((prev) => [issue, ...prev]);
+        toast.success(`Neues Ticket: ${issue.title}`, { icon: "🔔" });
+        showLocalNotification(`Neues Ticket: ${issue.title}`, { body: issue.description || "" }).catch(() => {});
+      })
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "tenant_issues" }, (payload) => {
+        const issue = payload.new as Issue;
+        setItems((prev) => prev.map((i) => (i.id === issue.id ? { ...i, ...issue } : i)));
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, []);
 
   const setStatus = async (id: string, status: Issue["status"]) => {
     const patch: any = { status };
