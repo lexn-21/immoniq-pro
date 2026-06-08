@@ -1,73 +1,68 @@
+# Zahlungen-Modul: Stripe SEPA + Bank-Sync
 
-## Ziel
-Sieben zusammenhängende Verbesserungen — von der Bewertung über Belege bis zum Finanzierungs-Cockpit. Damit das nicht in einem Riesen-Schritt zerschellt, baue ich in **drei Wellen**, jede einzeln testbar.
+Ziel: Vermieter sieht **alle Geldflüsse pro Objekt live**, ohne Belege zu tippen. Das schlägt klassische Buchhaltung, weil Ein- und Ausgänge automatisch zugeordnet werden.
 
----
+## Was gebaut wird
 
-### Welle 1 — Bewertung & Mietspiegel (sofort sichtbar)
+### A) Mieter zahlen direkt (Stripe Connect + SEPA Lastschrift)
+1. **Vermieter-Onboarding** als Stripe Connect Express Account (5 Min, einmalig pro Vermieter).
+2. Pro Mietverhältnis → Button **„Mietzahlung aktivieren"** → erzeugt SEPA-Mandat-Link → Mieter unterschreibt 1×.
+3. Stripe zieht ab dann monatlich automatisch ein (Miete + NK-Vorauszahlung), zahlt auf Vermieter-Konto aus.
+4. ImmonIQ behält **0,5 % Application Fee** = Umsatzquelle.
+5. Bei Zahlungsausfall: automatisches Mahnwesen + Inbox-Eintrag „Miete Februar offen – Mieter X".
 
-**Bewertung mit Objektauswahl + Bandbreite (`/app/valuation`)**
-- Dropdown „Eigene Immobilie wählen" → PLZ, Wohnfläche, Kaltmiete werden vorbefüllt aus `properties` + `units`.
-- Bewertung gibt **Spanne** zurück (Pessimistisch / Realistisch / Optimistisch), ±12 % um Blended-Value, statt eines fixen Preises.
-- Neuer Block „So rechnen Banken" (Sachwert vs. Ertragswert vs. Vergleichswert, kurz erklärt, mit Quelle ImmoWertV §§ 17/27/24).
-- Disclaimer prominent: „Indikative Range — ersetzt keinen Gutachter nach § 194 BauGB".
+### B) Bank read-only verknüpfen (GoCardless Bank Account Data)
+1. Einstellungen → **„Bankkonto verbinden"** → GoCardless-Flow (PSD2-SCA) → Vermieter wählt seine Bank, loggt sich ein, bestätigt 90 Tage Lesezugriff.
+2. Edge Function `bank-sync` ruft täglich Umsätze ab, schreibt in `bank_transactions`.
+3. **Auto-Matcher**: matcht Umsatz auf Mieter (Verwendungszweck + Betrag ± 5 €) → erzeugt `income`-Eintrag. Nicht-zugeordnete Umsätze → Inbox als „Bitte zuordnen".
+4. Ausgaben (Handwerker, Versicherung) → werden mit `expenses` gematcht oder als neuer Ausgaben-Vorschlag in Inbox.
+5. Re-Auth-Reminder 7 Tage vor Ablauf der 90-Tage-Berechtigung.
 
-**Mietspiegel-Karte (`MietspiegelCard.tsx`)**
-- Bug-Fix: einige offizielle URLs sind tot/redirected → aktualisieren + `target="_blank" rel="noopener"` prüfen.
-- Fallback „Google Suche site:.de" → präzisere Query mit `"Mietspiegel" + Stadt + aktuelles Jahr`.
+### C) Neue Cockpit-Ansicht „Cashflow pro Objekt"
+- Live-Saldo, MTD/YTD, offene Forderungen, DATEV-Export-Button (CSV nach Steuerberater-Schema).
+- Banner „Schlägt jede Buchhaltung – kein Tippen mehr".
 
----
+## Technisch
 
-### Welle 2 — Belege-Scan-Archiv & Mietvertrags-Vorlage
+### Neue Tabellen
+- `bank_connections` (user_id, gocardless_requisition_id, institution_id, valid_until, status)
+- `bank_accounts` (connection_id, iban, owner_name, currency, balance)
+- `bank_transactions` (account_id, booking_date, amount, currency, counterparty_name, counterparty_iban, purpose, matched_expense_id, matched_property_id, matched_tenant_id, status: unmatched/matched/ignored)
+- `tenant_payment_mandates` (tenant_id, stripe_mandate_id, stripe_subscription_id, amount_cents, status, next_charge_date)
+- `connected_accounts` (user_id, stripe_account_id, charges_enabled, payouts_enabled)
 
-**Belege wie Buchhaltung (`/app/expenses`)**
-- Bereits vorhandener `DocScanner` wird im Expense-Anlage-Dialog eingebunden → Multi-Page Scan → PDF in `receipts` Bucket.
-- Neuer Tab/Filter „Archiv": chronologisch sortiert, Suche nach Lieferant/Betrag/Datum, Vorschau im Drawer, Download.
-- Status-Badges (gebucht / offen / steuerlich relevant).
+Alle mit RLS `auth.uid() = user_id` + GRANTs.
 
-**Mietvertrag-Vorlage ARAG-Style (`/app/templates`)**
-- Neuer Starter „Wohnraum-Mietvertrag (unbefristet)" — komplett ausformuliert nach BGB §§ 535 ff., mit Index-/Staffel-Option, Kaution, Schönheitsreparaturen-Klausel BGH-konform.
-- Editierbar im bestehenden Markdown-Editor mit Placeholder-System.
-- Footer-Disclaimer in jedem rechtlichen Template: „Muster ohne Rechtsberatung — vor Verwendung individuell prüfen lassen".
+### Edge Functions
+- `gocardless-init-link` — startet Bank-Auth-Flow, gibt Redirect-URL zurück
+- `gocardless-callback` — speichert requisition, listet accounts
+- `gocardless-sync` — täglicher Cron (pg_cron), holt Umsätze, ruft Auto-Matcher
+- `stripe-connect-onboard` — erzeugt Express Account + Onboarding-Link
+- `stripe-create-tenant-mandate` — SEPA-Setup-Intent + Subscription für Mieter
+- `stripe-connect-webhook` — Erweiterung der bestehenden Webhook für `invoice.paid`, `invoice.payment_failed` (Mieterzahlungen)
 
----
+### Secrets benötigt
+- `GOCARDLESS_BAD_SECRET_ID` + `GOCARDLESS_BAD_SECRET_KEY` (kostenlos auf bankaccountdata.gocardless.com)
+- Stripe Connect läuft über bestehende Stripe-Integration
 
-### Welle 3 — Finanzierungs-Cockpit (neue Seite `/app/financing`)
+### UI
+- Neue Sidebar-Section **„Finanzen"** mit Tabs: Cashflow · Mieten · Bank · Belege · Export
+- Setup-Wizard 2-Schritt: „Bank verbinden" + „Stripe einrichten" (beides optional, beide unabhängig nutzbar)
 
-**Datenmodell** (neue Migration)
-```
-public.financings (
-  id, user_id, property_id,
-  bank_name, loan_amount, interest_rate, fixed_until,
-  monthly_rate, start_date, term_months,
-  current_balance,  -- Restschuld
-  notes, created_at, updated_at
-)
-```
-+ GRANTs + RLS (user_id = auth.uid()).
+## Rechtlich / Haftung
+- Hinweis: „Lesezugriff aufs Konto, ImmonIQ kann keine Überweisungen auslösen"
+- DSGVO-Verarbeitungsverzeichnis-Eintrag für GoCardless + Stripe
+- Footer-Disclaimer: „Ersetzt keine Buchhaltung – für Steuererklärung Steuerberater konsultieren"
 
-**UI Cockpit**
-- Pro Objekt: Restschuld-Kurve (Tilgungsplan annäherungsweise berechnet), Zinsbindung-Countdown, „Anschluss in X Monaten".
-- **Leitzins-Widget** ist bereits vorhanden (`LeitzinsWidget.tsx`) → integrieren oben auf der Seite.
-- **Umfinanzierungs-Check**: aktueller Marktzins (aus Leitzins + Spread-Annahme 1.5 %) vs. eigener Zins → grünes „Lohnt sich" wenn Differenz > 0.5 % und Zinsbindung < 18 Monate.
-- **Alert** (Banner auf Dashboard): wenn Marktzins ≥ 1 % unter eigenem Zins → „Umfinanzierung prüfen".
-- Sektion „Bank wird Kunde": kurzer Pitch + Mail-Button mit vorausgefüllter Anfrage an Hausbank (mailto-Vorlage).
+## Roadmap (3 Phasen, damit nicht alles auf einmal)
 
-**Methodik-Text** auf der Seite: erklärt Sondertilgung, Forward-Darlehen, Volltilger — knapp, ohne Rechtsberatung.
+**Phase 1 (jetzt, ~Tag 1):** GoCardless Bank-Sync read-only + Cashflow-Cockpit + Auto-Matcher. Sofort wertvoll, kein Mieter-Onboarding nötig.
 
----
+**Phase 2 (~Tag 2):** Stripe Connect Express + Mieter-SEPA-Mandate + Mahnwesen.
 
-## Technik-Notizen
-- Keine externe Bank-API — Leitzins kommt aus dem existierenden Widget (EZB).
-- Range-Bewertung: `value_blended * 0.88` / `* 1.0` / `* 1.12` als drei Werte.
-- Belege-Scan nutzt vorhandene `DocScanner`-Komponente, kein neuer Code für Scanning.
-- Mietvertrag-Template ist reiner Markdown-Text, nutzt bereits existierende Placeholder-Engine in `Templates.tsx`.
+**Phase 3 (~Tag 3):** DATEV/Lexware-CSV-Export + monatlicher PDF-Report an Steuerberater per E-Mail.
 
----
-
-## Reihenfolge der Ausführung
-1. Welle 1 (Valuation Range + Mietspiegel-Fix) — 1 Turn
-2. Welle 2 (Expenses-Scan-Archiv + Mietvertrag-Vorlage) — 1 Turn
-3. Welle 3 (Financing-Modul mit Migration + Cockpit + Alert) — 1–2 Turns
-
-Soll ich so loslegen? Wenn du eine Welle anders priorisierst (z. B. zuerst Finanzierung), sag Bescheid — sonst starte ich mit Welle 1.
+## Was ich von dir brauche, bevor ich starte
+1. **GoCardless BAD Account** anlegen auf https://bankaccountdata.gocardless.com → Secret ID + Secret Key (kostenlos, 2 Min) → dann reiche ich `add_secret` ein.
+2. OK für **0,5 % Application Fee** auf Mietzahlungen als ImmonIQ-Umsatzquelle? (Alternativ: Flat 2 €/Mietverhältnis/Monat)
+3. Start mit **Phase 1** (Bank-Sync) oder direkt **alle 3 Phasen** durchziehen?
