@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { eur } from "@/lib/format";
 import { toast } from "sonner";
-import { ArrowLeft, Star, X, Check, MessageSquare, ShieldCheck, Sparkles, Loader2, TrendingUp, Users, Copy, Plus, Trash2, Mail } from "lucide-react";
+import { ArrowLeft, Star, X, Check, MessageSquare, ShieldCheck, Sparkles, Loader2, TrendingUp, Users, Copy, Plus, Trash2, Mail, FileSearch } from "lucide-react";
 import ChatDialog from "@/components/market/ChatDialog";
 import LegalSnippet from "@/components/LegalSnippet";
 import { AIDisclaimer } from "@/components/AIDisclaimer";
@@ -24,9 +24,25 @@ const ListingApplications = () => {
   const [apps, setApps] = useState<any[]>([]);
   const [chatApp, setChatApp] = useState<any>(null);
   const [scoring, setScoring] = useState<string | null>(null);
+  const [bonCheck, setBonCheck] = useState<string | null>(null);
+  const [bonResults, setBonResults] = useState<Record<string, any>>({});
   const [wgOpen, setWgOpen] = useState(false);
   const [wgMembers, setWgMembers] = useState<any[]>([]);
   const [newMember, setNewMember] = useState({ name: "", email: "" });
+
+  const runBonitaet = async (appId: string) => {
+    setBonCheck(appId);
+    try {
+      const { data, error } = await supabase.functions.invoke("bonitaet-check", { body: { application_id: appId } });
+      if (error) throw error;
+      setBonResults((p) => ({ ...p, [appId]: data }));
+      toast.success(`Bonität: Score ${data.score} (${data.rating})`);
+    } catch (e: any) {
+      toast.error(e.message ?? "Bonitäts-Check fehlgeschlagen");
+    } finally {
+      setBonCheck(null);
+    }
+  };
 
   const aiScore = async (appId: string) => {
     setScoring(appId);
