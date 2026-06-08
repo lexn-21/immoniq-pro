@@ -62,18 +62,27 @@ export const useSubscription = (): PlanState => {
     const load = async () => {
       const env = getStripeEnvironment();
 
-      const [{ data: sub }, { data: trialDays }, { data: hasPro }] = await Promise.all([
-        supabase
-          .from("subscriptions")
-          .select("*")
-          .eq("user_id", user.id)
-          .eq("environment", env)
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .maybeSingle(),
-        supabase.rpc("trial_days_left", { _user_id: user.id }),
-        supabase.rpc("has_pro_access", { _user_id: user.id, _env: env }),
-      ]);
+      let sub: any = null, trialDays: any = null, hasPro: any = null;
+      try {
+        const [r1, r2, r3] = await Promise.all([
+          supabase
+            .from("subscriptions")
+            .select("*")
+            .eq("user_id", user.id)
+            .eq("environment", env)
+            .order("created_at", { ascending: false })
+            .limit(1)
+            .maybeSingle(),
+          supabase.rpc("trial_days_left", { _user_id: user.id }),
+          supabase.rpc("has_pro_access", { _user_id: user.id, _env: env }),
+        ]);
+        sub = r1.data; trialDays = r2.data; hasPro = r3.data;
+        if (r1.error) console.warn("[useSubscription] subscriptions:", r1.error.message);
+        if (r2.error) console.warn("[useSubscription] trial_days_left:", r2.error.message);
+        if (r3.error) console.warn("[useSubscription] has_pro_access:", r3.error.message);
+      } catch (e) {
+        console.error("[useSubscription] load failed", e);
+      }
 
       const days = (trialDays as number | null) ?? 0;
       const active = !!sub && (
