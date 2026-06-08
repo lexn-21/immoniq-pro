@@ -80,7 +80,7 @@ const Banking = () => {
       supabase.from("bank_accounts").select("*"),
       supabase.from("bank_transactions").select("*").order("booking_date", { ascending: false }).limit(50),
       supabase.from("bank_transactions").select("*").eq("match_status", "suggested").order("booking_date", { ascending: false }),
-      supabase.from("tenants").select("id,full_name,iban,unit_id"),
+      supabase.from("tenants").select("id,full_name,iban,unit_id,email"),
       supabase.from("properties").select("id,name"),
       supabase.rpc("missing_rents", { _grace_day: 5 }),
       supabase.rpc("recurring_transactions", { _months: 6 }),
