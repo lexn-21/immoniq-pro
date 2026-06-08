@@ -14,6 +14,7 @@ import { eur } from "@/lib/format";
 import { z } from "zod";
 import { NeighborhoodInsight } from "@/components/market/NeighborhoodInsight";
 import { MietspiegelCard } from "@/components/market/MietspiegelCard";
+import { AvmWidget } from "@/components/market/AvmWidget";
 
 const unitSchema = z.object({
   label: z.string().trim().min(1).max(100),
@@ -223,6 +224,13 @@ const PropertyDetail = () => {
           </div>
         </Card>
       )}
+
+      <AvmWidget
+        zip={property.zip}
+        livingSpace={units.reduce((s, u) => s + Number(u.living_space ?? 0), 0) || null}
+        annualRent={units.reduce((s, u) => s + (Number(u.rent_cold ?? 0) * 12), 0) || null}
+        purchasePrice={property.purchase_price}
+      />
 
       <MietspiegelCard zip={property.zip} city={property.city} />
 

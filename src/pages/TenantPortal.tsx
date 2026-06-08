@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Logo } from "@/components/Logo";
 import { eur, date } from "@/lib/format";
-import { Home, AlertTriangle, Plus, ShieldCheck, Loader2, FileText, Download } from "lucide-react";
+import { Home, AlertTriangle, Plus, ShieldCheck, Loader2, FileText, Download, Camera, Mic, Square, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
 type Resolved = {
@@ -46,6 +46,73 @@ const TenantPortal = () => {
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ category: "sanitaer", severity: "minor", title: "", description: "" });
+  const [analyzing, setAnalyzing] = useState(false);
+  const [recording, setRecording] = useState(false);
+  const photoRef = useRef<HTMLInputElement>(null);
+  const recorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
+
+  const blobToBase64 = (blob: Blob): Promise<string> => new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onloadend = () => res(String(r.result).split(",")[1] ?? "");
+    r.onerror = rej;
+    r.readAsDataURL(blob);
+  });
+
+  const analyzeWith = async (payload: { imageBase64?: string; audioBase64?: string; mimeType?: string }) => {
+    setAnalyzing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("ai-issue-analyze", { body: payload });
+      if (error) throw error;
+      if (data?.title) setForm(f => ({
+        ...f,
+        title: data.title ?? f.title,
+        description: data.description ?? f.description,
+        severity: data.severity ?? f.severity,
+        category: data.category ?? f.category,
+      }));
+      toast.success("KI-Analyse fertig — bitte prüfen & anpassen");
+    } catch (e: any) {
+      toast.error("KI-Analyse fehlgeschlagen: " + (e?.message ?? "unbekannt"));
+    } finally {
+      setAnalyzing(false);
+    }
+  };
+
+  const onPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 8 * 1024 * 1024) return toast.error("Bild zu groß (max 8 MB)");
+    const b64 = await blobToBase64(file);
+    await analyzeWith({ imageBase64: b64, mimeType: file.type });
+    e.target.value = "";
+  };
+
+  const toggleRecord = async () => {
+    if (recording) {
+      recorderRef.current?.stop();
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mr = new MediaRecorder(stream);
+      chunksRef.current = [];
+      mr.ondataavailable = (ev) => { if (ev.data.size) chunksRef.current.push(ev.data); };
+      mr.onstop = async () => {
+        stream.getTracks().forEach(t => t.stop());
+        setRecording(false);
+        const blob = new Blob(chunksRef.current, { type: mr.mimeType || "audio/webm" });
+        if (blob.size < 500) return toast.error("Aufnahme zu kurz");
+        const b64 = await blobToBase64(blob);
+        await analyzeWith({ audioBase64: b64, mimeType: "audio/webm" });
+      };
+      recorderRef.current = mr;
+      mr.start();
+      setRecording(true);
+    } catch {
+      toast.error("Mikrofon-Zugriff verweigert");
+    }
+  };
 
   const load = async () => {
     if (!token) return;
@@ -182,6 +249,22 @@ const TenantPortal = () => {
             <DialogContent>
               <DialogHeader><DialogTitle>Neuer Schaden</DialogTitle></DialogHeader>
               <div className="space-y-4">
+                <Card className="p-3 bg-primary/5 border-primary/20">
+                  <p className="text-xs font-medium mb-2 flex items-center gap-1.5">
+                    <Sparkles className="h-3.5 w-3.5 text-primary" /> KI füllt das Formular automatisch
+                  </p>
+                  <div className="flex gap-2">
+                    <input ref={photoRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={onPhoto} />
+                    <Button type="button" variant="outline" size="sm" className="flex-1" disabled={analyzing || recording} onClick={() => photoRef.current?.click()}>
+                      {analyzing ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : <Camera className="h-3.5 w-3.5 mr-1.5" />}
+                      Foto
+                    </Button>
+                    <Button type="button" variant={recording ? "destructive" : "outline"} size="sm" className="flex-1" disabled={analyzing} onClick={toggleRecord}>
+                      {recording ? <Square className="h-3.5 w-3.5 mr-1.5" /> : <Mic className="h-3.5 w-3.5 mr-1.5" />}
+                      {recording ? "Stoppen" : "Sprachnotiz"}
+                    </Button>
+                  </div>
+                </Card>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-2">
                     <Label>Kategorie</Label>
