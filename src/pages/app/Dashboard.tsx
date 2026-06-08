@@ -14,6 +14,7 @@ import { LeitzinsWidget } from "@/components/LeitzinsWidget";
 import { TodayFeed } from "@/components/TodayFeed";
 import { MarketPulseWidget } from "@/components/market/MarketPulseWidget";
 import RefinanceAlert from "@/components/RefinanceAlert";
+import OverdueTicketsWidget from "@/components/tickets/OverdueTicketsWidget";
 import { motion } from "framer-motion";
 import {
   ArrowUpRight, Building2, Wallet, Receipt, TrendingUp, Plus,
@@ -193,6 +194,13 @@ const Dashboard = () => {
 
       {/* Umfinanzierungs-Alert */}
       <RefinanceAlert />
+
+      {/* Überfällige Tickets — direkt sichtbar, deep-link in Tickets */}
+      {!isEmpty && (
+        <Item>
+          <OverdueTicketsWidget />
+        </Item>
+      )}
 
       {/* Heute-Feed: Auto-Mietvorschläge, Überfällige, Tasks, Tipps, Wins */}
       {!isEmpty && (
