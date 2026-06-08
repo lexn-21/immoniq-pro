@@ -128,25 +128,40 @@ export default function TenantDetail() {
             </p>
           </div>
         </div>
-        <Button variant="outline" size="sm" onClick={async () => {
-          const { data: auth } = await supabase.auth.getUser();
-          if (!auth.user || !tenant.unit_id) return;
-          const existing = await supabase.from("tenant_portal_links")
-            .select("token").eq("tenant_id", tenant.id).eq("revoked", false).maybeSingle();
-          let token = existing.data?.token;
-          if (!token) {
-            const ins = await supabase.from("tenant_portal_links").insert({
-              user_id: auth.user.id, tenant_id: tenant.id, unit_id: tenant.unit_id,
-            }).select("token").single();
-            if (ins.error) { toast.error(ins.error.message); return; }
-            token = ins.data.token;
-          }
-          const url = `${window.location.origin}/mieter/${token}`;
-          await navigator.clipboard.writeText(url);
-          toast.success("Mieter-Link kopiert", { description: url });
-        }}>
-          <Link2 className="h-3.5 w-3.5 mr-1.5" /> Portal-Link
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={async () => {
+            const { data: auth } = await supabase.auth.getUser();
+            if (!auth.user || !tenant.unit_id) return;
+            const existing = await supabase.from("tenant_portal_links")
+              .select("token").eq("tenant_id", tenant.id).eq("revoked", false).maybeSingle();
+            let token = existing.data?.token;
+            if (!token) {
+              const ins = await supabase.from("tenant_portal_links").insert({
+                user_id: auth.user.id, tenant_id: tenant.id, unit_id: tenant.unit_id,
+              }).select("token").single();
+              if (ins.error) { toast.error(ins.error.message); return; }
+              token = ins.data.token;
+            }
+            const url = `${window.location.origin}/mieter/${token}`;
+            await navigator.clipboard.writeText(url);
+            toast.success("Mieter-Portal-Link kopiert", { description: url, duration: 5000 });
+            // Optional: direkt per WhatsApp teilen wenn Telefon vorhanden
+            if (tenant.phone) {
+              const msg = `Hallo ${tenant.full_name}, hier ist dein persönlicher Mieter-Bereich für ${property?.name ?? "deine Wohnung"} — Zählerstände, Zahlungshistorie & Schadenmeldungen jederzeit online: ${url}`;
+              const { whatsappLink } = await import("@/lib/whatsapp");
+              const waUrl = whatsappLink(tenant.phone, msg);
+              if (waUrl) {
+                setTimeout(() => {
+                  if (confirm("Link per WhatsApp an Mieter senden?")) {
+                    window.open(waUrl, "_blank", "noopener,noreferrer");
+                  }
+                }, 300);
+              }
+            }
+          }}>
+            <Link2 className="h-3.5 w-3.5 mr-1.5" /> Portal-Link
+          </Button>
+        </div>
       </div>
 
       {/* KPI Row */}
