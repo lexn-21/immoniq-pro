@@ -116,19 +116,22 @@ export const TodayFeed = () => {
       });
     }
 
-    // 2) Auto-Mietvorschläge laufender Monat
-    activeTenants.forEach(t => {
-      if (paidThisMonth.has(t.id) || !t.unit_id) return;
-      const unit = unitsById.get(t.unit_id);
-      if (!unit) return;
-      const amount = Number(unit.rent_cold ?? 0) + Number(unit.utilities ?? 0);
-      if (amount <= 0) return;
-      out.push({
-        kind: "rent_suggest", id: `suggest-${t.id}-${curMonth}`,
-        tenant: t, unit, amount,
-        monthLabel: monthLabelDe(curMonthDate), monthKey: curMonth,
+    // 2) Auto-Mietvorschläge laufender Monat — nur wenn KEIN Banking verbunden
+    // (mit Banking läuft Auto-Match, manuelles Buchen wäre redundant)
+    if (!bankingActive) {
+      activeTenants.forEach(t => {
+        if (paidThisMonth.has(t.id) || !t.unit_id) return;
+        const unit = unitsById.get(t.unit_id);
+        if (!unit) return;
+        const amount = Number(unit.rent_cold ?? 0) + Number(unit.utilities ?? 0);
+        if (amount <= 0) return;
+        out.push({
+          kind: "rent_suggest", id: `suggest-${t.id}-${curMonth}`,
+          tenant: t, unit, amount,
+          monthLabel: monthLabelDe(curMonthDate), monthKey: curMonth,
+        });
       });
-    });
+    }
 
     // 3) Heutige/überfällige Aufgaben
     const todayISO = today.toISOString().slice(0, 10);
