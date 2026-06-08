@@ -300,7 +300,7 @@ async function autoMatch(supabase: any, userId: string) {
   const { data: txs } = await supabase
     .from("bank_transactions").select("*")
     .eq("user_id", userId).eq("match_status", "unmatched");
-  if (!txs?.length) return { autoIn: 0, autoOut: 0, suggested: 0 };
+  if (!txs?.length) return { autoIn: 0, autoOut: 0, suggested: 0, autoLinked: 0 };
 
   // Belege/Ausgaben der letzten 30 Tage laden — für Anti-Doppelbuchung
   const since30 = new Date(Date.now() - 30 * 24 * 3600 * 1000).toISOString().slice(0, 10);
