@@ -427,6 +427,7 @@ function ContractPanel({ tenant, property, reload }: { tenant: any; property: an
       deposit: f.deposit === "" ? null : Number(f.deposit),
       move_in: f.move_in || null,
       move_out: f.move_out || null,
+      iban: f.iban.replace(/\s/g, "").toUpperCase() || null,
     };
     const { error } = await supabase.from("tenants").update(payload).eq("id", tenant.id);
     setBusy(false);
