@@ -45,6 +45,7 @@ export const TodayFeed = () => {
   const [units, setUnits] = useState<Unit[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [bankingActive, setBankingActive] = useState(false);
   const [loading, setLoading] = useState(true);
   const [idx, setIdx] = useState(0);
   const [booking, setBooking] = useState<string | null>(null);
