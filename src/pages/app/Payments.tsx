@@ -209,12 +209,31 @@ const Payments = () => {
           <h1 className="text-3xl font-bold">Einnahmen</h1>
           <p className="text-muted-foreground text-sm mt-1">Mieteingänge erfassen — direkt im Steuerbericht & Dashboard sichtbar.</p>
         </div>
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button size="lg" className="bg-gradient-gold text-primary-foreground shadow-gold w-full sm:w-auto" disabled={properties.length === 0}>
-              <Plus className="h-5 w-5 mr-2" /> Einnahme erfassen
-            </Button>
-          </DialogTrigger>
+        <div className="flex gap-2 w-full sm:w-auto">
+          <Button
+            variant="outline"
+            size="lg"
+            disabled={items.length === 0}
+            onClick={() => downloadCsv(
+              `einnahmen-${new Date().toISOString().slice(0,10)}`,
+              items.map((p: any) => ({
+                Datum: p.paid_on,
+                Betrag_EUR: Number(p.amount ?? 0).toFixed(2),
+                Art: KIND_LABEL[p.kind] ?? p.kind,
+                Objekt: p.properties?.name ?? "",
+                Mieter: p.tenants?.full_name ?? "",
+                Notiz: p.note ?? "",
+              })),
+            )}
+          >
+            <Download className="h-4 w-4 mr-1.5" /> CSV
+          </Button>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <Button size="lg" className="bg-gradient-gold text-primary-foreground shadow-gold flex-1 sm:flex-none" disabled={properties.length === 0}>
+                <Plus className="h-5 w-5 mr-2" /> Einnahme erfassen
+              </Button>
+            </DialogTrigger>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle>Einnahme erfassen</DialogTitle>
