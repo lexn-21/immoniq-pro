@@ -453,6 +453,7 @@ function ContractPanel({ tenant, property, reload }: { tenant: any; property: an
           <Row label="Telefon" value={tenant.phone || "—"} icon={Phone} />
           <Row label="Kaution" value={tenant.deposit ? eur(tenant.deposit) : "—"} />
           <Row label="Kaltmiete (Objekt)" value={eur(property?.cold_rent || 0)} />
+          <Row label="IBAN" value={tenant.iban ? <span className="font-mono text-xs">{tenant.iban}</span> : "—"} />
         </div>
         <ContactBar email={tenant.email} phone={tenant.phone} name={tenant.full_name} />
       </Card>
