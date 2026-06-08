@@ -96,7 +96,7 @@ export default function Tickets() {
   };
 
   const patchIssue = async (id: string, patch: Partial<Issue>) => {
-    const { error } = await supabase.from("tenant_issues").update(patch).eq("id", id);
+    const { error } = await supabase.from("tenant_issues").update(patch as any).eq("id", id);
     if (error) return toastError(error);
     setItems((prev) => prev.map((i) => (i.id === id ? { ...i, ...patch } as Issue : i)));
     toast.success("Aktualisiert");
@@ -122,7 +122,7 @@ export default function Tickets() {
     load();
   };
 
-  const filtered = items.filter((i) => filter === "all" || i.status === filter);
+  
   const today = todayISO();
   const isSnoozed = (i: Issue) => !!i.snooze_until && i.snooze_until > today && i.status !== "resolved";
   const isOverdue = (i: Issue) => !!i.due_date && i.due_date < today && i.status !== "resolved";
