@@ -3279,6 +3279,19 @@ export type Database = {
           zip: string
         }[]
       }
+      missing_rents: {
+        Args: { _grace_day?: number }
+        Returns: {
+          days_overdue: number
+          due_day: number
+          expected_amount: number
+          property_id: string
+          property_name: string
+          tenant_id: string
+          tenant_name: string
+          unit_id: string
+        }[]
+      }
       move_to_dlq: {
         Args: {
           dlq_name: string
@@ -3317,6 +3330,16 @@ export type Database = {
           _zip?: string
         }
         Returns: string
+      }
+      recurring_transactions: {
+        Args: { _months?: number }
+        Returns: {
+          avg_amount_cents: number
+          counterparty: string
+          direction: string
+          last_seen: string
+          occurrences: number
+        }[]
       }
       tenant_portal_get_nka: { Args: { _token: string }; Returns: Json }
       tenant_portal_nka_pdf_path: {
