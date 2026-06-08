@@ -423,6 +423,200 @@ export type Database = {
           },
         ]
       }
+      bank_accounts: {
+        Row: {
+          balance_cents: number | null
+          balance_updated_at: string | null
+          connection_id: string
+          created_at: string
+          currency: string | null
+          external_id: string
+          iban: string | null
+          id: string
+          owner_name: string | null
+          property_id: string | null
+          user_id: string
+        }
+        Insert: {
+          balance_cents?: number | null
+          balance_updated_at?: string | null
+          connection_id: string
+          created_at?: string
+          currency?: string | null
+          external_id: string
+          iban?: string | null
+          id?: string
+          owner_name?: string | null
+          property_id?: string | null
+          user_id: string
+        }
+        Update: {
+          balance_cents?: number | null
+          balance_updated_at?: string | null
+          connection_id?: string
+          created_at?: string
+          currency?: string | null
+          external_id?: string
+          iban?: string | null
+          id?: string
+          owner_name?: string | null
+          property_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bank_accounts_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "bank_connections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bank_accounts_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bank_connections: {
+        Row: {
+          created_at: string
+          id: string
+          institution_id: string
+          institution_name: string | null
+          last_sync_at: string | null
+          provider: string
+          requisition_id: string
+          status: string
+          updated_at: string
+          user_id: string
+          valid_until: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          institution_id: string
+          institution_name?: string | null
+          last_sync_at?: string | null
+          provider?: string
+          requisition_id: string
+          status?: string
+          updated_at?: string
+          user_id: string
+          valid_until?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          institution_id?: string
+          institution_name?: string | null
+          last_sync_at?: string | null
+          provider?: string
+          requisition_id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+          valid_until?: string | null
+        }
+        Relationships: []
+      }
+      bank_transactions: {
+        Row: {
+          account_id: string
+          amount_cents: number
+          booking_date: string
+          category: string | null
+          counterparty_iban: string | null
+          counterparty_name: string | null
+          created_at: string
+          currency: string
+          external_id: string
+          id: string
+          match_confidence: number | null
+          match_status: string
+          matched_expense_id: string | null
+          matched_property_id: string | null
+          matched_tenant_id: string | null
+          purpose: string | null
+          raw: Json | null
+          user_id: string
+          value_date: string | null
+        }
+        Insert: {
+          account_id: string
+          amount_cents: number
+          booking_date: string
+          category?: string | null
+          counterparty_iban?: string | null
+          counterparty_name?: string | null
+          created_at?: string
+          currency?: string
+          external_id: string
+          id?: string
+          match_confidence?: number | null
+          match_status?: string
+          matched_expense_id?: string | null
+          matched_property_id?: string | null
+          matched_tenant_id?: string | null
+          purpose?: string | null
+          raw?: Json | null
+          user_id: string
+          value_date?: string | null
+        }
+        Update: {
+          account_id?: string
+          amount_cents?: number
+          booking_date?: string
+          category?: string | null
+          counterparty_iban?: string | null
+          counterparty_name?: string | null
+          created_at?: string
+          currency?: string
+          external_id?: string
+          id?: string
+          match_confidence?: number | null
+          match_status?: string
+          matched_expense_id?: string | null
+          matched_property_id?: string | null
+          matched_tenant_id?: string | null
+          purpose?: string | null
+          raw?: Json | null
+          user_id?: string
+          value_date?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bank_transactions_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "bank_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bank_transactions_matched_expense_id_fkey"
+            columns: ["matched_expense_id"]
+            isOneToOne: false
+            referencedRelation: "expenses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bank_transactions_matched_property_id_fkey"
+            columns: ["matched_property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bank_transactions_matched_tenant_id_fkey"
+            columns: ["matched_tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bonitaets_checks: {
         Row: {
           application_id: string | null
@@ -584,6 +778,42 @@ export type Database = {
           reactions_count?: number
           user_id?: string
           zip_prefix?: string | null
+        }
+        Relationships: []
+      }
+      connected_accounts: {
+        Row: {
+          charges_enabled: boolean | null
+          country: string | null
+          created_at: string
+          details_submitted: boolean | null
+          id: string
+          payouts_enabled: boolean | null
+          stripe_account_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          charges_enabled?: boolean | null
+          country?: string | null
+          created_at?: string
+          details_submitted?: boolean | null
+          id?: string
+          payouts_enabled?: boolean | null
+          stripe_account_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          charges_enabled?: boolean | null
+          country?: string | null
+          created_at?: string
+          details_submitted?: boolean | null
+          id?: string
+          payouts_enabled?: boolean | null
+          stripe_account_id?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -2368,6 +2598,72 @@ export type Database = {
           verified_schufa?: Json
         }
         Relationships: []
+      }
+      tenant_payment_mandates: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          currency: string
+          id: string
+          next_charge_date: string | null
+          property_id: string | null
+          status: string
+          stripe_account_id: string | null
+          stripe_customer_id: string | null
+          stripe_mandate_id: string | null
+          stripe_subscription_id: string | null
+          tenant_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_cents: number
+          created_at?: string
+          currency?: string
+          id?: string
+          next_charge_date?: string | null
+          property_id?: string | null
+          status?: string
+          stripe_account_id?: string | null
+          stripe_customer_id?: string | null
+          stripe_mandate_id?: string | null
+          stripe_subscription_id?: string | null
+          tenant_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          next_charge_date?: string | null
+          property_id?: string | null
+          status?: string
+          stripe_account_id?: string | null
+          stripe_customer_id?: string | null
+          stripe_mandate_id?: string | null
+          stripe_subscription_id?: string | null
+          tenant_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tenant_payment_mandates_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tenant_payment_mandates_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tenant_portal_links: {
         Row: {
