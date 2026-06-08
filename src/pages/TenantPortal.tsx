@@ -249,6 +249,22 @@ const TenantPortal = () => {
             <DialogContent>
               <DialogHeader><DialogTitle>Neuer Schaden</DialogTitle></DialogHeader>
               <div className="space-y-4">
+                <Card className="p-3 bg-primary/5 border-primary/20">
+                  <p className="text-xs font-medium mb-2 flex items-center gap-1.5">
+                    <Sparkles className="h-3.5 w-3.5 text-primary" /> KI füllt das Formular automatisch
+                  </p>
+                  <div className="flex gap-2">
+                    <input ref={photoRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={onPhoto} />
+                    <Button type="button" variant="outline" size="sm" className="flex-1" disabled={analyzing || recording} onClick={() => photoRef.current?.click()}>
+                      {analyzing ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : <Camera className="h-3.5 w-3.5 mr-1.5" />}
+                      Foto
+                    </Button>
+                    <Button type="button" variant={recording ? "destructive" : "outline"} size="sm" className="flex-1" disabled={analyzing} onClick={toggleRecord}>
+                      {recording ? <Square className="h-3.5 w-3.5 mr-1.5" /> : <Mic className="h-3.5 w-3.5 mr-1.5" />}
+                      {recording ? "Stoppen" : "Sprachnotiz"}
+                    </Button>
+                  </div>
+                </Card>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-2">
                     <Label>Kategorie</Label>
