@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useOutletContext } from "react-router-dom";
+import { Navigate, useOutletContext } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,11 @@ const KIND_LABEL: Record<string, string> = {
 
 export default function TenantDocs() {
   const ctx = useOutletContext<TenantCtx>();
+  if (!ctx.tenant) return <Navigate to="/mein-immoniq/verbinden" replace />;
+  return <TenantDocsInner ctx={ctx as TenantCtx & { tenant: NonNullable<TenantCtx["tenant"]> }} />;
+}
+
+function TenantDocsInner({ ctx }: { ctx: TenantCtx & { tenant: NonNullable<TenantCtx["tenant"]> } }) {
   const [docs, setDocs] = useState<Doc[]>([]);
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
