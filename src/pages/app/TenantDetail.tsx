@@ -42,6 +42,7 @@ export default function TenantDetail() {
   const [docs, setDocs] = useState<any[]>([]);
   const [notes, setNotes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [chatOpen, setChatOpen] = useState(false);
 
   useEffect(() => {
     document.title = "Mieter · ImmonIQ";
