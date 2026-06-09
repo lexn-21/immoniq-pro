@@ -22,6 +22,7 @@ import EmptyState from "@/components/EmptyState";
 import { waHref, mailHref } from "@/lib/contact";
 import { WhatsappButton } from "@/components/WhatsappButton";
 import TenantTicketsPanel from "@/components/tickets/TenantTicketsPanel";
+import TenantChatSheet from "@/components/tenant/TenantChatSheet";
 
 const DOC_KIND_LABEL: Record<string, string> = {
   contract: "Mietvertrag",
