@@ -2879,6 +2879,39 @@ export type Database = {
         }
         Relationships: []
       }
+      tenant_vault: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          mime: string | null
+          name: string
+          path: string
+          size_bytes: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind?: string
+          mime?: string | null
+          name: string
+          path: string
+          size_bytes?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          mime?: string | null
+          name?: string
+          path?: string
+          size_bytes?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       tenants: {
         Row: {
           archived_at: string | null
@@ -3477,6 +3510,10 @@ export type Database = {
         }[]
       }
       tenant_claim: { Args: { _token: string }; Returns: string }
+      tenant_connect_by_landlord_email: {
+        Args: { _email: string; _my_name: string }
+        Returns: string
+      }
       tenant_portal_get_nka: { Args: { _token: string }; Returns: Json }
       tenant_portal_list_messages: {
         Args: { _token: string }
