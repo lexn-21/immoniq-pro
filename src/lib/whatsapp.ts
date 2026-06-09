@@ -1,6 +1,6 @@
 /**
  * WhatsApp Click-to-Chat Helper
- * Erzeugt wa.me Deep-Links — kein API-Key nötig, funktioniert sofort auf Web + Mobile.
+ * Erzeugt App-Deep-Links — kein API-Key nötig und kein blockiertes WhatsApp Web.
  */
 
 /** Normalisiert eine deutsche/internationale Telefonnummer zu E.164 ohne führendes "+". */
@@ -14,21 +14,14 @@ export function normalizePhoneForWhatsapp(phone: string | null | undefined): str
   return digits.length >= 8 ? digits : null;
 }
 
-/** Baut einen WhatsApp-Link. Auf Desktop wird web.whatsapp.com verwendet
- *  (wa.me leitet sonst auf api.whatsapp.com weiter, was häufig mit
- *  ERR_BLOCKED_BY_RESPONSE durch Browser-/Adblock-Erweiterungen blockiert wird).
- *  Auf Mobile öffnet wa.me zuverlässig die App. */
+/** Baut einen WhatsApp-App-Link. Vermeidet web.whatsapp.com/api.whatsapp.com,
+ *  weil diese Ziele in manchen Browsern/Umgebungen mit ERR_BLOCKED_BY_RESPONSE
+ *  blockiert werden. */
 export function whatsappLink(phone: string | null | undefined, message?: string): string | null {
   const num = normalizePhoneForWhatsapp(phone);
   if (!num) return null;
-  const isMobile = typeof navigator !== "undefined" &&
-    /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
-  if (isMobile) {
-    const q = message ? `?text=${encodeURIComponent(message)}` : "";
-    return `https://wa.me/${num}${q}`;
-  }
   const q = message ? `&text=${encodeURIComponent(message)}` : "";
-  return `https://web.whatsapp.com/send?phone=${num}${q}`;
+  return `whatsapp://send?phone=${num}${q}`;
 }
 
 /** Vorgefertigte deutsche Mieter-Nachrichten. */
