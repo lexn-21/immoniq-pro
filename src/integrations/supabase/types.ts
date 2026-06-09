@@ -2650,6 +2650,53 @@ export type Database = {
         }
         Relationships: []
       }
+      tenant_messages: {
+        Row: {
+          body: string
+          channel: string
+          created_at: string
+          direction: string
+          external_id: string | null
+          id: string
+          sent_at: string
+          status: string
+          tenant_id: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          channel?: string
+          created_at?: string
+          direction: string
+          external_id?: string | null
+          id?: string
+          sent_at?: string
+          status?: string
+          tenant_id: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          channel?: string
+          created_at?: string
+          direction?: string
+          external_id?: string | null
+          id?: string
+          sent_at?: string
+          status?: string
+          tenant_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tenant_messages_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tenant_notes: {
         Row: {
           body: string

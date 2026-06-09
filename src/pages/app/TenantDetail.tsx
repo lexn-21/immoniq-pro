@@ -22,6 +22,7 @@ import EmptyState from "@/components/EmptyState";
 import { waHref, mailHref } from "@/lib/contact";
 import { WhatsappButton } from "@/components/WhatsappButton";
 import TenantTicketsPanel from "@/components/tickets/TenantTicketsPanel";
+import TenantChatSheet from "@/components/tenant/TenantChatSheet";
 
 const DOC_KIND_LABEL: Record<string, string> = {
   contract: "Mietvertrag",
@@ -41,6 +42,7 @@ export default function TenantDetail() {
   const [docs, setDocs] = useState<any[]>([]);
   const [notes, setNotes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [chatOpen, setChatOpen] = useState(false);
 
   useEffect(() => {
     document.title = "Mieter · ImmonIQ";
@@ -134,6 +136,15 @@ export default function TenantDetail() {
           </div>
         </div>
         <div className="flex gap-2 flex-wrap">
+          {tenant.phone && (
+            <Button
+              size="sm"
+              onClick={() => setChatOpen(true)}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            >
+              <MessageCircle className="h-3.5 w-3.5 mr-1.5" /> Chat
+            </Button>
+          )}
           <Button variant="outline" size="sm" onClick={async () => {
             const { data: auth } = await supabase.auth.getUser();
             if (!auth.user || !tenant.unit_id) return;
@@ -311,6 +322,12 @@ export default function TenantDetail() {
           <NotesPanel tenantId={tenant.id} notes={notes} reload={load} />
         </TabsContent>
       </Tabs>
+
+      <TenantChatSheet
+        open={chatOpen}
+        onOpenChange={setChatOpen}
+        tenant={{ id: tenant.id, full_name: tenant.full_name, phone: tenant.phone }}
+      />
     </div>
   );
 }
