@@ -39,6 +39,11 @@ const STATUS_LABEL: Record<string, string> = {
   open: "Offen", acknowledged: "Erhalten", in_progress: "In Bearbeitung", resolved: "Gelöst", closed: "Geschlossen"
 };
 
+type ChatMsg = {
+  id: string; direction: "out" | "in"; channel: string; body: string;
+  status: string; sent_at: string; read_at: string | null;
+};
+
 const TenantPortal = () => {
   const { token } = useParams();
   const [data, setData] = useState<Resolved | null>(null);
@@ -48,6 +53,10 @@ const TenantPortal = () => {
   const [form, setForm] = useState({ category: "sanitaer", severity: "minor", title: "", description: "" });
   const [analyzing, setAnalyzing] = useState(false);
   const [recording, setRecording] = useState(false);
+  const [chat, setChat] = useState<ChatMsg[]>([]);
+  const [chatText, setChatText] = useState("");
+  const [sending, setSending] = useState(false);
+  const chatEndRef = useRef<HTMLDivElement>(null);
   const photoRef = useRef<HTMLInputElement>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
