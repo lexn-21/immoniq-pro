@@ -74,6 +74,13 @@ const PassPublic = lazy(() => import("./pages/PassPublic"));
 const Messenger = lazy(() => import("./pages/app/Messenger"));
 const Profile = lazy(() => import("./pages/app/Profile"));
 
+const TenantLayout = lazy(() => import("./pages/tenant/TenantLayout"));
+const TenantHome = lazy(() => import("./pages/tenant/TenantHome"));
+const TenantChat = lazy(() => import("./pages/tenant/TenantChat"));
+const TenantDocs = lazy(() => import("./pages/tenant/TenantDocs"));
+const TenantIssues = lazy(() => import("./pages/tenant/TenantIssues"));
+const TenantRights = lazy(() => import("./pages/tenant/TenantRights"));
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
