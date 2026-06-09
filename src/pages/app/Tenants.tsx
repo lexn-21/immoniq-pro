@@ -85,6 +85,10 @@ const Tenants = () => {
     load();
   };
 
+  const activeTenants = tenants.filter(t => !t.archived_at);
+  const archivedTenants = tenants.filter(t => t.archived_at);
+  const visible = showArchived ? archivedTenants : activeTenants;
+
   return (
     <div className="space-y-6">
       <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
