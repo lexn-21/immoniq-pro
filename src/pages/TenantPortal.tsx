@@ -134,7 +134,37 @@ const TenantPortal = () => {
     setNka(((n as unknown) as NkaItem[]) ?? []);
     setLoading(false);
   };
-  useEffect(() => { load(); }, [token]);
+  useEffect(() => { load(); loadChat(); /* eslint-disable-next-line */ }, [token]);
+
+  useEffect(() => {
+    if (!token || !data) return;
+    const ch = supabase.channel(`portal-chat:${token}`)
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "tenant_messages" },
+        () => loadChat())
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+    // eslint-disable-next-line
+  }, [token, data]);
+
+  useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [chat]);
+
+  const loadChat = async () => {
+    if (!token) return;
+    const { data: msgs } = await supabase.rpc("tenant_portal_list_messages", { _token: token });
+    setChat(((msgs as unknown) as ChatMsg[]) ?? []);
+    await supabase.rpc("tenant_portal_mark_read", { _token: token });
+  };
+
+  const sendChat = async () => {
+    const body = chatText.trim();
+    if (!body || !token) return;
+    setSending(true);
+    const { error } = await supabase.rpc("tenant_portal_send_message", { _token: token, _body: body });
+    setSending(false);
+    if (error) return toast.error("Senden fehlgeschlagen");
+    setChatText("");
+    loadChat();
+  };
 
   const downloadPdf = async (item: NkaItem) => {
     if (!item.pdf_path) return toast.error("Noch keine PDF verfügbar");
