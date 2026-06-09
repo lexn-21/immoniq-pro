@@ -228,8 +228,15 @@ function ValueTab() {
           </div>
         </div>
 
-        <div className="pt-4 border-t border-border/60">
+        <div className="grid md:grid-cols-[1fr_auto] gap-6 items-center pt-4 border-t border-border/60">
           <Stat label="Geschätzter Verkehrswert" value={fmt(value)} highlight large />
+          <div className="justify-self-center md:justify-self-end">
+            <HouseFill
+              progress={Math.min(1, parseFloat(condition) / 1.3)}
+              label="Zustands-Index"
+              caption="Je voller, desto besser der Zustand"
+            />
+          </div>
         </div>
 
         <a
