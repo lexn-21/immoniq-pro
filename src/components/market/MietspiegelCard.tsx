@@ -35,10 +35,11 @@ function officialLink(city?: string | null): { name: string; url: string; isOffi
   const key = (city ?? "").trim().toLowerCase();
   if (key && OFFICIAL_MIETSPIEGEL[key]) return { ...OFFICIAL_MIETSPIEGEL[key], isOfficial: true };
   const year = new Date().getFullYear();
-  const q = encodeURIComponent(`"Mietspiegel" ${city ?? "Deutschland"} ${year} site:.de`);
+  const q = encodeURIComponent(`Mietspiegel ${city ?? "Deutschland"} ${year}`);
   return {
     name: city ? `Mietspiegel ${city} suchen` : "Mietspiegel suchen",
-    url: `https://www.google.com/search?q=${q}`,
+    // DuckDuckGo statt Google — Google blockt zunehmend Suchen aus iframes/Apps (ERR_BLOCKED_BY_RESPONSE)
+    url: `https://duckduckgo.com/?q=${q}`,
     isOfficial: false,
   };
 }
