@@ -86,6 +86,7 @@ const Auth = () => {
     const { error } = await supabase.auth.signInWithPassword({ email: ev.data, password: pv.data });
     setLoading(false);
     if (error) return toast.error(error.message === "Invalid login credentials" ? "E-Mail oder Passwort falsch." : error.message);
+    await tryClaim();
     toast.success("Willkommen zurück.");
     navigate(redirect, { replace: true });
   };
