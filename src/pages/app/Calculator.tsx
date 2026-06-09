@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertTriangle, Calculator as CalcIcon, TrendingUp, Home, ExternalLink, Percent } from "lucide-react";
+import { HouseFill } from "@/components/calc/HouseFill";
+import { YieldGauge } from "@/components/calc/YieldGauge";
 
 const fmt = (n: number) => new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(n || 0);
 const fmt2 = (n: number) => new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 2 }).format(n || 0);
@@ -39,6 +41,7 @@ export default function Calculator() {
 }
 
 function ZinsTab() {
+  const [ursprung, setUrsprung] = useState(400000);
   const [restschuld, setRestschuld] = useState(250000);
   const [altzins, setAltzins] = useState(1.5);
   const [neuzins, setNeuzins] = useState(3.8);
@@ -50,8 +53,10 @@ function ZinsTab() {
     const diffMonat = neuRate - altRate;
     const diffJahr = diffMonat * 12;
     const zinsMehr = restschuld * (neuzins - altzins) / 100;
-    return { altRate, neuRate, diffMonat, diffJahr, zinsMehr };
-  }, [restschuld, altzins, neuzins, tilgung]);
+    const getilgt = Math.max(0, ursprung - restschuld);
+    const progress = ursprung > 0 ? getilgt / ursprung : 0;
+    return { altRate, neuRate, diffMonat, diffJahr, zinsMehr, getilgt, progress };
+  }, [ursprung, restschuld, altzins, neuzins, tilgung]);
 
   return (
     <Card className="glass">
@@ -59,11 +64,21 @@ function ZinsTab() {
         <CardTitle>Anschlussfinanzierung — Was-wäre-wenn</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="grid md:grid-cols-2 gap-4">
-          <Field label="Restschuld bei Anschluss (€)" value={restschuld} onChange={setRestschuld} />
-          <Field label="Tilgung (% p.a.)" value={tilgung} onChange={setTilgung} step="0.1" />
-          <Field label="Alter Zins (%)" value={altzins} onChange={setAltzins} step="0.1" />
-          <Field label="Neuer Zins (%)" value={neuzins} onChange={setNeuzins} step="0.1" />
+        <div className="grid md:grid-cols-[1fr_auto] gap-6 items-start">
+          <div className="grid md:grid-cols-2 gap-4">
+            <Field label="Ursprüngliches Darlehen (€)" value={ursprung} onChange={setUrsprung} />
+            <Field label="Restschuld bei Anschluss (€)" value={restschuld} onChange={setRestschuld} />
+            <Field label="Tilgung (% p.a.)" value={tilgung} onChange={setTilgung} step="0.1" />
+            <Field label="Alter Zins (%)" value={altzins} onChange={setAltzins} step="0.1" />
+            <Field label="Neuer Zins (%)" value={neuzins} onChange={setNeuzins} step="0.1" />
+          </div>
+          <div className="justify-self-center md:justify-self-end">
+            <HouseFill
+              progress={calc.progress}
+              label="Dein Haus gehört dir"
+              caption={`${fmt(calc.getilgt)} von ${fmt(ursprung)} getilgt`}
+            />
+          </div>
         </div>
 
         <div className="grid md:grid-cols-3 gap-4 pt-4 border-t border-border/60">
@@ -169,10 +184,15 @@ function YieldTab() {
           <Field label="Leerstand (%)" value={vacancyPct} onChange={setVacancyPct} step="0.5" />
         </div>
 
-        <div className="grid md:grid-cols-3 gap-4 pt-4 border-t border-border/60">
-          <Stat label="Gesamtinvestition" value={fmt(calc.total)} />
-          <Stat label="Brutto-Rendite" value={pct(calc.gross)} />
-          <Stat label="Netto-Rendite" value={pct(calc.net)} highlight />
+        <div className="grid md:grid-cols-[1fr_auto] gap-6 items-center pt-4 border-t border-border/60">
+          <div className="grid md:grid-cols-3 gap-4">
+            <Stat label="Gesamtinvestition" value={fmt(calc.total)} />
+            <Stat label="Brutto-Rendite" value={pct(calc.gross)} />
+            <Stat label="Netto-Rendite" value={pct(calc.net)} highlight />
+          </div>
+          <div className="justify-self-center md:justify-self-end">
+            <YieldGauge value={calc.net} label="Netto-Rendite p.a." />
+          </div>
         </div>
       </CardContent>
     </Card>
@@ -208,8 +228,15 @@ function ValueTab() {
           </div>
         </div>
 
-        <div className="pt-4 border-t border-border/60">
+        <div className="grid md:grid-cols-[1fr_auto] gap-6 items-center pt-4 border-t border-border/60">
           <Stat label="Geschätzter Verkehrswert" value={fmt(value)} highlight large />
+          <div className="justify-self-center md:justify-self-end">
+            <HouseFill
+              progress={Math.min(1, parseFloat(condition) / 1.3)}
+              label="Zustands-Index"
+              caption="Je voller, desto besser der Zustand"
+            />
+          </div>
         </div>
 
         <a
