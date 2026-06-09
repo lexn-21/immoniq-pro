@@ -39,6 +39,8 @@ Deno.serve(async (req) => {
       return_url: returnUrl,
       // Volles Tax/Compliance-Handling: Stripe berechnet, zieht ein, meldet & führt MwSt ab (+3,5%)
       managed_payments: { enabled: true } as any,
+      // Tester/Early-Adopter-Rabatte: Codes werden in Stripe-Dashboard angelegt
+      allow_promotion_codes: true,
       ...(customerEmail && { customer_email: customerEmail }),
       ...(userId && {
         metadata: { userId },
