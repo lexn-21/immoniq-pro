@@ -31,8 +31,9 @@ const Auth = () => {
 
   const params = new URLSearchParams(window.location.search);
   const claimToken = params.get("claim");
-  const redirect = params.get("redirect") || params.get("next") || (claimToken ? "/mein-immoniq" : "/app");
   const as = claimToken ? "tenant" : params.get("as");
+  const defaultRedirect = claimToken || as === "tenant" ? "/mein-immoniq" : "/app";
+  const redirect = params.get("redirect") || params.get("next") || defaultRedirect;
 
   const SUBTITLES: Record<string, string> = {
     owner: "Dein sicherer Ort für alles rund um dein Zuhause.",
