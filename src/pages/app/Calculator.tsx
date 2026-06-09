@@ -184,10 +184,15 @@ function YieldTab() {
           <Field label="Leerstand (%)" value={vacancyPct} onChange={setVacancyPct} step="0.5" />
         </div>
 
-        <div className="grid md:grid-cols-3 gap-4 pt-4 border-t border-border/60">
-          <Stat label="Gesamtinvestition" value={fmt(calc.total)} />
-          <Stat label="Brutto-Rendite" value={pct(calc.gross)} />
-          <Stat label="Netto-Rendite" value={pct(calc.net)} highlight />
+        <div className="grid md:grid-cols-[1fr_auto] gap-6 items-center pt-4 border-t border-border/60">
+          <div className="grid md:grid-cols-3 gap-4">
+            <Stat label="Gesamtinvestition" value={fmt(calc.total)} />
+            <Stat label="Brutto-Rendite" value={pct(calc.gross)} />
+            <Stat label="Netto-Rendite" value={pct(calc.net)} highlight />
+          </div>
+          <div className="justify-self-center md:justify-self-end">
+            <YieldGauge value={calc.net} label="Netto-Rendite p.a." />
+          </div>
         </div>
       </CardContent>
     </Card>
