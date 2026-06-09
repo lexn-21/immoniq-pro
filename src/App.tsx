@@ -72,6 +72,7 @@ const SmartInbox = lazy(() => import("./pages/app/SmartInbox"));
 const Tickets = lazy(() => import("./pages/app/Tickets"));
 const PassPublic = lazy(() => import("./pages/PassPublic"));
 const Messenger = lazy(() => import("./pages/app/Messenger"));
+const Chat = lazy(() => import("./pages/app/Chat"));
 const Profile = lazy(() => import("./pages/app/Profile"));
 
 const TenantLayout = lazy(() => import("./pages/tenant/TenantLayout"));
@@ -184,6 +185,7 @@ const App = () => (
                 <Route path="inbox" element={<SmartInbox />} />
                 <Route path="tickets" element={<Tickets />} />
                 <Route path="messenger" element={<Messenger />} />
+                <Route path="chat" element={<Chat />} />
                 <Route path="ads" element={<MyAds />} />
                 <Route path="admin/ads" element={<AdminAds />} />
                 <Route path="settings" element={<Settings />} />
