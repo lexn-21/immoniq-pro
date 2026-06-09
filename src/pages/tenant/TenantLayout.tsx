@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { Home, MessageCircle, FileText, AlertTriangle, Scale, LogOut, Loader2, Menu } from "lucide-react";
+import { Home, MessageCircle, FileText, AlertTriangle, Scale, LogOut, Loader2, Menu, Lock, Link2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Logo } from "@/components/Logo";
@@ -19,22 +19,25 @@ export type TenantCtx = {
     lease_start: string | null;
     lease_end: string | null;
     deposit: number | null;
-  };
+  } | null;
   unit: { id: string; label: string; rent_cold: number; utilities: number; living_space: number } | null;
   property: { id: string; name: string; street: string; zip: string; city: string } | null;
 };
 
-const NAV = [
+type NavItem = { to: string; label: string; icon: any; end?: boolean; needsLink?: boolean };
+
+const NAV: NavItem[] = [
   { to: "/mein-immoniq", label: "Übersicht", icon: Home, end: true },
-  { to: "/mein-immoniq/chat", label: "Chat", icon: MessageCircle },
-  { to: "/mein-immoniq/dokumente", label: "Dokumente", icon: FileText },
-  { to: "/mein-immoniq/schaeden", label: "Schäden", icon: AlertTriangle },
-  { to: "/mein-immoniq/rechte", label: "Mietrechte", icon: Scale },
+  { to: "/mein-immoniq/chat", label: "Chat", icon: MessageCircle, needsLink: true },
+  { to: "/mein-immoniq/dokumente", label: "Dokumente", icon: FileText, needsLink: true },
+  { to: "/mein-immoniq/schaeden", label: "Schäden", icon: AlertTriangle, needsLink: true },
+  { to: "/mein-immoniq/tresor", label: "Tresor", icon: Lock },
+  { to: "/mein-immoniq/rechte", label: "Rechte", icon: Scale },
 ];
 
 export default function TenantLayout() {
   const { user, loading } = useAuth();
-  const [ctx, setCtx] = useState<TenantCtx | null>(null);
+  const [ctx, setCtx] = useState<TenantCtx>({ tenant: null, unit: null, property: null });
   const [loaded, setLoaded] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
@@ -48,8 +51,10 @@ export default function TenantLayout() {
         .select("id, full_name, user_id, unit_id, property_id, lease_start, lease_end, deposit")
         .eq("claimed_by_user_id", user.id)
         .is("archived_at", null)
+        .order("claimed_at", { ascending: false })
+        .limit(1)
         .maybeSingle();
-      if (!t) { setLoaded(true); return; }
+      if (!t) { setCtx({ tenant: null, unit: null, property: null }); setLoaded(true); return; }
       const [{ data: u }, { data: p }] = await Promise.all([
         t.unit_id ? supabase.from("units").select("id, label, rent_cold, utilities, living_space").eq("id", t.unit_id).maybeSingle() : Promise.resolve({ data: null }),
         t.property_id ? supabase.from("properties").select("id, name, street, zip, city").eq("id", t.property_id).maybeSingle() : Promise.resolve({ data: null }),
@@ -70,27 +75,14 @@ export default function TenantLayout() {
   if (loading || !loaded) {
     return <div className="min-h-screen flex items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>;
   }
-  if (!user) return <Navigate to="/auth" replace />;
-  if (!ctx) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-6">
-        <div className="max-w-md text-center space-y-4">
-          <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto">
-            <Home className="h-7 w-7 text-primary" />
-          </div>
-          <h1 className="text-2xl font-bold">Noch keine Wohnung verknüpft</h1>
-          <p className="text-sm text-muted-foreground">
-            Bitte deinen Vermieter um deinen persönlichen Mieter-Link (beginnt mit <span className="font-mono">/mieter/</span>) und öffne ihn — dann verbindet sich dein Account automatisch mit deiner Wohnung.
-          </p>
-          <Button onClick={signOut} variant="outline" className="gap-2"><LogOut className="h-4 w-4" />Abmelden</Button>
-        </div>
-      </div>
-    );
-  }
+  if (!user) return <Navigate to="/auth?as=tenant" replace />;
+
+  const isLinked = !!ctx.tenant;
+  const visible = NAV.filter(n => isLinked || !n.needsLink);
 
   const NavList = ({ onClick }: { onClick?: () => void }) => (
     <nav className="space-y-1">
-      {NAV.map(n => (
+      {visible.map(n => (
         <NavLink
           key={n.to}
           to={n.to}
@@ -105,12 +97,30 @@ export default function TenantLayout() {
           <n.icon className="h-4 w-4" /> {n.label}
         </NavLink>
       ))}
+      {!isLinked && (
+        <NavLink
+          to="/mein-immoniq/verbinden"
+          onClick={onClick}
+          className={({ isActive }) =>
+            `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition mt-2 border ${
+              isActive ? "bg-primary text-primary-foreground border-primary" : "border-dashed border-primary/40 text-primary hover:bg-primary/5"
+            }`
+          }
+        >
+          <Link2 className="h-4 w-4" /> Vermieter verbinden
+        </NavLink>
+      )}
     </nav>
+  );
+
+  // Mobile bottom nav: max 5 items
+  const bottom = (isLinked
+    ? [NAV[0], NAV[1], NAV[2], NAV[4], NAV[5]]
+    : [NAV[0], NAV[4], NAV[5], { to: "/mein-immoniq/verbinden", label: "Verbinden", icon: Link2 } as NavItem]
   );
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <header className="sticky top-0 z-30 border-b border-border/60 bg-card/80 backdrop-blur-xl">
         <div className="container max-w-6xl py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -127,7 +137,9 @@ export default function TenantLayout() {
             <Badge variant="secondary" className="hidden sm:inline-flex text-[10px]">Mein ImmonIQ</Badge>
           </div>
           <div className="flex items-center gap-2">
-            <span className="hidden sm:block text-sm text-muted-foreground">{ctx.tenant.full_name}</span>
+            <span className="hidden sm:block text-sm text-muted-foreground truncate max-w-[200px]">
+              {ctx.tenant?.full_name ?? user.email}
+            </span>
             <Button variant="ghost" size="icon" className="h-9 w-9" onClick={signOut}><LogOut className="h-4 w-4" /></Button>
           </div>
         </div>
@@ -137,23 +149,21 @@ export default function TenantLayout() {
         <aside className="hidden md:block">
           <div className="sticky top-20"><NavList /></div>
         </aside>
-        <main className="min-w-0">
+        <main className="min-w-0 pb-20 md:pb-0">
           <Outlet context={ctx} />
         </main>
       </div>
 
-      {/* Mobile bottom nav */}
       <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-card/95 backdrop-blur border-t border-border/60">
-        <div className="grid grid-cols-5">
-          {NAV.map(n => (
-            <NavLink key={n.to} to={n.to} end={n.end}
+        <div className="grid" style={{ gridTemplateColumns: `repeat(${bottom.length}, minmax(0, 1fr))` }}>
+          {bottom.map(n => (
+            <NavLink key={n.to} to={n.to} end={(n as any).end}
               className={({ isActive }) => `flex flex-col items-center gap-0.5 py-2 text-[10px] ${isActive ? "text-primary" : "text-muted-foreground"}`}>
               <n.icon className="h-4 w-4" /><span>{n.label}</span>
             </NavLink>
           ))}
         </div>
       </nav>
-      <div className="md:hidden h-16" />
     </div>
   );
 }

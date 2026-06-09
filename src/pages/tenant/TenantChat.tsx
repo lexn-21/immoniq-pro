@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useOutletContext } from "react-router-dom";
+import { Navigate, useOutletContext } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,6 +12,11 @@ type Msg = { id: string; direction: "out" | "in"; body: string; sent_at: string;
 
 export default function TenantChat() {
   const ctx = useOutletContext<TenantCtx>();
+  if (!ctx.tenant) return <Navigate to="/mein-immoniq/verbinden" replace />;
+  return <TenantChatInner ctx={ctx as TenantCtx & { tenant: NonNullable<TenantCtx["tenant"]> }} />;
+}
+
+function TenantChatInner({ ctx }: { ctx: TenantCtx & { tenant: NonNullable<TenantCtx["tenant"]> } }) {
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);

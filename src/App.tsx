@@ -80,6 +80,8 @@ const TenantChat = lazy(() => import("./pages/tenant/TenantChat"));
 const TenantDocs = lazy(() => import("./pages/tenant/TenantDocs"));
 const TenantIssues = lazy(() => import("./pages/tenant/TenantIssues"));
 const TenantRights = lazy(() => import("./pages/tenant/TenantRights"));
+const TenantVault = lazy(() => import("./pages/tenant/TenantVault"));
+const TenantConnect = lazy(() => import("./pages/tenant/TenantConnect"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -110,7 +112,9 @@ const App = () => (
                 <Route path="chat" element={<TenantChat />} />
                 <Route path="dokumente" element={<TenantDocs />} />
                 <Route path="schaeden" element={<TenantIssues />} />
+                <Route path="tresor" element={<TenantVault />} />
                 <Route path="rechte" element={<TenantRights />} />
+                <Route path="verbinden" element={<TenantConnect />} />
               </Route>
               <Route path="/wg-casting/:token" element={<WgCasting />} />
               <Route path="/pass/:code" element={<PassPublic />} />
