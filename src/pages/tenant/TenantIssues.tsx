@@ -26,6 +26,11 @@ const STATUS_LABEL: Record<string, string> = {
 
 export default function TenantIssues() {
   const ctx = useOutletContext<TenantCtx>();
+  if (!ctx.tenant) return <Navigate to="/mein-immoniq/verbinden" replace />;
+  return <TenantIssuesInner ctx={ctx as TenantCtx & { tenant: NonNullable<TenantCtx["tenant"]> }} />;
+}
+
+function TenantIssuesInner({ ctx }: { ctx: TenantCtx & { tenant: NonNullable<TenantCtx["tenant"]> } }) {
   const [issues, setIssues] = useState<Issue[]>([]);
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ category: "sanitaer", severity: "minor", title: "", description: "" });
