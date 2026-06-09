@@ -31,6 +31,7 @@ const Tenants = () => {
   const [properties, setProperties] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
+  const [showArchived, setShowArchived] = useState(false);
   const [form, setForm] = useState({ property_id: "", full_name: "", email: "", phone: "", lease_start: "", lease_end: "", deposit: "" });
 
   useEffect(() => { document.title = "Mieter · ImmonIQ"; load(); }, []);
@@ -83,6 +84,10 @@ const Tenants = () => {
     setForm({ property_id: "", full_name: "", email: "", phone: "", lease_start: "", lease_end: "", deposit: "" });
     load();
   };
+
+  const activeTenants = tenants.filter(t => !t.archived_at);
+  const archivedTenants = tenants.filter(t => t.archived_at);
+  const visible = showArchived ? archivedTenants : activeTenants;
 
   return (
     <div className="space-y-6">
@@ -143,8 +148,24 @@ const Tenants = () => {
           action={{ label: "Mieter anlegen", onClick: () => setOpen(true), icon: Plus }}
         />
       ) : (
+        <>
+          {archivedTenants.length > 0 && (
+            <div className="flex gap-2">
+              <Button size="sm" variant={!showArchived ? "default" : "outline"} onClick={() => setShowArchived(false)}>
+                Aktiv <span className="ml-1.5 text-xs opacity-70">{activeTenants.length}</span>
+              </Button>
+              <Button size="sm" variant={showArchived ? "default" : "outline"} onClick={() => setShowArchived(true)}>
+                Archiv <span className="ml-1.5 text-xs opacity-70">{archivedTenants.length}</span>
+              </Button>
+            </div>
+          )}
+          {visible.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-8">
+              {showArchived ? "Keine archivierten Mieter." : "Keine aktiven Mieter."}
+            </p>
+          ) : (
         <div className="grid md:grid-cols-2 gap-3">
-          {tenants.map(t => (
+          {visible.map(t => (
             <Card key={t.id} className="p-5 glass hover:shadow-elevated transition-shadow">
               <Link to={`/app/tenants/${t.id}`} className="block group">
                 <div className="flex items-start justify-between mb-2">
@@ -200,6 +221,8 @@ const Tenants = () => {
             </Card>
           ))}
         </div>
+          )}
+        </>
       )}
     </div>
   );

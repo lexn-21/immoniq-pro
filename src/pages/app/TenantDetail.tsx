@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import {
   ArrowLeft, Mail, Phone, Building2, CalendarDays, Wallet, FileText, Upload, MessageCircle,
   Download, Trash2, StickyNote, ShieldCheck, AlertTriangle, CheckCircle2, Clock, Link2,
+  Archive, ArchiveRestore,
 } from "lucide-react";
 import { eur, date } from "@/lib/format";
 import { toast } from "sonner";
@@ -123,13 +124,16 @@ export default function TenantDetail() {
         <div className="flex items-start gap-3">
           <Button variant="ghost" size="icon" onClick={() => nav("/app/tenants")} className="-ml-2"><ArrowLeft className="h-4 w-4" /></Button>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold">{tenant.full_name}</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2">
+              {tenant.full_name}
+              {tenant.archived_at && <Badge variant="secondary" className="text-[10px]">Archiviert</Badge>}
+            </h1>
             <p className="text-sm text-muted-foreground flex items-center gap-1.5 mt-0.5">
               <Building2 className="h-3.5 w-3.5" /> {property?.name}
             </p>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <Button variant="outline" size="sm" onClick={async () => {
             const { data: auth } = await supabase.auth.getUser();
             if (!auth.user || !tenant.unit_id) return;
@@ -146,7 +150,6 @@ export default function TenantDetail() {
             const url = `${window.location.origin}/mieter/${token}`;
             await navigator.clipboard.writeText(url);
             toast.success("Mieter-Portal-Link kopiert", { description: url, duration: 5000 });
-            // Optional: direkt per WhatsApp teilen wenn Telefon vorhanden
             if (tenant.phone) {
               const msg = `Hallo ${tenant.full_name}, hier ist dein persönlicher Mieter-Bereich für ${property?.name ?? "deine Wohnung"} — Zählerstände, Zahlungshistorie & Schadenmeldungen jederzeit online: ${url}`;
               const { whatsappLink } = await import("@/lib/whatsapp");
@@ -161,6 +164,47 @@ export default function TenantDetail() {
             }
           }}>
             <Link2 className="h-3.5 w-3.5 mr-1.5" /> Portal-Link
+          </Button>
+
+          {tenant.archived_at ? (
+            <Button variant="outline" size="sm" onClick={async () => {
+              const { error } = await supabase.from("tenants").update({ archived_at: null }).eq("id", tenant.id);
+              if (error) return toastError(error);
+              toast.success("Mieter reaktiviert");
+              load();
+            }}>
+              <ArchiveRestore className="h-3.5 w-3.5 mr-1.5" /> Reaktivieren
+            </Button>
+          ) : (
+            <Button variant="outline" size="sm" onClick={async () => {
+              if (!confirm(`"${tenant.full_name}" als ausgezogen markieren und archivieren?\n\nDer Mieter bleibt mit Zahlungshistorie & Dokumenten gespeichert, wird aber aus der aktiven Liste ausgeblendet.`)) return;
+              const today = new Date().toISOString().slice(0,10);
+              const patch: any = { archived_at: new Date().toISOString() };
+              if (!tenant.lease_end) patch.lease_end = today;
+              const { error } = await supabase.from("tenants").update(patch).eq("id", tenant.id);
+              if (error) return toastError(error);
+              // Portal-Link automatisch widerrufen
+              await supabase.from("tenant_portal_links").update({ revoked: true }).eq("tenant_id", tenant.id).eq("revoked", false);
+              toast.success("Mieter archiviert");
+              nav("/app/tenants");
+            }}>
+              <Archive className="h-3.5 w-3.5 mr-1.5" /> Ausgezogen
+            </Button>
+          )}
+
+          <Button variant="outline" size="sm" className="text-destructive hover:text-destructive" onClick={async () => {
+            if (!confirm(`"${tenant.full_name}" UNWIDERRUFLICH löschen?\n\n⚠️ Damit gehen auch Notizen, Dokumente und Verknüpfungen verloren. Zahlungshistorie bleibt anonym erhalten.\n\nTipp: Bei Auszug lieber „Ausgezogen" wählen — dann bleibt alles dokumentiert.`)) return;
+            // Dokumente aus Storage entfernen
+            const { data: ds } = await supabase.from("tenant_documents").select("path").eq("tenant_id", tenant.id);
+            if (ds && ds.length) {
+              await supabase.storage.from("documents").remove(ds.map((x: any) => x.path).filter(Boolean));
+            }
+            const { error } = await supabase.from("tenants").delete().eq("id", tenant.id);
+            if (error) return toastError(error);
+            toast.success("Mieter gelöscht");
+            nav("/app/tenants");
+          }}>
+            <Trash2 className="h-3.5 w-3.5 mr-1.5" /> Löschen
           </Button>
         </div>
       </div>

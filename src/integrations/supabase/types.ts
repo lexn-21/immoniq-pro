@@ -2831,6 +2831,7 @@ export type Database = {
       }
       tenants: {
         Row: {
+          archived_at: string | null
           created_at: string
           deposit: number | null
           email: string | null
@@ -2848,6 +2849,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          archived_at?: string | null
           created_at?: string
           deposit?: number | null
           email?: string | null
@@ -2865,6 +2867,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          archived_at?: string | null
           created_at?: string
           deposit?: number | null
           email?: string | null
