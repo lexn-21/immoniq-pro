@@ -104,7 +104,7 @@ const Auth = () => {
       email: ev.data,
       password: pv.data,
       options: {
-        emailRedirectTo: `${window.location.origin}/app`,
+        emailRedirectTo: claimToken ? `${window.location.origin}/auth?claim=${encodeURIComponent(claimToken)}` : `${window.location.origin}/app`,
         data: { display_name: nv.data },
       },
     });
@@ -124,8 +124,9 @@ const Auth = () => {
         templateData: { name: nv.data },
       },
     }).catch(() => { /* nicht blockierend */ });
+    await tryClaim();
     toast.success("Konto erstellt. Willkommen bei ImmonIQ.");
-    navigate("/app/onboarding", { replace: true });
+    navigate(claimToken ? "/mein-immoniq" : "/app/onboarding", { replace: true });
   };
 
   return (
