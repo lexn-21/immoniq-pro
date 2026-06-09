@@ -185,6 +185,7 @@ const App = () => (
                 <Route path="inbox" element={<SmartInbox />} />
                 <Route path="tickets" element={<Tickets />} />
                 <Route path="messenger" element={<Messenger />} />
+                <Route path="chat" element={<Chat />} />
                 <Route path="ads" element={<MyAds />} />
                 <Route path="admin/ads" element={<AdminAds />} />
                 <Route path="settings" element={<Settings />} />
