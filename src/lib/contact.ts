@@ -18,8 +18,16 @@ export function waHref(phone?: string | null, text?: string): string | null {
   if (!phone) return null;
   const n = normalizePhone(phone);
   if (!n) return null;
+  // Desktop-Browser: web.whatsapp.com (wa.me leitet sonst auf api.whatsapp.com,
+  // das wird von vielen Browsern/Erweiterungen mit ERR_BLOCKED_BY_RESPONSE geblockt).
+  // Mobile: wa.me öffnet zuverlässig die App.
+  const isMobile = typeof navigator !== "undefined" &&
+    /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+  const q = text ? `&text=${encodeURIComponent(text)}` : "";
   const t = text ? `?text=${encodeURIComponent(text)}` : "";
-  return `https://wa.me/${n}${t}`;
+  return isMobile
+    ? `https://wa.me/${n}${t}`
+    : `https://web.whatsapp.com/send?phone=${n}${q}`;
 }
 
 export function mailHref(email?: string | null, subject?: string, body?: string): string | null {
