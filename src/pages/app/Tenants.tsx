@@ -221,6 +221,8 @@ const Tenants = () => {
             </Card>
           ))}
         </div>
+          )}
+        </>
       )}
     </div>
   );
