@@ -30,37 +30,51 @@ const Auth = () => {
   const [name, setName] = useState("");
 
   const params = new URLSearchParams(window.location.search);
-  const redirect = params.get("redirect") || params.get("next") || "/app";
-  const as = params.get("as"); // owner | landlord | advisor | buyer | tenant | family
+  const claimToken = params.get("claim");
+  const redirect = params.get("redirect") || params.get("next") || (claimToken ? "/mein-immoniq" : "/app");
+  const as = claimToken ? "tenant" : params.get("as");
 
   const SUBTITLES: Record<string, string> = {
     owner: "Dein sicherer Ort für alles rund um dein Zuhause.",
     landlord: "Dein Verwalten +-Cockpit wartet.",
     advisor: "Mandanten-Daten in Minuten — read-only & DSGVO-sicher.",
     buyer: "Marktwerte, Rendite & Inserate — direkt zwischen Eigentümern.",
-    tenant: "Wohnung finden, Profil pflegen, ohne Maklerprovision.",
+    tenant: "Dein kostenloser Mieter-Account: Chat, Dokumente, Schadensmeldungen, Rechte — alles an einem Ort.",
     family: "Schritt für Schritt durch Erbschaft und Immobilien-Fragen.",
   };
   const subtitle = (as && SUBTITLES[as]) || "Alles für deine Immobilie — an einem sicheren Ort.";
 
+  const tryClaim = async () => {
+    if (!claimToken) return;
+    const { error } = await supabase.rpc("tenant_claim", { _token: claimToken });
+    if (error) toast.error("Verknüpfung fehlgeschlagen: " + error.message);
+    else toast.success("Wohnung verknüpft!");
+  };
+
   useEffect(() => {
-    document.title = "Anmelden · ImmonIQ";
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) navigate(redirect, { replace: true });
+    document.title = claimToken ? "Mieter-Account · ImmonIQ" : "Anmelden · ImmonIQ";
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (session) {
+        await tryClaim();
+        navigate(redirect, { replace: true });
+      }
     });
+    // eslint-disable-next-line
   }, [navigate, redirect]);
 
   const handleGoogle = async () => {
     setOauthLoading(true);
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: `${window.location.origin}/app`,
-    });
+    const target = claimToken
+      ? `${window.location.origin}/auth?claim=${encodeURIComponent(claimToken)}`
+      : `${window.location.origin}/app`;
+    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: target });
     if (result.error) {
       setOauthLoading(false);
       toast.error("Google-Anmeldung fehlgeschlagen.");
       return;
     }
     if (result.redirected) return;
+    await tryClaim();
     navigate(redirect, { replace: true });
   };
 
@@ -74,6 +88,7 @@ const Auth = () => {
     const { error } = await supabase.auth.signInWithPassword({ email: ev.data, password: pv.data });
     setLoading(false);
     if (error) return toast.error(error.message === "Invalid login credentials" ? "E-Mail oder Passwort falsch." : error.message);
+    await tryClaim();
     toast.success("Willkommen zurück.");
     navigate(redirect, { replace: true });
   };
@@ -91,7 +106,7 @@ const Auth = () => {
       email: ev.data,
       password: pv.data,
       options: {
-        emailRedirectTo: `${window.location.origin}/app`,
+        emailRedirectTo: claimToken ? `${window.location.origin}/auth?claim=${encodeURIComponent(claimToken)}` : `${window.location.origin}/app`,
         data: { display_name: nv.data },
       },
     });
@@ -111,8 +126,9 @@ const Auth = () => {
         templateData: { name: nv.data },
       },
     }).catch(() => { /* nicht blockierend */ });
+    await tryClaim();
     toast.success("Konto erstellt. Willkommen bei ImmonIQ.");
-    navigate("/app/onboarding", { replace: true });
+    navigate(claimToken ? "/mein-immoniq" : "/app/onboarding", { replace: true });
   };
 
   return (

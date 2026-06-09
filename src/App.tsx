@@ -74,6 +74,13 @@ const PassPublic = lazy(() => import("./pages/PassPublic"));
 const Messenger = lazy(() => import("./pages/app/Messenger"));
 const Profile = lazy(() => import("./pages/app/Profile"));
 
+const TenantLayout = lazy(() => import("./pages/tenant/TenantLayout"));
+const TenantHome = lazy(() => import("./pages/tenant/TenantHome"));
+const TenantChat = lazy(() => import("./pages/tenant/TenantChat"));
+const TenantDocs = lazy(() => import("./pages/tenant/TenantDocs"));
+const TenantIssues = lazy(() => import("./pages/tenant/TenantIssues"));
+const TenantRights = lazy(() => import("./pages/tenant/TenantRights"));
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -98,6 +105,13 @@ const App = () => (
               <Route path="/auth" element={<Auth />} />
               <Route path="/advisor/:token" element={<AdvisorView />} />
               <Route path="/mieter/:token" element={<TenantPortal />} />
+              <Route path="/mein-immoniq" element={<TenantLayout />}>
+                <Route index element={<TenantHome />} />
+                <Route path="chat" element={<TenantChat />} />
+                <Route path="dokumente" element={<TenantDocs />} />
+                <Route path="schaeden" element={<TenantIssues />} />
+                <Route path="rechte" element={<TenantRights />} />
+              </Route>
               <Route path="/wg-casting/:token" element={<WgCasting />} />
               <Route path="/pass/:code" element={<PassPublic />} />
               <Route path="/markt" element={<Markt />} />
