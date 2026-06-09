@@ -14,6 +14,7 @@ import EmptyState from "@/components/EmptyState";
 import { eur, pct, date as fdate } from "@/lib/format";
 import { toast } from "sonner";
 import { Banknote, Plus, Pencil, Trash2, AlertTriangle, TrendingDown, Clock, Sparkles, Mail, Info, Building2, RefreshCw } from "lucide-react";
+import { HouseFill } from "@/components/calc/HouseFill";
 
 type Financing = {
   id: string;
