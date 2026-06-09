@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Logo } from "@/components/Logo";
 import { eur, date } from "@/lib/format";
-import { Home, AlertTriangle, Plus, ShieldCheck, Loader2, FileText, Download, Camera, Mic, Square, Sparkles } from "lucide-react";
+import { Home, AlertTriangle, Plus, ShieldCheck, Loader2, FileText, Download, Camera, Mic, Square, Sparkles, MessageCircle, Send } from "lucide-react";
 import { toast } from "sonner";
 
 type Resolved = {
