@@ -10,8 +10,11 @@ import type { TenantCtx } from "./TenantLayout";
 
 type Msg = { id: string; direction: "out" | "in"; body: string; sent_at: string; read_at: string | null; status: string };
 
+import { Navigate } from "react-router-dom";
+
 export default function TenantChat() {
   const ctx = useOutletContext<TenantCtx>();
+  if (!ctx.tenant) return <Navigate to="/mein-immoniq/verbinden" replace />;
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
