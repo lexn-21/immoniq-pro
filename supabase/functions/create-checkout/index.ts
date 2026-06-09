@@ -37,6 +37,8 @@ Deno.serve(async (req) => {
       mode: isRecurring ? "subscription" : "payment",
       ui_mode: "embedded_page",
       return_url: returnUrl,
+      // Volles Tax/Compliance-Handling: Stripe berechnet, zieht ein, meldet & führt MwSt ab (+3,5%)
+      managed_payments: { enabled: true } as any,
       ...(customerEmail && { customer_email: customerEmail }),
       ...(userId && {
         metadata: { userId },
