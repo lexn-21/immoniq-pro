@@ -80,6 +80,8 @@ const TenantChat = lazy(() => import("./pages/tenant/TenantChat"));
 const TenantDocs = lazy(() => import("./pages/tenant/TenantDocs"));
 const TenantIssues = lazy(() => import("./pages/tenant/TenantIssues"));
 const TenantRights = lazy(() => import("./pages/tenant/TenantRights"));
+const TenantVault = lazy(() => import("./pages/tenant/TenantVault"));
+const TenantConnect = lazy(() => import("./pages/tenant/TenantConnect"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
