@@ -232,6 +232,12 @@ const MarktDetail = () => {
               <p className="text-[11px] text-muted-foreground mt-4 flex items-center gap-1">
                 <ShieldCheck className="h-3 w-3 text-primary" /> Direkt vom Eigentümer · keine Maklerprovision
               </p>
+              <a
+                href={`mailto:leonboomgaarden@gmail.com?subject=${encodeURIComponent(`Inserat melden: ${l.id}`)}&body=${encodeURIComponent(`Hallo,\n\nIch möchte das folgende Inserat melden:\n${typeof window !== "undefined" ? window.location.href : ""}\n\nGrund (z. B. irreführend, betrügerisch, Diskriminierung, Urheberrechtsverstoß):\n\n`)}`}
+                className="block text-[11px] text-muted-foreground hover:text-foreground mt-2 underline"
+              >
+                Inserat melden
+              </a>
             </Card>
             <div>
               <p className="text-[11px] uppercase tracking-wider text-muted-foreground mb-2">
