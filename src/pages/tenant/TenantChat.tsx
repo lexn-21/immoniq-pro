@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useOutletContext } from "react-router-dom";
+import { Navigate, useOutletContext } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -9,9 +9,6 @@ import { toast } from "sonner";
 import type { TenantCtx } from "./TenantLayout";
 
 type Msg = { id: string; direction: "out" | "in"; body: string; sent_at: string; read_at: string | null; status: string };
-
-import { Navigate } from "react-router-dom";
-import { Navigate } from "react-router-dom";
 
 export default function TenantChat() {
   const ctx = useOutletContext<TenantCtx>();
