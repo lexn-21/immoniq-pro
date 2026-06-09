@@ -2658,6 +2658,7 @@ export type Database = {
           direction: string
           external_id: string | null
           id: string
+          read_at: string | null
           sent_at: string
           status: string
           tenant_id: string
@@ -2670,6 +2671,7 @@ export type Database = {
           direction: string
           external_id?: string | null
           id?: string
+          read_at?: string | null
           sent_at?: string
           status?: string
           tenant_id: string
@@ -2682,6 +2684,7 @@ export type Database = {
           direction?: string
           external_id?: string | null
           id?: string
+          read_at?: string | null
           sent_at?: string
           status?: string
           tenant_id?: string
@@ -3436,6 +3439,29 @@ export type Database = {
         }[]
       }
       tenant_portal_get_nka: { Args: { _token: string }; Returns: Json }
+      tenant_portal_list_messages: {
+        Args: { _token: string }
+        Returns: {
+          body: string
+          channel: string
+          created_at: string
+          direction: string
+          external_id: string | null
+          id: string
+          read_at: string | null
+          sent_at: string
+          status: string
+          tenant_id: string
+          user_id: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "tenant_messages"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      tenant_portal_mark_read: { Args: { _token: string }; Returns: undefined }
       tenant_portal_nka_pdf_path: {
         Args: { _distribution_id: string; _token: string }
         Returns: string
@@ -3451,6 +3477,10 @@ export type Database = {
         Returns: string
       }
       tenant_portal_resolve: { Args: { _token: string }; Returns: Json }
+      tenant_portal_send_message: {
+        Args: { _body: string; _token: string }
+        Returns: string
+      }
       trial_days_left: { Args: { _user_id: string }; Returns: number }
       user_plan_tier: { Args: { _user_id: string }; Returns: string }
       wg_casting_resolve: { Args: { _token: string }; Returns: Json }
