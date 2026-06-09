@@ -31,6 +31,7 @@ const Tenants = () => {
   const [properties, setProperties] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
+  const [showArchived, setShowArchived] = useState(false);
   const [form, setForm] = useState({ property_id: "", full_name: "", email: "", phone: "", lease_start: "", lease_end: "", deposit: "" });
 
   useEffect(() => { document.title = "Mieter · ImmonIQ"; load(); }, []);
