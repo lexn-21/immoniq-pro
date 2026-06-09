@@ -322,6 +322,12 @@ export default function TenantDetail() {
           <NotesPanel tenantId={tenant.id} notes={notes} reload={load} />
         </TabsContent>
       </Tabs>
+
+      <TenantChatSheet
+        open={chatOpen}
+        onOpenChange={setChatOpen}
+        tenant={{ id: tenant.id, full_name: tenant.full_name, phone: tenant.phone }}
+      />
     </div>
   );
 }
