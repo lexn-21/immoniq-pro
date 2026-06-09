@@ -105,6 +105,13 @@ const App = () => (
               <Route path="/auth" element={<Auth />} />
               <Route path="/advisor/:token" element={<AdvisorView />} />
               <Route path="/mieter/:token" element={<TenantPortal />} />
+              <Route path="/mein-immoniq" element={<TenantLayout />}>
+                <Route index element={<TenantHome />} />
+                <Route path="chat" element={<TenantChat />} />
+                <Route path="dokumente" element={<TenantDocs />} />
+                <Route path="schaeden" element={<TenantIssues />} />
+                <Route path="rechte" element={<TenantRights />} />
+              </Route>
               <Route path="/wg-casting/:token" element={<WgCasting />} />
               <Route path="/pass/:code" element={<PassPublic />} />
               <Route path="/markt" element={<Markt />} />
