@@ -136,6 +136,15 @@ export default function TenantDetail() {
           </div>
         </div>
         <div className="flex gap-2 flex-wrap">
+          {tenant.phone && (
+            <Button
+              size="sm"
+              onClick={() => setChatOpen(true)}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            >
+              <MessageCircle className="h-3.5 w-3.5 mr-1.5" /> Chat
+            </Button>
+          )}
           <Button variant="outline" size="sm" onClick={async () => {
             const { data: auth } = await supabase.auth.getUser();
             if (!auth.user || !tenant.unit_id) return;
