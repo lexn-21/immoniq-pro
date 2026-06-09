@@ -64,15 +64,17 @@ const Auth = () => {
 
   const handleGoogle = async () => {
     setOauthLoading(true);
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: `${window.location.origin}/app`,
-    });
+    const target = claimToken
+      ? `${window.location.origin}/auth?claim=${encodeURIComponent(claimToken)}`
+      : `${window.location.origin}/app`;
+    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: target });
     if (result.error) {
       setOauthLoading(false);
       toast.error("Google-Anmeldung fehlgeschlagen.");
       return;
     }
     if (result.redirected) return;
+    await tryClaim();
     navigate(redirect, { replace: true });
   };
 
