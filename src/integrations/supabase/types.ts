@@ -946,6 +946,88 @@ export type Database = {
         }
         Relationships: []
       }
+      conversation_members: {
+        Row: {
+          conversation_id: string
+          display_name: string | null
+          joined_at: string
+          last_read_at: string | null
+          muted: boolean
+          role: string
+          user_id: string
+        }
+        Insert: {
+          conversation_id: string
+          display_name?: string | null
+          joined_at?: string
+          last_read_at?: string | null
+          muted?: boolean
+          role?: string
+          user_id: string
+        }
+        Update: {
+          conversation_id?: string
+          display_name?: string | null
+          joined_at?: string
+          last_read_at?: string | null
+          muted?: boolean
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversation_members_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      conversations: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          kind: Database["public"]["Enums"]["conversation_kind"]
+          last_message_at: string
+          last_message_preview: string | null
+          last_sender_id: string | null
+          property_id: string | null
+          title: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          kind?: Database["public"]["Enums"]["conversation_kind"]
+          last_message_at?: string
+          last_message_preview?: string | null
+          last_sender_id?: string | null
+          property_id?: string | null
+          title?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          kind?: Database["public"]["Enums"]["conversation_kind"]
+          last_message_at?: string
+          last_message_preview?: string | null
+          last_sender_id?: string | null
+          property_id?: string | null
+          title?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversations_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       email_send_log: {
         Row: {
           created_at: string
@@ -1719,6 +1801,44 @@ export type Database = {
           zip_prefix?: string | null
         }
         Relationships: []
+      }
+      messages: {
+        Row: {
+          body: string
+          conversation_id: string
+          created_at: string
+          deleted_at: string | null
+          edited_at: string | null
+          id: string
+          sender_id: string | null
+        }
+        Insert: {
+          body: string
+          conversation_id: string
+          created_at?: string
+          deleted_at?: string | null
+          edited_at?: string | null
+          id?: string
+          sender_id?: string | null
+        }
+        Update: {
+          body?: string
+          conversation_id?: string
+          created_at?: string
+          deleted_at?: string | null
+          edited_at?: string | null
+          id?: string
+          sender_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       nka_cost_categories: {
         Row: {
@@ -3420,6 +3540,10 @@ export type Database = {
         Args: { _app_id: string; _user: string }
         Returns: boolean
       }
+      is_conv_member: {
+        Args: { _conv: string; _user: string }
+        Returns: boolean
+      }
       listing_inc_view: { Args: { _listing_id: string }; Returns: undefined }
       listings_nearby: {
         Args: {
@@ -3446,6 +3570,42 @@ export type Database = {
           title: string
           zip: string
         }[]
+      }
+      messenger_add_members: {
+        Args: { _conv: string; _user_ids: string[] }
+        Returns: undefined
+      }
+      messenger_create_group: {
+        Args: {
+          _kind?: Database["public"]["Enums"]["conversation_kind"]
+          _property_id?: string
+          _title: string
+          _user_ids: string[]
+        }
+        Returns: string
+      }
+      messenger_get: { Args: { _conv: string }; Returns: Json }
+      messenger_leave: { Args: { _conv: string }; Returns: undefined }
+      messenger_list: {
+        Args: never
+        Returns: {
+          id: string
+          kind: Database["public"]["Enums"]["conversation_kind"]
+          last_message_at: string
+          last_message_preview: string
+          last_sender_id: string
+          member_count: number
+          peer_name: string
+          peer_user_id: string
+          property_id: string
+          title: string
+          unread_count: number
+        }[]
+      }
+      messenger_mark_read: { Args: { _conv: string }; Returns: undefined }
+      messenger_start_direct: {
+        Args: { _other: string; _other_name?: string }
+        Returns: string
       }
       missing_rents: {
         Args: { _grace_day?: number }
@@ -3586,6 +3746,7 @@ export type Database = {
         | "completed"
         | "cancelled"
         | "disputed"
+      conversation_kind: "direct" | "group" | "house"
       employment_type:
         | "unbefristet"
         | "befristet"
@@ -3838,6 +3999,7 @@ export const Constants = {
         "cancelled",
         "disputed",
       ],
+      conversation_kind: ["direct", "group", "house"],
       employment_type: [
         "unbefristet",
         "befristet",
