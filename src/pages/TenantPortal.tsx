@@ -213,10 +213,37 @@ const TenantPortal = () => {
       </header>
 
       <main className="container max-w-4xl py-8 space-y-6">
+        {/* WOW: Account-CTA */}
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
+          <Card className="p-5 bg-gradient-to-br from-primary/15 via-primary/5 to-transparent border-primary/30">
+            <div className="flex items-start gap-3">
+              <div className="h-11 w-11 rounded-xl bg-primary text-primary-foreground flex items-center justify-center shrink-0">
+                <Sparkles className="h-5 w-5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold">Hol dir deinen kostenlosen Mieter-Account</p>
+                <p className="text-sm text-muted-foreground mt-1 mb-3">
+                  Chat mit Vermieter · Dokumenten-Tresor · Schadensmeldungen mit KI · Nebenkosten-Einsicht · Mietrechte verständlich erklärt — alles gratis und für immer.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <a href={`/auth?claim=${encodeURIComponent(token!)}`}>
+                    <Button className="gap-2">Account erstellen <Sparkles className="h-3.5 w-3.5" /></Button>
+                  </a>
+                  <a href={`/auth?claim=${encodeURIComponent(token!)}`}>
+                    <Button variant="outline">Schon ein Konto? Anmelden</Button>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </motion.div>
+
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
           <p className="text-sm text-muted-foreground">Hallo</p>
           <h1 className="font-display text-4xl font-bold tracking-tight">{data.tenant.full_name}</h1>
         </motion.div>
+
+
 
         <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }}>
           <Card className="p-6">
