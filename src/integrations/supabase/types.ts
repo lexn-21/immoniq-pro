@@ -2882,6 +2882,8 @@ export type Database = {
       tenants: {
         Row: {
           archived_at: string | null
+          claimed_at: string | null
+          claimed_by_user_id: string | null
           created_at: string
           deposit: number | null
           email: string | null
@@ -2900,6 +2902,8 @@ export type Database = {
         }
         Insert: {
           archived_at?: string | null
+          claimed_at?: string | null
+          claimed_by_user_id?: string | null
           created_at?: string
           deposit?: number | null
           email?: string | null
@@ -2918,6 +2922,8 @@ export type Database = {
         }
         Update: {
           archived_at?: string | null
+          claimed_at?: string | null
+          claimed_by_user_id?: string | null
           created_at?: string
           deposit?: number | null
           email?: string | null
@@ -3029,6 +3035,27 @@ export type Database = {
             referencedColumns: ["code"]
           },
         ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
       }
       user_stats: {
         Row: {
@@ -3330,6 +3357,10 @@ export type Database = {
         Args: { _resource: string; _user_id: string }
         Returns: undefined
       }
+      current_user_role: {
+        Args: never
+        Returns: Database["public"]["Enums"]["app_role"]
+      }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
@@ -3342,6 +3373,13 @@ export type Database = {
       evaluate_achievements: { Args: never; Returns: Json }
       has_pro_access: {
         Args: { _env?: string; _user_id: string }
+        Returns: boolean
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
         Returns: boolean
       }
       is_admin: { Args: { _user: string }; Returns: boolean }
@@ -3438,6 +3476,7 @@ export type Database = {
           occurrences: number
         }[]
       }
+      tenant_claim: { Args: { _token: string }; Returns: string }
       tenant_portal_get_nka: { Args: { _token: string }; Returns: Json }
       tenant_portal_list_messages: {
         Args: { _token: string }
@@ -3495,6 +3534,7 @@ export type Database = {
       }
     }
     Enums: {
+      app_role: "landlord" | "tenant" | "admin"
       application_status:
         | "sent"
         | "shortlisted"
@@ -3744,6 +3784,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_role: ["landlord", "tenant", "admin"],
       application_status: [
         "sent",
         "shortlisted",
