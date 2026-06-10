@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Send, Plus, Users, Home, MessageSquare, Bell, BellOff, ArrowLeft, Search, Check, CheckCheck, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { showNotification, notifyPermission, requestNotifyPermission, canNotify } from "@/lib/notifications";
+import { ensurePushSubscription } from "@/lib/pushNotifications";
 
 type Kind = "direct" | "group" | "house";
 type ConvRow = {
