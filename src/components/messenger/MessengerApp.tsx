@@ -120,14 +120,27 @@ export default function MessengerApp({ mode = "landlord" }: { mode?: "landlord" 
     setSending(false);
     if (error) return toast.error("Senden fehlgeschlagen: " + error.message);
     setText("");
+    // Fire-and-forget Web-Push to other members
+    const conv = convs.find(c => c.id === activeId);
+    const title = conv?.title || conv?.peer_name || "Neue Nachricht";
+    supabase.functions.invoke("send-push", {
+      body: { conversation_id: activeId, body, title, url: mode === "tenant" ? "/mein-immoniq/chat" : "/app/chat" },
+    }).catch(() => {});
   };
 
   const enableNotifs = async () => {
     const p = await requestNotifyPermission();
     setPermission(p);
-    if (p === "granted") toast.success("Benachrichtigungen aktiviert");
-    else toast.error("Benachrichtigungen blockiert — im Browser erlauben");
+    if (p === "granted") {
+      const ok = await ensurePushSubscription();
+      toast.success(ok ? "Benachrichtigungen aktiviert (auch bei geschlossenem Tab)" : "Benachrichtigungen aktiviert");
+    } else {
+      toast.error("Benachrichtigungen blockiert — im Browser erlauben");
+    }
   };
+
+  // Auto-register push subscription if permission already granted
+  useEffect(() => { if (permission === "granted") { ensurePushSubscription().catch(() => {}); } }, [permission]);
 
   // ---------- LIST ----------
   const ListPanel = (
