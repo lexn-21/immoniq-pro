@@ -31,8 +31,13 @@ const Auth = () => {
 
   const params = new URLSearchParams(window.location.search);
   const claimToken = params.get("claim");
-  const as = claimToken ? "tenant" : params.get("as");
-  const defaultRedirect = claimToken || as === "tenant" ? "/mein-immoniq" : "/app";
+  const advisorInvite = params.get("advisor_invite");
+  const as = claimToken ? "tenant" : advisorInvite ? "advisor" : params.get("as");
+  const defaultRedirect = advisorInvite
+    ? "/berater"
+    : claimToken || as === "tenant" ? "/mein-immoniq"
+    : as === "advisor" ? "/berater"
+    : "/app";
   const redirect = params.get("redirect") || params.get("next") || defaultRedirect;
 
   const SUBTITLES: Record<string, string> = {
