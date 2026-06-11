@@ -110,6 +110,9 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/advisor/:token" element={<AdvisorView />} />
+              <Route path="/berater/einladung/:token" element={<AdvisorAcceptInvite />} />
+              <Route path="/berater" element={<ProtectedRoute><AdvisorDashboard /></ProtectedRoute>} />
+              <Route path="/berater/:landlordId" element={<ProtectedRoute><AdvisorMandate /></ProtectedRoute>} />
               <Route path="/mieter/:token" element={<TenantPortal />} />
               <Route path="/mein-immoniq" element={<TenantLayout />}>
                 <Route index element={<TenantHome />} />
