@@ -76,9 +76,11 @@ const Auth = () => {
 
   const handleGoogle = async () => {
     setOauthLoading(true);
-    const target = claimToken
-      ? `${window.location.origin}/auth?claim=${encodeURIComponent(claimToken)}`
-      : `${window.location.origin}/app`;
+    const target = advisorInvite
+      ? `${window.location.origin}/auth?advisor_invite=${encodeURIComponent(advisorInvite)}`
+      : claimToken
+        ? `${window.location.origin}/auth?claim=${encodeURIComponent(claimToken)}`
+        : `${window.location.origin}${redirect}`;
     const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: target });
     if (result.error) {
       setOauthLoading(false);
