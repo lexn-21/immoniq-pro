@@ -142,7 +142,7 @@ const Auth = () => {
     }).catch(() => { /* nicht blockierend */ });
     await tryClaim();
     toast.success("Konto erstellt. Willkommen bei ImmonIQ.");
-    navigate(claimToken || as === "tenant" ? "/mein-immoniq" : "/app/onboarding", { replace: true });
+    navigate(advisorInvite || as === "advisor" ? "/berater" : claimToken || as === "tenant" ? "/mein-immoniq" : "/app/onboarding", { replace: true });
   };
 
   return (
