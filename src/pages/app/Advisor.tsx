@@ -12,19 +12,28 @@ import { date } from "@/lib/format";
 
 const Advisor = () => {
   const [items, setItems] = useState<any[]>([]);
+  const [mandates, setMandates] = useState<any[]>([]);
+  const [invites, setInvites] = useState<any[]>([]);
   const [directory, setDirectory] = useState<any[]>([]);
   const [open, setOpen] = useState(false);
+  const [inviteOpen, setInviteOpen] = useState(false);
   const [form, setForm] = useState({ advisor_name: "", advisor_email: "" });
+  const [invForm, setInvForm] = useState({ advisor_name: "", advisor_email: "", can_write: false });
+  const [createdInviteLink, setCreatedInviteLink] = useState<string | null>(null);
 
   useEffect(() => { document.title = "Steuerberater · ImmonIQ"; load(); }, []);
 
   const load = async () => {
-    const [links, dir] = await Promise.all([
+    const [links, dir, mand, inv] = await Promise.all([
       supabase.from("advisor_links").select("*").order("created_at", { ascending: false }),
       supabase.from("advisor_directory").select("*").order("partner_status", { ascending: true }).limit(5),
+      supabase.from("advisor_mandates").select("*").order("created_at", { ascending: false }),
+      supabase.from("advisor_invites").select("*").is("accepted_at", null).order("created_at", { ascending: false }),
     ]);
     setItems(links.data ?? []);
     setDirectory(dir.data ?? []);
+    setMandates(mand.data ?? []);
+    setInvites(inv.data ?? []);
   };
 
   const submit = async () => {
