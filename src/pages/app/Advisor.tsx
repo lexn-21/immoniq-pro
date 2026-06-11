@@ -71,6 +71,45 @@ const Advisor = () => {
     load();
   };
 
+  const inviteLinkFor = (token: string) => `${window.location.origin}/berater/einladung/${token}`;
+
+  const createInvite = async () => {
+    if (!invForm.advisor_name.trim() || !invForm.advisor_email.trim()) return toast.error("Name und E-Mail nötig");
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const { data, error } = await supabase.from("advisor_invites").insert({
+      landlord_user_id: user.id,
+      advisor_name: invForm.advisor_name.trim(),
+      advisor_email: invForm.advisor_email.trim(),
+      can_write: invForm.can_write,
+    }).select("token").single();
+    if (error) return toast.error(error.message);
+    setCreatedInviteLink(inviteLinkFor(data.token));
+    toast.success("Einladung erstellt.");
+    setInvForm({ advisor_name: "", advisor_email: "", can_write: false });
+    load();
+  };
+
+  const setWritable = async (mandateId: string, can_write: boolean) => {
+    const { error } = await supabase.from("advisor_mandates").update({ can_write }).eq("id", mandateId);
+    if (error) return toast.error(error.message);
+    toast.success(can_write ? "Schreibrechte aktiv." : "Nur noch Leserechte.");
+    load();
+  };
+
+  const revokeMandate = async (mandateId: string) => {
+    if (!confirm("Zugriff für diesen Steuerberater wirklich entziehen?")) return;
+    const { error } = await supabase.from("advisor_mandates").update({ status: "revoked", revoked_at: new Date().toISOString() }).eq("id", mandateId);
+    if (error) return toast.error(error.message);
+    toast.success("Zugriff entzogen.");
+    load();
+  };
+
+  const deleteInvite = async (id: string) => {
+    await supabase.from("advisor_invites").delete().eq("id", id);
+    load();
+  };
+
   return (
     <div className="space-y-6">
       <header className="flex flex-wrap items-end justify-between gap-4">
