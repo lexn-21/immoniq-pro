@@ -51,10 +51,16 @@ const Auth = () => {
   const subtitle = (as && SUBTITLES[as]) || "Alles für deine Immobilie — an einem sicheren Ort.";
 
   const tryClaim = async () => {
-    if (!claimToken) return;
-    const { error } = await supabase.rpc("tenant_claim", { _token: claimToken });
-    if (error) toast.error("Verknüpfung fehlgeschlagen: " + error.message);
-    else toast.success("Wohnung verknüpft!");
+    if (claimToken) {
+      const { error } = await supabase.rpc("tenant_claim", { _token: claimToken });
+      if (error) toast.error("Verknüpfung fehlgeschlagen: " + error.message);
+      else toast.success("Wohnung verknüpft!");
+    }
+    if (advisorInvite) {
+      const { error } = await supabase.rpc("advisor_accept_invite", { _token: advisorInvite });
+      if (error) toast.error("Einladung fehlgeschlagen: " + error.message);
+      else toast.success("Mandant verknüpft!");
+    }
   };
 
   useEffect(() => {
