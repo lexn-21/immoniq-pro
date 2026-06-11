@@ -205,6 +205,39 @@ export type Database = {
         }
         Relationships: []
       }
+      advisor_audit_log: {
+        Row: {
+          action: string
+          advisor_user_id: string
+          created_at: string
+          details: Json | null
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          landlord_user_id: string
+        }
+        Insert: {
+          action: string
+          advisor_user_id: string
+          created_at?: string
+          details?: Json | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          landlord_user_id: string
+        }
+        Update: {
+          action?: string
+          advisor_user_id?: string
+          created_at?: string
+          details?: Json | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          landlord_user_id?: string
+        }
+        Relationships: []
+      }
       advisor_directory: {
         Row: {
           active: boolean
@@ -253,6 +286,45 @@ export type Database = {
         }
         Relationships: []
       }
+      advisor_invites: {
+        Row: {
+          accepted_at: string | null
+          accepted_by: string | null
+          advisor_email: string
+          advisor_name: string
+          can_write: boolean
+          created_at: string
+          expires_at: string
+          id: string
+          landlord_user_id: string
+          token: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          advisor_email: string
+          advisor_name: string
+          can_write?: boolean
+          created_at?: string
+          expires_at?: string
+          id?: string
+          landlord_user_id: string
+          token?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          advisor_email?: string
+          advisor_name?: string
+          can_write?: boolean
+          created_at?: string
+          expires_at?: string
+          id?: string
+          landlord_user_id?: string
+          token?: string
+        }
+        Relationships: []
+      }
       advisor_links: {
         Row: {
           access_count: number
@@ -292,6 +364,45 @@ export type Database = {
           token?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      advisor_mandates: {
+        Row: {
+          advisor_email: string | null
+          advisor_name: string | null
+          advisor_user_id: string
+          can_write: boolean
+          created_at: string
+          id: string
+          landlord_user_id: string
+          last_accessed_at: string | null
+          revoked_at: string | null
+          status: string
+        }
+        Insert: {
+          advisor_email?: string | null
+          advisor_name?: string | null
+          advisor_user_id: string
+          can_write?: boolean
+          created_at?: string
+          id?: string
+          landlord_user_id: string
+          last_accessed_at?: string | null
+          revoked_at?: string | null
+          status?: string
+        }
+        Update: {
+          advisor_email?: string | null
+          advisor_name?: string | null
+          advisor_user_id?: string
+          can_write?: boolean
+          created_at?: string
+          id?: string
+          landlord_user_id?: string
+          last_accessed_at?: string | null
+          revoked_at?: string | null
+          status?: string
         }
         Relationships: []
       }
@@ -1117,6 +1228,8 @@ export type Database = {
       }
       expenses: {
         Row: {
+          advisor_note: string | null
+          advisor_user_id: string | null
           amount: number
           category: Database["public"]["Enums"]["expense_category"]
           classification: Database["public"]["Enums"]["expense_classification"]
@@ -1129,6 +1242,7 @@ export type Database = {
           nka_period_id: string | null
           property_id: string | null
           receipt_path: string | null
+          source: string
           spent_on: string
           tenant_id: string | null
           type: string | null
@@ -1138,6 +1252,8 @@ export type Database = {
           vendor: string | null
         }
         Insert: {
+          advisor_note?: string | null
+          advisor_user_id?: string | null
           amount: number
           category?: Database["public"]["Enums"]["expense_category"]
           classification?: Database["public"]["Enums"]["expense_classification"]
@@ -1150,6 +1266,7 @@ export type Database = {
           nka_period_id?: string | null
           property_id?: string | null
           receipt_path?: string | null
+          source?: string
           spent_on: string
           tenant_id?: string | null
           type?: string | null
@@ -1159,6 +1276,8 @@ export type Database = {
           vendor?: string | null
         }
         Update: {
+          advisor_note?: string | null
+          advisor_user_id?: string | null
           amount?: number
           category?: Database["public"]["Enums"]["expense_category"]
           classification?: Database["public"]["Enums"]["expense_classification"]
@@ -1171,6 +1290,7 @@ export type Database = {
           nka_period_id?: string | null
           property_id?: string | null
           receipt_path?: string | null
+          source?: string
           spent_on?: string
           tenant_id?: string | null
           type?: string | null
@@ -2088,6 +2208,8 @@ export type Database = {
       }
       payments: {
         Row: {
+          advisor_note: string | null
+          advisor_user_id: string | null
           amount: number
           created_at: string
           id: string
@@ -2097,6 +2219,7 @@ export type Database = {
           notes: string | null
           paid_on: string
           property_id: string | null
+          source: string
           status: Database["public"]["Enums"]["payment_status_simple"] | null
           tenant_id: string | null
           type: string | null
@@ -2104,6 +2227,8 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          advisor_note?: string | null
+          advisor_user_id?: string | null
           amount: number
           created_at?: string
           id?: string
@@ -2113,6 +2238,7 @@ export type Database = {
           notes?: string | null
           paid_on: string
           property_id?: string | null
+          source?: string
           status?: Database["public"]["Enums"]["payment_status_simple"] | null
           tenant_id?: string | null
           type?: string | null
@@ -2120,6 +2246,8 @@ export type Database = {
           user_id: string
         }
         Update: {
+          advisor_note?: string | null
+          advisor_user_id?: string | null
           amount?: number
           created_at?: string
           id?: string
@@ -2129,6 +2257,7 @@ export type Database = {
           notes?: string | null
           paid_on?: string
           property_id?: string | null
+          source?: string
           status?: Database["public"]["Enums"]["payment_status_simple"] | null
           tenant_id?: string | null
           type?: string | null
@@ -2666,6 +2795,8 @@ export type Database = {
       }
       tenant_documents: {
         Row: {
+          advisor_note: string | null
+          advisor_user_id: string | null
           created_at: string
           id: string
           kind: Database["public"]["Enums"]["tenant_doc_kind"]
@@ -2674,10 +2805,13 @@ export type Database = {
           notes: string | null
           path: string
           size_bytes: number | null
+          source: string
           tenant_id: string
           user_id: string
         }
         Insert: {
+          advisor_note?: string | null
+          advisor_user_id?: string | null
           created_at?: string
           id?: string
           kind?: Database["public"]["Enums"]["tenant_doc_kind"]
@@ -2686,10 +2820,13 @@ export type Database = {
           notes?: string | null
           path: string
           size_bytes?: number | null
+          source?: string
           tenant_id: string
           user_id: string
         }
         Update: {
+          advisor_note?: string | null
+          advisor_user_id?: string | null
           created_at?: string
           id?: string
           kind?: Database["public"]["Enums"]["tenant_doc_kind"]
@@ -2698,6 +2835,7 @@ export type Database = {
           notes?: string | null
           path?: string
           size_bytes?: number | null
+          source?: string
           tenant_id?: string
           user_id?: string
         }
@@ -3522,8 +3660,23 @@ export type Database = {
         }
         Returns: undefined
       }
+      advisor_accept_invite: { Args: { _token: string }; Returns: string }
       advisor_get_data: { Args: { _token: string }; Returns: Json }
+      advisor_list_mandates: {
+        Args: never
+        Returns: {
+          can_write: boolean
+          created_at: string
+          landlord_name: string
+          landlord_user_id: string
+          last_accessed_at: string
+          mandate_id: string
+          property_count: number
+          status: string
+        }[]
+      }
       advisor_owner_for_token: { Args: { _token: string }; Returns: string }
+      advisor_touch_mandate: { Args: { _landlord: string }; Returns: undefined }
       advisor_touch_token: { Args: { _token: string }; Returns: string }
       avm_estimate: {
         Args: { _annual_rent: number; _living_space: number; _zip: string }
@@ -3569,6 +3722,10 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: { _user: string }; Returns: boolean }
+      is_advisor_for: {
+        Args: { _landlord: string; _need_write?: boolean }
+        Returns: boolean
+      }
       is_app_participant: {
         Args: { _app_id: string; _user: string }
         Returns: boolean
@@ -3764,7 +3921,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "landlord" | "tenant" | "admin"
+      app_role: "landlord" | "tenant" | "admin" | "advisor"
       application_status:
         | "sent"
         | "shortlisted"
@@ -4015,7 +4172,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["landlord", "tenant", "admin"],
+      app_role: ["landlord", "tenant", "admin", "advisor"],
       application_status: [
         "sent",
         "shortlisted",

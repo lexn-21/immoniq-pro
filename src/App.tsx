@@ -36,6 +36,9 @@ const Marketplace = lazy(() => import("./pages/app/Marketplace"));
 const Deadlines = lazy(() => import("./pages/app/Deadlines"));
 const LawCorner = lazy(() => import("./pages/app/LawCorner"));
 const AdvisorView = lazy(() => import("./pages/AdvisorView"));
+const AdvisorDashboard = lazy(() => import("./pages/advisor/AdvisorDashboard"));
+const AdvisorMandate = lazy(() => import("./pages/advisor/AdvisorMandate"));
+const AdvisorAcceptInvite = lazy(() => import("./pages/advisor/AdvisorAcceptInvite"));
 const TenantPortal = lazy(() => import("./pages/TenantPortal"));
 const Markt = lazy(() => import("./pages/Markt"));
 const MarktDetail = lazy(() => import("./pages/MarktDetail"));
@@ -107,6 +110,9 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/advisor/:token" element={<AdvisorView />} />
+              <Route path="/berater/einladung/:token" element={<AdvisorAcceptInvite />} />
+              <Route path="/berater" element={<ProtectedRoute><AdvisorDashboard /></ProtectedRoute>} />
+              <Route path="/berater/:landlordId" element={<ProtectedRoute><AdvisorMandate /></ProtectedRoute>} />
               <Route path="/mieter/:token" element={<TenantPortal />} />
               <Route path="/mein-immoniq" element={<TenantLayout />}>
                 <Route index element={<TenantHome />} />

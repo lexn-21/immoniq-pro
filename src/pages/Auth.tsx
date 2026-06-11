@@ -31,8 +31,13 @@ const Auth = () => {
 
   const params = new URLSearchParams(window.location.search);
   const claimToken = params.get("claim");
-  const as = claimToken ? "tenant" : params.get("as");
-  const defaultRedirect = claimToken || as === "tenant" ? "/mein-immoniq" : "/app";
+  const advisorInvite = params.get("advisor_invite");
+  const as = claimToken ? "tenant" : advisorInvite ? "advisor" : params.get("as");
+  const defaultRedirect = advisorInvite
+    ? "/berater"
+    : claimToken || as === "tenant" ? "/mein-immoniq"
+    : as === "advisor" ? "/berater"
+    : "/app";
   const redirect = params.get("redirect") || params.get("next") || defaultRedirect;
 
   const SUBTITLES: Record<string, string> = {
@@ -46,10 +51,16 @@ const Auth = () => {
   const subtitle = (as && SUBTITLES[as]) || "Alles für deine Immobilie — an einem sicheren Ort.";
 
   const tryClaim = async () => {
-    if (!claimToken) return;
-    const { error } = await supabase.rpc("tenant_claim", { _token: claimToken });
-    if (error) toast.error("Verknüpfung fehlgeschlagen: " + error.message);
-    else toast.success("Wohnung verknüpft!");
+    if (claimToken) {
+      const { error } = await supabase.rpc("tenant_claim", { _token: claimToken });
+      if (error) toast.error("Verknüpfung fehlgeschlagen: " + error.message);
+      else toast.success("Wohnung verknüpft!");
+    }
+    if (advisorInvite) {
+      const { error } = await supabase.rpc("advisor_accept_invite", { _token: advisorInvite });
+      if (error) toast.error("Einladung fehlgeschlagen: " + error.message);
+      else toast.success("Mandant verknüpft!");
+    }
   };
 
   useEffect(() => {
@@ -65,9 +76,11 @@ const Auth = () => {
 
   const handleGoogle = async () => {
     setOauthLoading(true);
-    const target = claimToken
-      ? `${window.location.origin}/auth?claim=${encodeURIComponent(claimToken)}`
-      : `${window.location.origin}/app`;
+    const target = advisorInvite
+      ? `${window.location.origin}/auth?advisor_invite=${encodeURIComponent(advisorInvite)}`
+      : claimToken
+        ? `${window.location.origin}/auth?claim=${encodeURIComponent(claimToken)}`
+        : `${window.location.origin}${redirect}`;
     const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: target });
     if (result.error) {
       setOauthLoading(false);
@@ -107,7 +120,7 @@ const Auth = () => {
       email: ev.data,
       password: pv.data,
       options: {
-        emailRedirectTo: claimToken ? `${window.location.origin}/auth?claim=${encodeURIComponent(claimToken)}` : `${window.location.origin}/app`,
+        emailRedirectTo: advisorInvite ? `${window.location.origin}/auth?advisor_invite=${encodeURIComponent(advisorInvite)}` : claimToken ? `${window.location.origin}/auth?claim=${encodeURIComponent(claimToken)}` : `${window.location.origin}/app`,
         data: { display_name: nv.data },
       },
     });
@@ -129,7 +142,7 @@ const Auth = () => {
     }).catch(() => { /* nicht blockierend */ });
     await tryClaim();
     toast.success("Konto erstellt. Willkommen bei ImmonIQ.");
-    navigate(claimToken || as === "tenant" ? "/mein-immoniq" : "/app/onboarding", { replace: true });
+    navigate(advisorInvite || as === "advisor" ? "/berater" : claimToken || as === "tenant" ? "/mein-immoniq" : "/app/onboarding", { replace: true });
   };
 
   return (
