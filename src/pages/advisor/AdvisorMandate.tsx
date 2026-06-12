@@ -108,7 +108,7 @@ export default function AdvisorMandate() {
       advisor_note: expForm.advisor_note || null,
     });
     if (error) return toast.error(error.message);
-    toast.success("Beleg gebucht · markiert als „vom Steuerberater"");
+    toast.success("Beleg gebucht · markiert als vom Steuerberater");
     setExpOpen(false);
     setExpForm({ ...expForm, amount: "", vendor: "", description: "", advisor_note: "" });
     reload();
@@ -129,7 +129,7 @@ export default function AdvisorMandate() {
       advisor_note: payForm.advisor_note || null,
     });
     if (error) return toast.error(error.message);
-    toast.success("Zahlung gebucht · markiert als „vom Steuerberater"");
+    toast.success("Zahlung gebucht · markiert als vom Steuerberater");
     setPayOpen(false);
     setPayForm({ ...payForm, amount: "", note: "", advisor_note: "" });
     reload();
@@ -319,7 +319,7 @@ export default function AdvisorMandate() {
                         </Select>
                       </div>
                     </div>
-                    <div><Label>Notiz für Mandant</Label><Textarea value={expForm.advisor_note} onChange={e => setExpForm({...expForm, advisor_note: e.target.value})} placeholder="z. B. „Aus DATEV übernommen"" rows={2} /></div>
+                    <div><Label>Notiz für Mandant</Label><Textarea value={expForm.advisor_note} onChange={e => setExpForm({...expForm, advisor_note: e.target.value})} placeholder="z. B. Aus DATEV übernommen" rows={2} /></div>
                   </div>
                   <DialogFooter><Button onClick={submitExpense} className="bg-gradient-gold text-primary-foreground shadow-gold">Buchen</Button></DialogFooter>
                 </DialogContent>
