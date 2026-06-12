@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { UserPlus, Copy, Trash2, Eye, Calendar, Mail, Link as LinkIcon, ShieldCheck, Send, Sparkles, UserCheck, Pencil, X } from "lucide-react";
 import { toast } from "sonner";
 import { date } from "@/lib/format";
+import { publicUrl } from "@/lib/publicUrl";
 
 const Advisor = () => {
   const [items, setItems] = useState<any[]>([]);
@@ -51,7 +52,7 @@ const Advisor = () => {
     load();
   };
 
-  const linkFor = (token: string) => `${window.location.origin}/advisor/${token}`;
+  const linkFor = (token: string) => publicUrl(`/advisor/${token}`);
 
   const copyLink = async (token: string) => {
     await navigator.clipboard.writeText(linkFor(token));
@@ -72,7 +73,7 @@ const Advisor = () => {
     load();
   };
 
-  const inviteLinkFor = (token: string) => `${window.location.origin}/berater/einladung/${token}`;
+  const inviteLinkFor = (token: string) => publicUrl(`/berater/einladung/${token}`);
 
   const createInvite = async () => {
     if (!invForm.advisor_name.trim() || !invForm.advisor_email.trim()) return toast.error("Name und E-Mail nötig");
