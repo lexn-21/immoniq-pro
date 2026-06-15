@@ -239,13 +239,18 @@ const PropertyDetail = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-6 pt-6 border-t border-border">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mt-6 pt-6 border-t border-border">
             <div><p className="text-xs text-muted-foreground">Baujahr</p><p className="font-semibold">{property.build_year ?? "—"}</p></div>
+            <div><p className="text-xs text-muted-foreground">Sanierung</p><p className="font-semibold">{property.last_renovation_year ?? "—"}</p></div>
+            <div><p className="text-xs text-muted-foreground">Energie</p><p className="font-semibold">{property.energy_class ?? "—"}{property.energy_consumption_kwh ? ` · ${property.energy_consumption_kwh} kWh` : ""}</p></div>
+            <div><p className="text-xs text-muted-foreground">Heizung</p><p className="font-semibold capitalize">{property.heating_type ?? "—"}</p></div>
             <div><p className="text-xs text-muted-foreground">Kaufpreis</p><p className="font-semibold">{property.purchase_price ? eur(property.purchase_price) : "—"}</p></div>
-            <div><p className="text-xs text-muted-foreground">AfA-Satz</p><p className="font-semibold">{property.afa_rate ?? "—"} %</p></div>
             <div><p className="text-xs text-muted-foreground">Einheiten</p><p className="font-semibold">{units.length}</p></div>
             <div><p className="text-xs text-muted-foreground">Sollmiete/Mo</p><p className="font-semibold text-gradient-gold">{eur(monthlyTotal)}</p></div>
           </div>
+          {property.listed_building && (
+            <div className="mt-3 text-xs inline-flex items-center gap-1 px-2 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400">🏛️ Denkmalgeschützt</div>
+          )}
         </div>
       </Card>
 
