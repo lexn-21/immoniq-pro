@@ -15,6 +15,7 @@ import { z } from "zod";
 import { NeighborhoodInsight } from "@/components/market/NeighborhoodInsight";
 import { MietspiegelCard } from "@/components/market/MietspiegelCard";
 import { AvmWidget } from "@/components/market/AvmWidget";
+import PropertyComponents from "@/components/property/PropertyComponents";
 
 const unitSchema = z.object({
   label: z.string().trim().min(1).max(100),
@@ -59,9 +60,14 @@ const PropertyDetail = () => {
         zip: p.data.zip ?? "",
         city: p.data.city ?? "",
         build_year: p.data.build_year ?? "",
+        last_renovation_year: p.data.last_renovation_year ?? "",
         purchase_price: p.data.purchase_price ?? "",
         afa_rate: p.data.afa_rate ?? "",
         status: p.data.status ?? "rented",
+        energy_class: p.data.energy_class ?? "",
+        energy_consumption_kwh: p.data.energy_consumption_kwh ?? "",
+        heating_type: p.data.heating_type ?? "",
+        listed_building: !!p.data.listed_building,
         notes: p.data.notes ?? "",
       });
     }
@@ -75,9 +81,14 @@ const PropertyDetail = () => {
       zip: edit.zip || null,
       city: edit.city || null,
       build_year: edit.build_year ? Number(edit.build_year) : null,
+      last_renovation_year: edit.last_renovation_year ? Number(edit.last_renovation_year) : null,
       purchase_price: edit.purchase_price ? Number(edit.purchase_price) : null,
       afa_rate: edit.afa_rate ? Number(edit.afa_rate) : null,
       status: edit.status || "rented",
+      energy_class: edit.energy_class || null,
+      energy_consumption_kwh: edit.energy_consumption_kwh ? Number(edit.energy_consumption_kwh) : null,
+      heating_type: edit.heating_type || null,
+      listed_building: !!edit.listed_building,
       notes: edit.notes || null,
     };
     const { error } = await supabase.from("properties").update(payload).eq("id", id);
@@ -176,8 +187,30 @@ const PropertyDetail = () => {
                   <div><Label>PLZ</Label><Input value={edit.zip} onChange={e => setEdit({ ...edit, zip: e.target.value })} /></div>
                   <div><Label>Ort</Label><Input value={edit.city} onChange={e => setEdit({ ...edit, city: e.target.value })} /></div>
                   <div><Label>Baujahr</Label><Input type="number" value={edit.build_year} onChange={e => setEdit({ ...edit, build_year: e.target.value })} /></div>
+                  <div><Label>Letzte Kernsanierung</Label><Input type="number" value={edit.last_renovation_year} onChange={e => setEdit({ ...edit, last_renovation_year: e.target.value })} placeholder="Jahr" /></div>
                   <div><Label>Kaufpreis (€)</Label><Input type="number" value={edit.purchase_price} onChange={e => setEdit({ ...edit, purchase_price: e.target.value })} /></div>
                   <div><Label>AfA-Satz (%)</Label><Input type="number" step="0.01" value={edit.afa_rate} onChange={e => setEdit({ ...edit, afa_rate: e.target.value })} /></div>
+                  <div>
+                    <Label>Energieklasse</Label>
+                    <select className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm" value={edit.energy_class} onChange={e => setEdit({ ...edit, energy_class: e.target.value })}>
+                      <option value="">—</option>
+                      {["A+","A","B","C","D","E","F","G","H"].map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
+                  <div><Label>Verbrauch (kWh/m²·a)</Label><Input type="number" step="0.1" value={edit.energy_consumption_kwh} onChange={e => setEdit({ ...edit, energy_consumption_kwh: e.target.value })} /></div>
+                  <div>
+                    <Label>Heizungsart</Label>
+                    <select className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm" value={edit.heating_type} onChange={e => setEdit({ ...edit, heating_type: e.target.value })}>
+                      <option value="">—</option>
+                      <option value="gas">Gas</option>
+                      <option value="oil">Öl</option>
+                      <option value="heatpump">Wärmepumpe</option>
+                      <option value="district">Fernwärme</option>
+                      <option value="pellet">Pellets/Holz</option>
+                      <option value="electric">Strom</option>
+                      <option value="other">Sonstiges</option>
+                    </select>
+                  </div>
                   <div>
                     <Label>Status</Label>
                     <select className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm" value={edit.status} onChange={e => setEdit({ ...edit, status: e.target.value })}>
@@ -186,6 +219,10 @@ const PropertyDetail = () => {
                       <option value="self_use">Eigennutzung</option>
                     </select>
                   </div>
+                  <label className="col-span-2 flex items-center gap-2 text-sm cursor-pointer">
+                    <input type="checkbox" checked={!!edit.listed_building} onChange={e => setEdit({ ...edit, listed_building: e.target.checked })} />
+                    Denkmalgeschützt (erhöhte AfA möglich)
+                  </label>
                   <div className="col-span-2"><Label>Notizen</Label><Textarea rows={3} value={edit.notes} onChange={e => setEdit({ ...edit, notes: e.target.value })} placeholder="Interne Notizen, Termine, Besonderheiten…" /></div>
                 </div>
               )}
@@ -202,13 +239,18 @@ const PropertyDetail = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-6 pt-6 border-t border-border">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mt-6 pt-6 border-t border-border">
             <div><p className="text-xs text-muted-foreground">Baujahr</p><p className="font-semibold">{property.build_year ?? "—"}</p></div>
+            <div><p className="text-xs text-muted-foreground">Sanierung</p><p className="font-semibold">{property.last_renovation_year ?? "—"}</p></div>
+            <div><p className="text-xs text-muted-foreground">Energie</p><p className="font-semibold">{property.energy_class ?? "—"}{property.energy_consumption_kwh ? ` · ${property.energy_consumption_kwh} kWh` : ""}</p></div>
+            <div><p className="text-xs text-muted-foreground">Heizung</p><p className="font-semibold capitalize">{property.heating_type ?? "—"}</p></div>
             <div><p className="text-xs text-muted-foreground">Kaufpreis</p><p className="font-semibold">{property.purchase_price ? eur(property.purchase_price) : "—"}</p></div>
-            <div><p className="text-xs text-muted-foreground">AfA-Satz</p><p className="font-semibold">{property.afa_rate ?? "—"} %</p></div>
             <div><p className="text-xs text-muted-foreground">Einheiten</p><p className="font-semibold">{units.length}</p></div>
             <div><p className="text-xs text-muted-foreground">Sollmiete/Mo</p><p className="font-semibold text-gradient-gold">{eur(monthlyTotal)}</p></div>
           </div>
+          {property.listed_building && (
+            <div className="mt-3 text-xs inline-flex items-center gap-1 px-2 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400">🏛️ Denkmalgeschützt</div>
+          )}
         </div>
       </Card>
 
@@ -235,6 +277,8 @@ const PropertyDetail = () => {
       <MietspiegelCard zip={property.zip} city={property.city} />
 
       <NeighborhoodInsight zip={property.zip} city={property.city} kind="rent" label={property.name} radiusKm={10} />
+
+      <PropertyComponents propertyId={id as string} />
 
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold">Wohneinheiten</h2>

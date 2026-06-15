@@ -2355,10 +2355,15 @@ export type Database = {
           created_at: string
           denkmalschutz: boolean
           deposit: number | null
+          energy_class: string | null
+          energy_consumption_kwh: number | null
           erbpacht_ende: string | null
           erbpacht_zins_jaehrlich: number | null
+          heating_type: string | null
           id: string
           image_url: string | null
+          last_renovation_year: number | null
+          listed_building: boolean | null
           name: string
           notes: string | null
           org_unit_id: string | null
@@ -2382,10 +2387,15 @@ export type Database = {
           created_at?: string
           denkmalschutz?: boolean
           deposit?: number | null
+          energy_class?: string | null
+          energy_consumption_kwh?: number | null
           erbpacht_ende?: string | null
           erbpacht_zins_jaehrlich?: number | null
+          heating_type?: string | null
           id?: string
           image_url?: string | null
+          last_renovation_year?: number | null
+          listed_building?: boolean | null
           name: string
           notes?: string | null
           org_unit_id?: string | null
@@ -2409,10 +2419,15 @@ export type Database = {
           created_at?: string
           denkmalschutz?: boolean
           deposit?: number | null
+          energy_class?: string | null
+          energy_consumption_kwh?: number | null
           erbpacht_ende?: string | null
           erbpacht_zins_jaehrlich?: number | null
+          heating_type?: string | null
           id?: string
           image_url?: string | null
+          last_renovation_year?: number | null
+          listed_building?: boolean | null
           name?: string
           notes?: string | null
           org_unit_id?: string | null
@@ -2428,6 +2443,80 @@ export type Database = {
           zip?: string | null
         }
         Relationships: []
+      }
+      property_components: {
+        Row: {
+          cost_cents: number | null
+          created_at: string
+          document_path: string | null
+          expected_lifespan_years: number | null
+          id: string
+          installed_on: string | null
+          kind: Database["public"]["Enums"]["component_kind"]
+          label: string | null
+          last_maintenance_on: string | null
+          manufacturer: string | null
+          model: string | null
+          next_check_on: string | null
+          notes: string | null
+          property_id: string
+          serial_number: string | null
+          supplier: string | null
+          updated_at: string
+          user_id: string
+          warranty_until: string | null
+        }
+        Insert: {
+          cost_cents?: number | null
+          created_at?: string
+          document_path?: string | null
+          expected_lifespan_years?: number | null
+          id?: string
+          installed_on?: string | null
+          kind: Database["public"]["Enums"]["component_kind"]
+          label?: string | null
+          last_maintenance_on?: string | null
+          manufacturer?: string | null
+          model?: string | null
+          next_check_on?: string | null
+          notes?: string | null
+          property_id: string
+          serial_number?: string | null
+          supplier?: string | null
+          updated_at?: string
+          user_id: string
+          warranty_until?: string | null
+        }
+        Update: {
+          cost_cents?: number | null
+          created_at?: string
+          document_path?: string | null
+          expected_lifespan_years?: number | null
+          id?: string
+          installed_on?: string | null
+          kind?: Database["public"]["Enums"]["component_kind"]
+          label?: string | null
+          last_maintenance_on?: string | null
+          manufacturer?: string | null
+          model?: string | null
+          next_check_on?: string | null
+          notes?: string | null
+          property_id?: string
+          serial_number?: string | null
+          supplier?: string | null
+          updated_at?: string
+          user_id?: string
+          warranty_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_components_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       providers: {
         Row: {
@@ -3700,6 +3789,10 @@ export type Database = {
         Args: never
         Returns: Database["public"]["Enums"]["app_role"]
       }
+      default_component_lifespan: {
+        Args: { _kind: Database["public"]["Enums"]["component_kind"] }
+        Returns: number
+      }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
@@ -3936,6 +4029,36 @@ export type Database = {
         | "completed"
         | "cancelled"
         | "disputed"
+      component_kind:
+        | "roof"
+        | "facade"
+        | "windows"
+        | "doors"
+        | "heating"
+        | "boiler"
+        | "solar_pv"
+        | "solar_thermal"
+        | "electrical"
+        | "plumbing"
+        | "insulation"
+        | "smoke_detector"
+        | "elevator"
+        | "garage_door"
+        | "gate"
+        | "intercom"
+        | "ventilation"
+        | "chimney"
+        | "oil_tank"
+        | "water_tank"
+        | "sewage"
+        | "kitchen"
+        | "bathroom"
+        | "flooring"
+        | "paint"
+        | "garden"
+        | "fence"
+        | "driveway"
+        | "other"
       conversation_kind: "direct" | "group" | "house"
       employment_type:
         | "unbefristet"
@@ -4188,6 +4311,37 @@ export const Constants = {
         "completed",
         "cancelled",
         "disputed",
+      ],
+      component_kind: [
+        "roof",
+        "facade",
+        "windows",
+        "doors",
+        "heating",
+        "boiler",
+        "solar_pv",
+        "solar_thermal",
+        "electrical",
+        "plumbing",
+        "insulation",
+        "smoke_detector",
+        "elevator",
+        "garage_door",
+        "gate",
+        "intercom",
+        "ventilation",
+        "chimney",
+        "oil_tank",
+        "water_tank",
+        "sewage",
+        "kitchen",
+        "bathroom",
+        "flooring",
+        "paint",
+        "garden",
+        "fence",
+        "driveway",
+        "other",
       ],
       conversation_kind: ["direct", "group", "house"],
       employment_type: [
