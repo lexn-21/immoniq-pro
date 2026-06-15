@@ -81,9 +81,14 @@ const PropertyDetail = () => {
       zip: edit.zip || null,
       city: edit.city || null,
       build_year: edit.build_year ? Number(edit.build_year) : null,
+      last_renovation_year: edit.last_renovation_year ? Number(edit.last_renovation_year) : null,
       purchase_price: edit.purchase_price ? Number(edit.purchase_price) : null,
       afa_rate: edit.afa_rate ? Number(edit.afa_rate) : null,
       status: edit.status || "rented",
+      energy_class: edit.energy_class || null,
+      energy_consumption_kwh: edit.energy_consumption_kwh ? Number(edit.energy_consumption_kwh) : null,
+      heating_type: edit.heating_type || null,
+      listed_building: !!edit.listed_building,
       notes: edit.notes || null,
     };
     const { error } = await supabase.from("properties").update(payload).eq("id", id);
