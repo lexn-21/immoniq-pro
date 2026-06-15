@@ -15,6 +15,7 @@ import { z } from "zod";
 import { NeighborhoodInsight } from "@/components/market/NeighborhoodInsight";
 import { MietspiegelCard } from "@/components/market/MietspiegelCard";
 import { AvmWidget } from "@/components/market/AvmWidget";
+import PropertyComponents from "@/components/property/PropertyComponents";
 
 const unitSchema = z.object({
   label: z.string().trim().min(1).max(100),
