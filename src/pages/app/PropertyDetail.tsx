@@ -60,9 +60,14 @@ const PropertyDetail = () => {
         zip: p.data.zip ?? "",
         city: p.data.city ?? "",
         build_year: p.data.build_year ?? "",
+        last_renovation_year: p.data.last_renovation_year ?? "",
         purchase_price: p.data.purchase_price ?? "",
         afa_rate: p.data.afa_rate ?? "",
         status: p.data.status ?? "rented",
+        energy_class: p.data.energy_class ?? "",
+        energy_consumption_kwh: p.data.energy_consumption_kwh ?? "",
+        heating_type: p.data.heating_type ?? "",
+        listed_building: !!p.data.listed_building,
         notes: p.data.notes ?? "",
       });
     }
