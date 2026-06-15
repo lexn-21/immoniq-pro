@@ -187,8 +187,30 @@ const PropertyDetail = () => {
                   <div><Label>PLZ</Label><Input value={edit.zip} onChange={e => setEdit({ ...edit, zip: e.target.value })} /></div>
                   <div><Label>Ort</Label><Input value={edit.city} onChange={e => setEdit({ ...edit, city: e.target.value })} /></div>
                   <div><Label>Baujahr</Label><Input type="number" value={edit.build_year} onChange={e => setEdit({ ...edit, build_year: e.target.value })} /></div>
+                  <div><Label>Letzte Kernsanierung</Label><Input type="number" value={edit.last_renovation_year} onChange={e => setEdit({ ...edit, last_renovation_year: e.target.value })} placeholder="Jahr" /></div>
                   <div><Label>Kaufpreis (€)</Label><Input type="number" value={edit.purchase_price} onChange={e => setEdit({ ...edit, purchase_price: e.target.value })} /></div>
                   <div><Label>AfA-Satz (%)</Label><Input type="number" step="0.01" value={edit.afa_rate} onChange={e => setEdit({ ...edit, afa_rate: e.target.value })} /></div>
+                  <div>
+                    <Label>Energieklasse</Label>
+                    <select className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm" value={edit.energy_class} onChange={e => setEdit({ ...edit, energy_class: e.target.value })}>
+                      <option value="">—</option>
+                      {["A+","A","B","C","D","E","F","G","H"].map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
+                  <div><Label>Verbrauch (kWh/m²·a)</Label><Input type="number" step="0.1" value={edit.energy_consumption_kwh} onChange={e => setEdit({ ...edit, energy_consumption_kwh: e.target.value })} /></div>
+                  <div>
+                    <Label>Heizungsart</Label>
+                    <select className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm" value={edit.heating_type} onChange={e => setEdit({ ...edit, heating_type: e.target.value })}>
+                      <option value="">—</option>
+                      <option value="gas">Gas</option>
+                      <option value="oil">Öl</option>
+                      <option value="heatpump">Wärmepumpe</option>
+                      <option value="district">Fernwärme</option>
+                      <option value="pellet">Pellets/Holz</option>
+                      <option value="electric">Strom</option>
+                      <option value="other">Sonstiges</option>
+                    </select>
+                  </div>
                   <div>
                     <Label>Status</Label>
                     <select className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm" value={edit.status} onChange={e => setEdit({ ...edit, status: e.target.value })}>
@@ -197,6 +219,10 @@ const PropertyDetail = () => {
                       <option value="self_use">Eigennutzung</option>
                     </select>
                   </div>
+                  <label className="col-span-2 flex items-center gap-2 text-sm cursor-pointer">
+                    <input type="checkbox" checked={!!edit.listed_building} onChange={e => setEdit({ ...edit, listed_building: e.target.checked })} />
+                    Denkmalgeschützt (erhöhte AfA möglich)
+                  </label>
                   <div className="col-span-2"><Label>Notizen</Label><Textarea rows={3} value={edit.notes} onChange={e => setEdit({ ...edit, notes: e.target.value })} placeholder="Interne Notizen, Termine, Besonderheiten…" /></div>
                 </div>
               )}
