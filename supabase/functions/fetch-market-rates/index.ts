@@ -12,7 +12,7 @@ Deno.serve(async (req) => {
 
   try {
     const res = await fetch(URL, { headers: { Accept: "text/csv" } });
-    if (!res.ok) throw new Error(`Bundesbank ${res.status}`);
+    if (!res.ok) throw new Error(`ECB ${res.status}`);
     const csv = await res.text();
     // ECB CSV with header. Use header indices for TIME_PERIOD and OBS_VALUE.
     const lines = csv.trim().split(/\r?\n/);
