@@ -16,6 +16,7 @@ const METRIC_LABEL: Record<string, string> = {
   listings_count: "Neue Inserate",
   yield_factor: "Mietrendite",
   vacancy_rate: "Leerstand",
+  mortgage_rate_10y: "Bauzins 10J %",
 };
 
 export function MarketPulseWidget() {
@@ -72,9 +73,13 @@ export function MarketPulseWidget() {
                 )}
               </div>
               <div className="text-lg font-bold tabular">{Number(p.value).toLocaleString("de-DE", { maximumFractionDigits: 2 })}</div>
-              <div className="text-[11px] text-muted-foreground truncate">
-                {p.city ?? (p.zip_prefix ? `PLZ ${p.zip_prefix}xx` : "Bundesweit")}
-                {p.caption && ` · ${p.caption}`}
+              <div className="text-[11px] text-muted-foreground truncate flex items-center gap-1">
+                <span>{p.city ?? (p.zip_prefix ? `PLZ ${p.zip_prefix}xx` : "Bundesweit")}</span>
+                {p.caption ? (
+                  <span className="truncate">· {p.caption}</span>
+                ) : (
+                  <Badge variant="outline" className="text-[9px] px-1 py-0 h-3.5 ml-1">Demo</Badge>
+                )}
               </div>
             </div>
           );
