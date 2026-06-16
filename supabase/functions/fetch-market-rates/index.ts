@@ -41,7 +41,7 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
-    const { error } = await supabase.from("market_pulse").insert({
+    const { error } = await supabase.from("market_pulse").upsert({
       week_start: weekStart,
       city: null,
       zip_prefix: null,
@@ -49,7 +49,7 @@ Deno.serve(async (req) => {
       value: latest.value,
       delta_pct: delta,
       caption: `EZB · ${latest.date}`,
-    });
+    }, { onConflict: "week_start, metric, city, zip_prefix" });
     if (error) throw error;
 
     return new Response(JSON.stringify({ ok: true, value: latest.value, date: latest.date }), {
