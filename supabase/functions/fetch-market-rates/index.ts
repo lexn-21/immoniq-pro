@@ -14,16 +14,19 @@ Deno.serve(async (req) => {
     const res = await fetch(URL, { headers: { Accept: "text/csv" } });
     if (!res.ok) throw new Error(`Bundesbank ${res.status}`);
     const csv = await res.text();
-    // Parse: first non-header lines; columns vary, find date + value heuristically.
+    // ECB CSV with header. Use header indices for TIME_PERIOD and OBS_VALUE.
     const lines = csv.trim().split(/\r?\n/);
-    const rows = lines.slice(1).map((l) => l.split(/[,;]/));
-    // Bundesbank CSV: TIME_PERIOD ; OBS_VALUE typically last two non-empty cols
-    const parsed = rows
-      .map((cols) => {
-        const date = cols.find((c) => /^\d{4}-\d{2}/.test(c));
-        const numCol = [...cols].reverse().find((c) => /^-?\d+([.,]\d+)?$/.test(c.trim()));
-        if (!date || !numCol) return null;
-        return { date, value: parseFloat(numCol.replace(",", ".")) };
+    const header = lines[0].split(",");
+    const idxDate = header.indexOf("TIME_PERIOD");
+    const idxVal = header.indexOf("OBS_VALUE");
+    if (idxDate < 0 || idxVal < 0) throw new Error("unexpected CSV header");
+    const parsed = lines.slice(1)
+      .map((l) => {
+        const cols = l.split(",");
+        const date = cols[idxDate];
+        const v = parseFloat((cols[idxVal] ?? "").replace(",", "."));
+        if (!date || !isFinite(v)) return null;
+        return { date, value: v };
       })
       .filter(Boolean) as { date: string; value: number }[];
 
