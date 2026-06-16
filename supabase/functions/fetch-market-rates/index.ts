@@ -1,30 +1,32 @@
-// Fetches live mortgage interest rates from Deutsche Bundesbank (BBSIS) and
-// writes them into market_pulse. Free public API, no key required.
-// Series: Effektivzinssatz Wohnungsbaukredite an priv. Haushalte,
-// anfängliche Zinsbindung über 5 bis 10 Jahre.
+// Fetches live mortgage interest rates for Germany from the ECB Data Portal
+// (MIR dataset, Bank interest rates for house purchase loans, DE) and
+// writes the latest value into market_pulse. Free public API, no key.
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { createClient } from "npm:@supabase/supabase-js@2";
 
-const SERIES = "M.DE.N.A.AR.R.A.5B.A.R.A.A._Z._Z.A";
-const URL = `https://api.statistiken.bundesbank.de/rest/data/BBSIS/${SERIES}?format=csv&lastNObservations=2`;
+const SERIES = "M.DE.B.A2C.A.R.A.2250.EUR.R";
+const URL = `https://data-api.ecb.europa.eu/service/data/MIR/${SERIES}?format=csvdata&lastNObservations=2`;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
     const res = await fetch(URL, { headers: { Accept: "text/csv" } });
-    if (!res.ok) throw new Error(`Bundesbank ${res.status}`);
+    if (!res.ok) throw new Error(`ECB ${res.status}`);
     const csv = await res.text();
-    // Parse: first non-header lines; columns vary, find date + value heuristically.
+    // ECB CSV with header. Use header indices for TIME_PERIOD and OBS_VALUE.
     const lines = csv.trim().split(/\r?\n/);
-    const rows = lines.slice(1).map((l) => l.split(/[,;]/));
-    // Bundesbank CSV: TIME_PERIOD ; OBS_VALUE typically last two non-empty cols
-    const parsed = rows
-      .map((cols) => {
-        const date = cols.find((c) => /^\d{4}-\d{2}/.test(c));
-        const numCol = [...cols].reverse().find((c) => /^-?\d+([.,]\d+)?$/.test(c.trim()));
-        if (!date || !numCol) return null;
-        return { date, value: parseFloat(numCol.replace(",", ".")) };
+    const header = lines[0].split(",");
+    const idxDate = header.indexOf("TIME_PERIOD");
+    const idxVal = header.indexOf("OBS_VALUE");
+    if (idxDate < 0 || idxVal < 0) throw new Error("unexpected CSV header");
+    const parsed = lines.slice(1)
+      .map((l) => {
+        const cols = l.split(",");
+        const date = cols[idxDate];
+        const v = parseFloat((cols[idxVal] ?? "").replace(",", "."));
+        if (!date || !isFinite(v)) return null;
+        return { date, value: v };
       })
       .filter(Boolean) as { date: string; value: number }[];
 
@@ -46,7 +48,7 @@ Deno.serve(async (req) => {
       metric: "mortgage_rate_10y",
       value: latest.value,
       delta_pct: delta,
-      caption: `Bundesbank · ${latest.date}`,
+      caption: `EZB · ${latest.date}`,
     });
     if (error) throw error;
 
