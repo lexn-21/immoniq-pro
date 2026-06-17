@@ -45,6 +45,31 @@ export default function AGB() {
           <h2 className="text-lg font-semibold">§ 7 Änderungen</h2>
           <p>Änderungen werden mind. 30 Tage vorher per E-Mail angekündigt. Widerspruch möglich = Sonderkündigungsrecht.</p>
         </section>
+
+        <section className="space-y-2 text-sm">
+          <h2 className="text-lg font-semibold">§ 8 Auftragsverarbeitung (AVV) für Vermieter</h2>
+          <p>
+            Soweit der Nutzer (Vermieter) im Rahmen von ImmonIQ personenbezogene Daten Dritter
+            (insb. Mieter, Bewerber, Handwerker) verarbeitet, ist der Nutzer datenschutzrechtlich
+            <strong> Verantwortlicher</strong> i.S.d. Art. 4 Nr. 7 DSGVO. ImmonIQ verarbeitet
+            diese Daten weisungsgebunden als <strong>Auftragsverarbeiter</strong> nach Art. 28 DSGVO.
+          </p>
+          <p>
+            Mit Abschluss dieser AGB schließen die Parteien zugleich einen Auftragsverarbeitungs­vertrag
+            (AVV) auf Grundlage der EU-Standardvertragsklauseln. Die vollständigen AVV-Bedingungen
+            (Gegenstand, Dauer, Art und Zweck, Datenkategorien, TOMs nach Art. 32 DSGVO,
+            Sub-Auftragsverarbeiter: Lovable Cloud / Supabase, Stripe, ggf. E-Mail-Versand)
+            sind in der <Link to="/datenschutz" className="text-primary underline">Datenschutzerklärung</Link>{" "}
+            ausgewiesen und können jederzeit unter{" "}
+            <a href="mailto:leonboomgaarden@gmail.com" className="text-primary underline">leonboomgaarden@gmail.com</a>{" "}
+            in unterzeichneter Form angefordert werden.
+          </p>
+          <p>
+            Der Vermieter ist verpflichtet, eine eigene Rechtsgrundlage für die Verarbeitung
+            (z.&nbsp;B. Mietvertrag, Einwilligung) sicherzustellen und Betroffene gem. Art. 13/14 DSGVO
+            zu informieren.
+          </p>
+        </section>
       </div>
     </div>
   );
