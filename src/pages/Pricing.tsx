@@ -8,6 +8,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { StripeEmbeddedCheckout } from "@/components/StripeEmbeddedCheckout";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const FREE_FEATURES = [
   "1 selbstgenutzte Immobilie",
@@ -45,12 +46,14 @@ export default function Pricing() {
   const { isPro, hasManageAccess, isTrial, trialDaysLeft, hasActiveSubscription, tier } = useSubscription();
   const navigate = useNavigate();
   const [target, setTarget] = useState<CheckoutTarget>(null);
+  const [waiverConsent, setWaiverConsent] = useState(false);
 
   const start = (priceId: string, label: string) => {
     if (!user) {
       navigate("/auth?next=/pricing");
       return;
     }
+    setWaiverConsent(false);
     setTarget({ priceId, label });
   };
 
@@ -175,14 +178,35 @@ export default function Pricing() {
           <DialogHeader className="p-6 pb-2">
             <DialogTitle>ImmonIQ {target?.label} abonnieren</DialogTitle>
           </DialogHeader>
+          <div className="px-6 pb-2">
+            <label className="flex items-start gap-3 text-xs leading-relaxed cursor-pointer rounded-md border p-3 bg-muted/30">
+              <Checkbox
+                checked={waiverConsent}
+                onCheckedChange={(c) => setWaiverConsent(c === true)}
+                className="mt-0.5"
+              />
+              <span className="text-muted-foreground">
+                Ich verlange ausdrücklich, dass ImmonIQ vor Ablauf der 14-tägigen Widerrufsfrist
+                mit der Ausführung des Vertrages beginnt. Mir ist bekannt, dass ich mit
+                vollständiger Vertragserfüllung mein <Link to="/widerruf" className="underline">Widerrufsrecht</Link> verliere
+                (§ 356 Abs. 5 BGB). Ich habe die <Link to="/agb" className="underline">AGB</Link> und{" "}
+                <Link to="/datenschutz" className="underline">Datenschutzerklärung</Link> gelesen und akzeptiert.
+              </span>
+            </label>
+          </div>
           <div className="px-2 pb-4">
-            {target && user && (
+            {target && user && waiverConsent && (
               <StripeEmbeddedCheckout
                 priceId={target.priceId}
                 customerEmail={user.email ?? undefined}
                 userId={user.id}
                 returnUrl={`${window.location.origin}/checkout/return?session_id={CHECKOUT_SESSION_ID}`}
               />
+            )}
+            {target && !waiverConsent && (
+              <div className="px-6 py-12 text-center text-sm text-muted-foreground">
+                Bitte bestätige die Einwilligung oben, um zur Bezahlung fortzufahren.
+              </div>
             )}
           </div>
         </DialogContent>
