@@ -23,13 +23,34 @@ export default function Impressum() {
         </div>
 
         <div className="space-y-2 text-sm">
-          <p><strong>Umsatzsteuer-ID</strong></p>
-          <p>USt-ID: DE365353142</p>
-          <p>Hinweis: Kleinunternehmer gem. § 19 UStG — keine Umsatzsteuer ausgewiesen.</p>
+          <p><strong>Umsatzsteuer</strong></p>
+          <p>
+            Kleinunternehmer gem. § 19 UStG — es wird keine Umsatzsteuer ausgewiesen.
+            Eine USt-ID wird gem. § 19 UStG nicht geführt.
+          </p>
+        </div>
+
+        <div className="space-y-2 text-sm">
+          <p><strong>EU-Streitschlichtung</strong></p>
+          <p>
+            Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit:{" "}
+            <a
+              href="https://ec.europa.eu/consumers/odr/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary underline"
+            >
+              https://ec.europa.eu/consumers/odr/
+            </a>
+            . Unsere E-Mail finden Sie oben. Wir sind nicht bereit oder verpflichtet, an
+            Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen
+            (§ 36 VSBG).
+          </p>
         </div>
 
         <p className="text-xs text-muted-foreground pt-4">
-          Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV: Leon Boomgaarden, Anschrift wie oben.
+          Verantwortlich für journalistisch-redaktionelle Inhalte gem. § 18 Abs. 2 MStV:
+          Leon Boomgaarden, Anschrift wie oben.
         </p>
       </div>
     </div>
