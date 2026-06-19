@@ -46,13 +46,13 @@ type Cycle = "monthly" | "yearly";
 type CheckoutTarget = { priceId: string; label: string } | null;
 
 // Preise in Cent für Monatsanzeige
-const PRICES = {
+const PRICES: Record<"verwalten_plus" | "pro", Record<Cycle, { id: string; cents: number; perMonthCents: number }>> = {
   verwalten_plus: {
-    monthly: { id: "verwalten_plus_monthly_v2", cents: 790 },
+    monthly: { id: "verwalten_plus_monthly_v2", cents: 790, perMonthCents: 790 },
     yearly: { id: "verwalten_plus_yearly", cents: 7900, perMonthCents: 658 },
   },
   pro: {
-    monthly: { id: "pro_monthly_v2", cents: 1990 },
+    monthly: { id: "pro_monthly_v2", cents: 1990, perMonthCents: 1990 },
     yearly: { id: "pro_yearly", cents: 19900, perMonthCents: 1658 },
   },
 };
