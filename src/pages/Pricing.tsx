@@ -160,7 +160,7 @@ export default function Pricing() {
             <div className="mb-5">
               {cycle === "yearly" ? (
                 <>
-                  <span className="text-4xl font-bold">{fmt(vp.perMonthCents!)} €</span>
+                  <span className="text-4xl font-bold">{fmt(vp.perMonthCents)} €</span>
                   <span className="text-muted-foreground">/Monat</span>
                   <p className="text-xs text-muted-foreground mt-1">
                     {fmt(vp.cents)} € jährlich · inkl. MwSt · 2 Monate gratis
