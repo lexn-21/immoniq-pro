@@ -23,6 +23,7 @@ const VERWALTEN_FEATURES = [
   "Mieter & Mietverträge verwalten",
   "Zahlungen & SEPA-Tracking",
   "Mahnwesen mit KI-Briefen",
+  "Nebenkosten-Abrechnung",
   "Steuer-Export (Anlage V)",
   "Tresor verschlüsselt",
   "Mieter-Portal (Schadensmeldung)",
@@ -33,20 +34,39 @@ const PRO_FEATURES = [
   "Unbegrenzt Objekte",
   "Markt: Inserieren & Bewerber-Scoring",
   "KI-Copilot (Steuer, Recht, Optimierung)",
-  "Wert-Schätzung & Markt-Benchmark",
+  "AVM Wert-Schätzung & Markt-Benchmark",
+  "Bonitäts-Check & Mieter-Pass",
+  "Banking-Anbindung (PSD2)",
   "Berater-Zugriff (Steuerberater)",
   "Dokumenten-Scanner (OCR)",
   "Priorisierter Support",
 ];
 
+type Cycle = "monthly" | "yearly";
 type CheckoutTarget = { priceId: string; label: string } | null;
+
+// Preise in Cent für Monatsanzeige
+const PRICES = {
+  verwalten_plus: {
+    monthly: { id: "verwalten_plus_monthly_v2", cents: 790 },
+    yearly: { id: "verwalten_plus_yearly", cents: 7900, perMonthCents: 658 },
+  },
+  pro: {
+    monthly: { id: "pro_monthly_v2", cents: 1990 },
+    yearly: { id: "pro_yearly", cents: 19900, perMonthCents: 1658 },
+  },
+};
+
+const fmt = (cents: number) =>
+  (cents / 100).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 export default function Pricing() {
   const { user } = useAuth();
-  const { isPro, hasManageAccess, isTrial, trialDaysLeft, hasActiveSubscription, tier } = useSubscription();
+  const { hasManageAccess, isTrial, trialDaysLeft, hasActiveSubscription, tier } = useSubscription();
   const navigate = useNavigate();
   const [target, setTarget] = useState<CheckoutTarget>(null);
   const [waiverConsent, setWaiverConsent] = useState(false);
+  const [cycle, setCycle] = useState<Cycle>("yearly");
 
   const start = (priceId: string, label: string) => {
     if (!user) {
@@ -57,6 +77,9 @@ export default function Pricing() {
     setTarget({ priceId, label });
   };
 
+  const vp = PRICES.verwalten_plus[cycle];
+  const pro = PRICES.pro[cycle];
+
   return (
     <div className="min-h-screen bg-background">
       <PaymentTestModeBanner />
@@ -65,10 +88,10 @@ export default function Pricing() {
           <ArrowLeft className="h-4 w-4" /> Zurück
         </Link>
 
-        <div className="text-center mb-10">
+        <div className="text-center mb-8">
           <h1 className="text-4xl md:text-5xl font-bold mb-3">Drei Pläne. Klar geschnitten.</h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Free für Selbstnutzer. Verwalten+ für Vermieter. Pro für alles — inkl. Vermarktung & KI.
+            Free für Selbstnutzer. Verwalten+ für Vermieter. Pro für alles — inkl. Vermarktung, KI & Banking.
             30 Tage Pro-Trial automatisch nach Registrierung.
           </p>
           {isTrial && (
@@ -76,6 +99,31 @@ export default function Pricing() {
               🎁 Du bist im Pro-Trial · noch {trialDaysLeft} Tag{trialDaysLeft === 1 ? "" : "e"}
             </p>
           )}
+        </div>
+
+        {/* Cycle Toggle */}
+        <div className="flex justify-center mb-10">
+          <div className="inline-flex items-center bg-muted rounded-full p-1 text-sm">
+            <button
+              onClick={() => setCycle("monthly")}
+              className={`px-4 py-1.5 rounded-full transition ${
+                cycle === "monthly" ? "bg-background shadow-sm font-medium" : "text-muted-foreground"
+              }`}
+            >
+              Monatlich
+            </button>
+            <button
+              onClick={() => setCycle("yearly")}
+              className={`px-4 py-1.5 rounded-full transition flex items-center gap-2 ${
+                cycle === "yearly" ? "bg-background shadow-sm font-medium" : "text-muted-foreground"
+              }`}
+            >
+              Jährlich
+              <span className="bg-success/15 text-success text-[10px] font-semibold px-1.5 py-0.5 rounded-full">
+                −17%
+              </span>
+            </button>
+          </div>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6">
@@ -110,8 +158,20 @@ export default function Pricing() {
               <p className="text-sm text-muted-foreground">Für Vermieter</p>
             </div>
             <div className="mb-5">
-              <span className="text-4xl font-bold">4,99 €</span>
-              <span className="text-muted-foreground">/Monat · inkl. MwSt</span>
+              {cycle === "yearly" ? (
+                <>
+                  <span className="text-4xl font-bold">{fmt(vp.perMonthCents!)} €</span>
+                  <span className="text-muted-foreground">/Monat</span>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {fmt(vp.cents)} € jährlich · inkl. MwSt · 2 Monate gratis
+                  </p>
+                </>
+              ) : (
+                <>
+                  <span className="text-4xl font-bold">{fmt(vp.cents)} €</span>
+                  <span className="text-muted-foreground">/Monat · inkl. MwSt</span>
+                </>
+              )}
             </div>
             <ul className="space-y-2.5 mb-7 text-sm flex-1">
               {VERWALTEN_FEATURES.map((f) => (
@@ -127,7 +187,11 @@ export default function Pricing() {
             ) : tier === "pro" && hasActiveSubscription ? (
               <Button variant="outline" disabled className="w-full">In Pro enthalten</Button>
             ) : (
-              <Button onClick={() => start("verwalten_plus_monthly", "Verwalten+")} className="w-full" variant="outline">
+              <Button
+                onClick={() => start(vp.id, `Verwalten+ (${cycle === "yearly" ? "Jahr" : "Monat"})`)}
+                className="w-full"
+                variant="outline"
+              >
                 Verwalten+ abonnieren
               </Button>
             )}
@@ -142,11 +206,23 @@ export default function Pricing() {
               <h2 className="text-xl font-semibold flex items-center gap-2">
                 <Sparkles className="h-5 w-5 text-primary" /> Pro
               </h2>
-              <p className="text-sm text-muted-foreground">Alles. Auch Vermarktung & KI.</p>
+              <p className="text-sm text-muted-foreground">Alles. Auch Vermarktung, KI & Banking.</p>
             </div>
             <div className="mb-5">
-              <span className="text-4xl font-bold">9,90 €</span>
-              <span className="text-muted-foreground">/Monat · inkl. MwSt</span>
+              {cycle === "yearly" ? (
+                <>
+                  <span className="text-4xl font-bold">{fmt(pro.perMonthCents!)} €</span>
+                  <span className="text-muted-foreground">/Monat</span>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {fmt(pro.cents)} € jährlich · inkl. MwSt · 2 Monate gratis
+                  </p>
+                </>
+              ) : (
+                <>
+                  <span className="text-4xl font-bold">{fmt(pro.cents)} €</span>
+                  <span className="text-muted-foreground">/Monat · inkl. MwSt</span>
+                </>
+              )}
             </div>
             <ul className="space-y-2.5 mb-7 text-sm flex-1">
               {PRO_FEATURES.map((f) => (
@@ -160,7 +236,7 @@ export default function Pricing() {
                 Aktueller Plan
               </Button>
             ) : (
-              <Button onClick={() => start("pro_monthly", "Pro")} className="w-full">
+              <Button onClick={() => start(pro.id, `Pro (${cycle === "yearly" ? "Jahr" : "Monat"})`)} className="w-full">
                 {hasManageAccess ? "Auf Pro upgraden" : "Pro abonnieren"}
               </Button>
             )}
@@ -168,8 +244,8 @@ export default function Pricing() {
         </div>
 
         <p className="text-xs text-muted-foreground text-center mt-8 max-w-2xl mx-auto">
-          Monatlich kündbar. Trial endet automatisch — kein automatischer Übergang in ein bezahltes Abo.
-          Steuern werden korrekt berechnet und abgeführt. Free ist auf 1 selbstgenutzte Immobilie begrenzt.
+          Monatlich oder jährlich kündbar zum Laufzeitende. Trial endet automatisch — kein automatischer Übergang in ein
+          bezahltes Abo. Steuern werden korrekt berechnet und abgeführt. Free ist auf 1 selbstgenutzte Immobilie begrenzt.
         </p>
       </div>
 
