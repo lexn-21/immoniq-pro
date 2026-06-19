@@ -28,8 +28,12 @@ export type PlanState = {
 };
 
 // Mapping: Welcher price_id gehört zu welchem Tier?
-const PRO_PRICES = new Set(["pro_monthly", "pro_yearly"]);
-const VERWALTEN_PRICES = new Set(["verwalten_plus_monthly", "verwalten_plus_yearly"]);
+const PRO_PRICES = new Set(["pro_monthly", "pro_monthly_v2", "pro_yearly"]);
+const VERWALTEN_PRICES = new Set([
+  "verwalten_plus_monthly",
+  "verwalten_plus_monthly_v2",
+  "verwalten_plus_yearly",
+]);
 
 const tierFromPriceId = (priceId: string | null | undefined): PlanTier => {
   if (!priceId) return "free";
