@@ -84,7 +84,7 @@ const groups: NavGroup[] = [
     items: [
       { to: "/markt", label: "Markt", icon: SearchIcon },
       { to: "/app/listings", label: "Meine Inserate", icon: Megaphone, personas: ["vermieter", "pro"] },
-      { to: "/app/applications", label: "Bewerbungen", icon: Inbox, personas: ["vermieter", "pro"] },
+      { to: "/app/chat", label: "Bewerbungen", icon: Inbox, personas: ["vermieter", "pro"] },
       { to: "/app/marketplace", label: "Experten", icon: Wrench, personas: ["pro"] },
       { to: "/app/ads", label: "Werben", icon: Megaphone, personas: ["pro"] },
     ],
