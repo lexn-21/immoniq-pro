@@ -503,6 +503,8 @@ export default function Templates() {
   const [saving, setSaving] = useState(false);
   const [applyOpen, setApplyOpen] = useState(false);
   const [applyTemplate, setApplyTemplate] = useState<UserTemplate | null>(null);
+  const [q, setQ] = useState("");
+  const [cat, setCat] = useState<string>("");
 
   useEffect(() => {
     document.title = "Vorlagen · ImmonIQ";
