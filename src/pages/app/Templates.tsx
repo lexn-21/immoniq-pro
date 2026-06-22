@@ -729,7 +729,7 @@ export default function Templates() {
         <EmptyState
           icon={FileText}
           title={q || cat ? "Keine Vorlage gefunden" : "Noch keine Vorlagen"}
-          description={q || cat ? "Andere Suche oder Filter versuchen." : "Klicke „Alle Starter laden", um die rechtlich geprüfte Muster-Bibliothek zu übernehmen."}
+          description={q || cat ? "Andere Suche oder Filter versuchen." : 'Klicke „Alle Starter laden", um die rechtlich geprüfte Muster-Bibliothek zu übernehmen.'}
         />
       )}
 
