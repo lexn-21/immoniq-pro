@@ -48,8 +48,7 @@ const groups: NavGroup[] = [
     items: [
       { to: "/app", label: "Dashboard", icon: Home, end: true },
       { to: "/app/tasks", label: "Mein Plan", icon: CalendarCheck },
-      { to: "/app/chat", label: "Chat", icon: MessageSquare },
-      { to: "/app/messenger", label: "Inserat-Chats", icon: MessageSquare },
+      { to: "/app/chat", label: "Postfach", icon: MessageSquare },
       { to: "/app/inbox", label: "Smart Inbox", icon: Inbox, personas: ["vermieter", "pro"] },
       { to: "/app/feed", label: "Community", icon: PartyPopper, personas: ["pro"] },
     ],
