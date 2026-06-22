@@ -587,6 +587,42 @@ export default function Templates() {
     load();
   };
 
+  // Build a unified list: user templates + starters that aren't already owned, all in one grid
+  type Row =
+    | { kind: "mine"; t: UserTemplate }
+    | { kind: "starter"; s: typeof STARTERS[number] };
+
+  const mineTitles = useMemo(() => new Set(mine.map(m => m.title)), [mine]);
+
+  const allRows: Row[] = useMemo(() => {
+    const a: Row[] = mine.map(t => ({ kind: "mine", t }));
+    const b: Row[] = STARTERS.filter(s => !mineTitles.has(s.title)).map(s => ({ kind: "starter", s }));
+    return [...a, ...b];
+  }, [mine, mineTitles]);
+
+  const filtered = useMemo(() => {
+    const s = q.trim().toLowerCase();
+    return allRows.filter(r => {
+      const title = r.kind === "mine" ? r.t.title : r.s.title;
+      const category = r.kind === "mine" ? r.t.category : r.s.category;
+      const body = r.kind === "mine" ? r.t.body_md : r.s.body_md;
+      if (cat && (category || "") !== cat) return false;
+      if (!s) return true;
+      return title.toLowerCase().includes(s) ||
+        (category || "").toLowerCase().includes(s) ||
+        body.toLowerCase().includes(s);
+    });
+  }, [allRows, q, cat]);
+
+  const usedCategories = useMemo(() => {
+    const set = new Set<string>();
+    allRows.forEach(r => {
+      const c = r.kind === "mine" ? r.t.category : r.s.category;
+      if (c) set.add(c);
+    });
+    return Array.from(set).sort();
+  }, [allRows]);
+
   return (
     <div className="space-y-6">
       <Card className="p-3 border-warning/30 bg-warning/5">
@@ -597,6 +633,7 @@ export default function Templates() {
           </span>
         </p>
       </Card>
+
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">Vorlagen</h1>
@@ -605,11 +642,9 @@ export default function Templates() {
           </p>
         </div>
         <div className="flex gap-2 flex-wrap">
-          {mine.length === 0 && (
-            <Button variant="outline" size="sm" onClick={seedStarters}>
-              <Sparkles className="h-4 w-4 mr-1.5 text-primary" /> Starter laden
-            </Button>
-          )}
+          <Button variant="outline" size="sm" onClick={seedStarters}>
+            <Sparkles className="h-4 w-4 mr-1.5 text-primary" /> Alle Starter laden
+          </Button>
           <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setEdit({}); }}>
             <DialogTrigger asChild>
               <Button size="sm" className="bg-gradient-gold text-primary-foreground shadow-gold">
@@ -653,89 +688,101 @@ export default function Templates() {
         </div>
       </div>
 
+      {/* Search + category filter */}
+      <div className="flex flex-wrap gap-2 items-center">
+        <div className="relative flex-1 min-w-[220px]">
+          <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Vorlagen durchsuchen (Titel, Kategorie, Inhalt)…"
+            className="pl-9 h-10"
+          />
+          {q && (
+            <button onClick={() => setQ("")} className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded hover:bg-muted">
+              <X className="h-3.5 w-3.5 text-muted-foreground" />
+            </button>
+          )}
+        </div>
+        <div className="flex gap-1 flex-wrap">
+          <button
+            onClick={() => setCat("")}
+            className={`text-xs px-3 py-1.5 rounded-full border transition ${cat === "" ? "bg-primary text-primary-foreground border-primary" : "border-border hover:bg-muted"}`}
+          >
+            Alle
+          </button>
+          {usedCategories.map(c => (
+            <button
+              key={c}
+              onClick={() => setCat(c === cat ? "" : c)}
+              className={`text-xs px-3 py-1.5 rounded-full border transition ${cat === c ? "bg-primary text-primary-foreground border-primary" : "border-border hover:bg-muted"}`}
+            >
+              {c}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {loading && <CardGridSkeleton count={4} />}
 
-      {!loading && mine.length === 0 && (
+      {!loading && filtered.length === 0 && (
         <EmptyState
           icon={FileText}
-          title="Noch keine eigenen Vorlagen"
-          description="Wähle unten aus der Starter-Bibliothek (Mietverträge, Mahnung, Mieterhöhung, Übergabeprotokoll, Kündigung, Hausordnung) oder lege eine eigene Vorlage an."
+          title={q || cat ? "Keine Vorlage gefunden" : "Noch keine Vorlagen"}
+          description={q || cat ? "Andere Suche oder Filter versuchen." : "Klicke „Alle Starter laden", um die rechtlich geprüfte Muster-Bibliothek zu übernehmen."}
         />
       )}
 
-      {!loading && mine.length > 0 && (
+      {!loading && filtered.length > 0 && (
         <div className="grid md:grid-cols-2 gap-3">
-          {mine.map(t => (
-            <Card key={t.id} className="glass hover:border-primary/40 transition group">
+          {filtered.map(r => r.kind === "mine" ? (
+            <Card key={`m-${r.t.id}`} className="glass hover:border-primary/40 transition group">
               <CardContent className="p-5">
                 <div className="flex items-start justify-between gap-2 mb-3">
                   <div className="min-w-0 flex-1">
-                    <p className="font-medium truncate">{t.title}</p>
-                    {t.category && <Badge variant="outline" className="mt-1">{t.category}</Badge>}
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="font-medium truncate">{r.t.title}</p>
+                      <Badge variant="secondary" className="text-[9px] h-4 px-1.5">Meine</Badge>
+                    </div>
+                    {r.t.category && <Badge variant="outline" className="mt-1">{r.t.category}</Badge>}
                   </div>
                   <div className="flex gap-0.5 flex-shrink-0 opacity-60 group-hover:opacity-100 transition">
-                    <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => { setEdit(t); setOpen(true); }} title="Bearbeiten"><Pencil className="h-3.5 w-3.5" /></Button>
-                    <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => duplicate(t)} title="Duplizieren"><Copy className="h-3.5 w-3.5" /></Button>
-                    <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => exportTxt(t)} title="Export .txt"><Download className="h-3.5 w-3.5" /></Button>
-                    <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => remove(t.id)} title="Löschen"><Trash2 className="h-3.5 w-3.5" /></Button>
+                    <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => { setEdit(r.t); setOpen(true); }} title="Bearbeiten"><Pencil className="h-3.5 w-3.5" /></Button>
+                    <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => duplicate(r.t)} title="Duplizieren"><Copy className="h-3.5 w-3.5" /></Button>
+                    <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => exportTxt(r.t)} title="Export .txt"><Download className="h-3.5 w-3.5" /></Button>
+                    <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => remove(r.t.id)} title="Löschen"><Trash2 className="h-3.5 w-3.5" /></Button>
                   </div>
                 </div>
-                <p className="text-xs text-muted-foreground line-clamp-2 whitespace-pre-wrap font-mono mb-3">{t.body_md || "—"}</p>
-                <Button size="sm" className="w-full bg-gradient-gold text-primary-foreground shadow-gold" onClick={() => { setApplyTemplate(t); setApplyOpen(true); }}>
+                <p className="text-xs text-muted-foreground line-clamp-2 whitespace-pre-wrap font-mono mb-3">{r.t.body_md || "—"}</p>
+                <Button size="sm" className="w-full bg-gradient-gold text-primary-foreground shadow-gold" onClick={() => { setApplyTemplate(r.t); setApplyOpen(true); }}>
                   <Wand2 className="h-3.5 w-3.5 mr-1.5" /> Mieter & Objekt wählen · ausfüllen
                 </Button>
               </CardContent>
             </Card>
+          ) : (
+            <Card key={`s-${r.s.title}`} className="glass hover:border-primary/40 transition border-dashed">
+              <CardContent className="p-5">
+                <div className="flex items-start justify-between gap-2 mb-3">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="font-medium truncate">{r.s.title}</p>
+                      <Badge variant="outline" className="text-[9px] h-4 px-1.5 gap-0.5"><Sparkles className="h-2.5 w-2.5" /> Starter</Badge>
+                    </div>
+                    <Badge variant="outline" className="mt-1">{r.s.category}</Badge>
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground line-clamp-2 whitespace-pre-wrap font-mono mb-3">{r.s.body_md}</p>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" className="flex-1" onClick={() => useStarter(r.s)}>
+                    <Pencil className="h-3.5 w-3.5 mr-1.5" /> Ansehen & anpassen
+                  </Button>
+                  <Button size="sm" className="flex-1 bg-gradient-gold text-primary-foreground shadow-gold" onClick={() => addStarter(r.s)}>
+                    <Plus className="h-3.5 w-3.5 mr-1.5" /> Übernehmen
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           ))}
-        </div>
-      )}
-
-      {!loading && (
-        <div className="space-y-3 pt-4 border-t border-border/40">
-          <div className="flex items-end justify-between flex-wrap gap-2">
-            <div>
-              <h2 className="text-lg font-semibold flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-primary" /> Starter-Bibliothek
-              </h2>
-              <p className="text-xs text-muted-foreground">
-                Rechtlich geprüfte Muster nach aktueller BGB-Lage — klicke „Hinzufügen", um sie deinen Vorlagen zu übernehmen und individuell anzupassen.
-              </p>
-            </div>
-            <Button variant="outline" size="sm" onClick={seedStarters}>
-              <Sparkles className="h-4 w-4 mr-1.5 text-primary" /> Alle fehlenden laden
-            </Button>
-          </div>
-          <div className="grid md:grid-cols-2 gap-3">
-            {STARTERS.map(s => {
-              const owned = mine.some(m => m.title === s.title);
-              return (
-                <Card key={s.title} className="glass hover:border-primary/40 transition">
-                  <CardContent className="p-4 flex items-start gap-3">
-                    <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <FileText className="h-5 w-5 text-primary" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="font-medium text-sm">{s.title}</p>
-                      <Badge variant="outline" className="mt-1">{s.category}</Badge>
-                      <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{s.body_md.split("\n").slice(0, 3).join(" ")}</p>
-                      <div className="flex gap-2 mt-3">
-                        <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => useStarter(s)}>
-                          <Pencil className="h-3 w-3 mr-1" /> Ansehen & anpassen
-                        </Button>
-                        {!owned ? (
-                          <Button size="sm" className="h-7 text-xs bg-gradient-gold text-primary-foreground" onClick={() => addStarter(s)}>
-                            <Plus className="h-3 w-3 mr-1" /> Hinzufügen
-                          </Button>
-                        ) : (
-                          <Badge variant="secondary" className="text-[10px]">✓ Übernommen</Badge>
-                        )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
         </div>
       )}
 
