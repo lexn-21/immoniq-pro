@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { StripeEmbeddedCheckout } from "@/components/StripeEmbeddedCheckout";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from "sonner";
 
 const FREE_FEATURES = [
   "1 selbstgenutzte Immobilie",
