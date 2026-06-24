@@ -451,6 +451,11 @@ const AppLayout = () => {
         <main className="lg:pl-64 relative">
           <div className="container py-6 lg:py-10 max-w-6xl pb-32 lg:pb-10">
             <PaymentTestModeBanner />
+            {import.meta.env.VITE_DEMO_MODE === "true" && (
+              <div className="mb-4 rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-2.5 text-sm text-amber-700 dark:text-amber-300">
+                <strong>Demo-Modus aktiv.</strong> Alle Pläne sind freigeschaltet, Zahlungen sind deaktiviert. Bitte keine echten Mieter-/Personendaten eingeben.
+              </div>
+            )}
             <AnimatePresence mode="wait">
               <motion.div
                 key={location.pathname}

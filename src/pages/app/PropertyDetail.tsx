@@ -173,7 +173,13 @@ const PropertyDetail = () => {
                 <>
                   <div className="flex items-center gap-2 flex-wrap">
                     <h1 className="text-2xl font-bold">{property.name}</h1>
-                    <Badge variant={property.status === "vacant" ? "secondary" : "default"}>{property.status === "vacant" ? "Leerstand" : property.status === "self_use" ? "Eigennutzung" : "Vermietet"}</Badge>
+                    {(() => {
+                      if (property.status === "self_use") return <Badge variant="secondary">Eigennutzung</Badge>;
+                      if (property.status === "vacant") return <Badge variant="secondary">Leerstand</Badge>;
+                      // status === rented
+                      if (activeTenants.length === 0) return <Badge variant="outline" className="border-amber-500/50 text-amber-600">Vermietung offen</Badge>;
+                      return <Badge variant="default">Vermietet</Badge>;
+                    })()}
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">
                     {[property.street, [property.zip, property.city].filter(Boolean).join(" ")].filter(Boolean).join(", ") || "Keine Adresse"}

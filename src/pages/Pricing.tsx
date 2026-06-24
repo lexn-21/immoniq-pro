@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { StripeEmbeddedCheckout } from "@/components/StripeEmbeddedCheckout";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from "sonner";
 
 const FREE_FEATURES = [
   "1 selbstgenutzte Immobilie",
@@ -69,6 +70,11 @@ export default function Pricing() {
   const [cycle, setCycle] = useState<Cycle>("yearly");
 
   const start = (priceId: string, label: string) => {
+    if (import.meta.env.VITE_DEMO_MODE === "true") {
+      toast.success(`Demo-Modus: ${label} ist freigeschaltet. Keine Zahlung nötig.`);
+      navigate("/app");
+      return;
+    }
     if (!user) {
       navigate("/auth?next=/pricing");
       return;
@@ -76,6 +82,7 @@ export default function Pricing() {
     setWaiverConsent(false);
     setTarget({ priceId, label });
   };
+
 
   const vp = PRICES.verwalten_plus[cycle];
   const pro = PRICES.pro[cycle];

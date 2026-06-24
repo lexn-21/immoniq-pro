@@ -42,6 +42,8 @@ const tierFromPriceId = (priceId: string | null | undefined): PlanTier => {
   return "free";
 };
 
+export const DEMO_MODE = import.meta.env.VITE_DEMO_MODE === "true";
+
 export const useSubscription = (): PlanState => {
   const { user } = useAuth();
   const [state, setState] = useState<PlanState>({
@@ -58,10 +60,26 @@ export const useSubscription = (): PlanState => {
   });
 
   useEffect(() => {
+    if (DEMO_MODE) {
+      setState({
+        loading: false,
+        tier: "pro",
+        isPro: true,
+        hasManageAccess: true,
+        isTrial: false,
+        trialDaysLeft: 0,
+        hasActiveSubscription: true,
+        cancelAtPeriodEnd: false,
+        periodEnd: null,
+        subscription: null,
+      });
+      return;
+    }
     if (!user) {
       setState((s) => ({ ...s, loading: false }));
       return;
     }
+
 
     const load = async () => {
       const env = getStripeEnvironment();
