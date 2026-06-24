@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Users, Mail, Phone, Link2, Building2, ChevronRight, MessageCircle } from "lucide-react";
 import { waHref, mailHref } from "@/lib/contact";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { toastError } from "@/lib/errors";
 import { eur, date } from "@/lib/format";
