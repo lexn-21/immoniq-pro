@@ -254,9 +254,16 @@ const PropertyDetail = () => {
         </div>
       </Card>
 
-      {activeTenants.length > 0 && (
-        <Card className="p-5 glass">
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3">Aktive Mieter</h2>
+      <Card className="p-5 glass">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Mieter ({activeTenants.length})</h2>
+          <Link to={`/app/tenants?property=${id}`}>
+            <Button size="sm" variant="outline" className="h-7 text-xs"><Plus className="h-3 w-3 mr-1" />Mieter hinzufügen</Button>
+          </Link>
+        </div>
+        {activeTenants.length === 0 ? (
+          <p className="text-xs text-muted-foreground">Noch keine Mieter erfasst. Lege Mieter an, um Mietverträge, Zahlungen und Tickets zuzuordnen.</p>
+        ) : (
           <div className="flex flex-wrap gap-2">
             {activeTenants.map(t => (
               <Link key={t.id} to={`/app/tenants/${t.id}`} className="text-xs bg-muted hover:bg-muted/70 px-3 py-1.5 rounded-full transition">
@@ -264,8 +271,8 @@ const PropertyDetail = () => {
               </Link>
             ))}
           </div>
-        </Card>
-      )}
+        )}
+      </Card>
 
       <AvmWidget
         zip={property.zip}
