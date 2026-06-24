@@ -34,7 +34,20 @@ const Tenants = () => {
   const [showArchived, setShowArchived] = useState(false);
   const [form, setForm] = useState({ property_id: "", full_name: "", email: "", phone: "", lease_start: "", lease_end: "", deposit: "" });
 
+  const [searchParams, setSearchParams] = useSearchParams();
+
   useEffect(() => { document.title = "Mieter · ImmonIQ"; load(); }, []);
+
+  // Deep-Link: ?property=<id> öffnet Dialog vorbelegt
+  useEffect(() => {
+    const pid = searchParams.get("property");
+    if (pid) {
+      setForm(f => ({ ...f, property_id: pid }));
+      setOpen(true);
+      searchParams.delete("property");
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   // Auto-Select: nur eine Immobilie? Direkt vorbelegen.
   useEffect(() => {
