@@ -1,6 +1,12 @@
 import { Link } from "react-router-dom";
+import { usePageSeo } from "@/hooks/usePageSeo";
 
 export default function Datenschutz() {
+  usePageSeo({
+    title: "Datenschutzerklärung · ImmonIQ",
+    description: "Datenschutzerklärung von ImmonIQ — wie wir Daten von Privatvermietern verarbeiten. DSGVO-konform, transparent, mit Auftragsverarbeitern aus der EU.",
+    canonicalPath: "/datenschutz",
+  });
   return (
     <div className="min-h-screen bg-background py-16 px-6">
       <div className="max-w-2xl mx-auto space-y-6">
