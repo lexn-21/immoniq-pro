@@ -18,6 +18,7 @@ import {
 import { SponsoredSlot } from "@/components/market/SponsoredSlot";
 import { approxLatLngFromZip } from "@/lib/geo";
 import { toast } from "sonner";
+import { usePageSeo } from "@/hooks/usePageSeo";
 
 type SortKey = "newest" | "price_asc" | "price_desc" | "size_desc" | "ppm2_asc";
 
@@ -263,6 +264,13 @@ const Markt = () => {
     const v = Number(l.price) / Number(l.living_space);
     return `${v.toFixed(2).replace(".", ",")} €/m²`;
   };
+
+  usePageSeo({
+    title: "Wohnungsmarkt — direkt vom Eigentümer · ImmonIQ",
+    description: "Wohnungen, Häuser und WG-Zimmer ohne Maklerprovision — direkt von Privatvermietern in Deutschland. Mit Energieausweis-Pflicht und transparenten Filtern.",
+    canonicalPath: "/markt",
+  });
+
 
   return (
     <div className="min-h-screen bg-background pb-24">
