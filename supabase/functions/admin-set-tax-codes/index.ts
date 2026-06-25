@@ -1,5 +1,6 @@
 // Einmal-Skript: setzt SaaS-Tax-Code (txcd_10103001) auf alle Stripe-Produkte.
-// Aufruf via: supabase.functions.invoke("admin-set-tax-codes", { body: { environment: "sandbox" } })
+// Nur für Admins (app_admins).
+import { createClient } from "npm:@supabase/supabase-js@2";
 import { type StripeEnv, createStripeClient } from "../_shared/stripe.ts";
 
 const corsHeaders = {
@@ -11,6 +12,36 @@ const corsHeaders = {
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   try {
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } },
+    );
+    const token = authHeader.replace("Bearer ", "");
+    const { data: claims, error: authErr } = await supabase.auth.getClaims(token);
+    if (authErr || !claims?.claims?.sub) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const userId = claims.claims.sub;
+    const admin = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+    );
+    const { data: isAdmin } = await admin.from("app_admins").select("user_id").eq("user_id", userId).maybeSingle();
+    if (!isAdmin) {
+      return new Response(JSON.stringify({ error: "Forbidden" }), {
+        status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { environment } = (await req.json()) as { environment: StripeEnv };
     if (environment !== "sandbox" && environment !== "live") throw new Error("Invalid environment");
     const stripe = createStripeClient(environment);
@@ -20,7 +51,6 @@ Deno.serve(async (req) => {
     while (true) {
       const page = await stripe.products.list({ limit: 100, ...(starting_after && { starting_after }) });
       for (const p of page.data) {
-        // SaaS / digitale Dienstleistung — passt für alle ImmonIQ-Pläne und Werbeplätze
         const taxCode = "txcd_10103001";
         if (p.tax_code !== taxCode) {
           await stripe.products.update(p.id, { tax_code: taxCode });
