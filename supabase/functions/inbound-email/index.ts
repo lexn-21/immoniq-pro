@@ -53,9 +53,26 @@ ${(body || '').slice(0, 4000)}`
   try { return JSON.parse(txt) } catch { return {} }
 }
 
+function constantTimeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false
+  let r = 0
+  for (let i = 0; i < a.length; i++) r |= a.charCodeAt(i) ^ b.charCodeAt(i)
+  return r === 0
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
   if (req.method !== 'POST') return new Response('Method not allowed', { status: 405, headers: corsHeaders })
+
+  const expected = Deno.env.get('INBOUND_EMAIL_SECRET') || ''
+  const provided = req.headers.get('x-inbound-secret') || ''
+  if (!expected || !provided || !constantTimeEqual(expected, provided)) {
+    return new Response(JSON.stringify({ error: 'unauthorized' }), {
+      status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
+  }
+
+
 
   try {
     const url = Deno.env.get('SUPABASE_URL')!
