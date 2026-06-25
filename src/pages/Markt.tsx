@@ -276,14 +276,15 @@ const Markt = () => {
         </div>
       </header>
 
-      <section className="container max-w-6xl py-6 space-y-5">
+      <section className="container max-w-6xl py-6 space-y-5" aria-labelledby="markt-heading">
         <div>
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight">Wohnungen — direkt vom Eigentümer.</h1>
+          <h1 id="markt-heading" className="text-3xl md:text-4xl font-bold tracking-tight">Wohnungen — direkt vom Eigentümer.</h1>
           <p className="text-muted-foreground mt-2 text-sm md:text-base flex items-center gap-2 flex-wrap">
             <ShieldCheck className="h-4 w-4 text-primary" />
             Keine Maklerprovision · Keine bezahlten Plätze in den Treffern · Energieausweis-Pflicht
           </p>
         </div>
+        <h2 className="sr-only">Suche &amp; Filter</h2>
 
         {/* Anchor banner */}
         {anchor && (
@@ -384,6 +385,7 @@ const Markt = () => {
             </div>
 
             {/* Sort + count + save search */}
+            <h2 className="sr-only">Ergebnisse</h2>
             <div className="flex items-center justify-between gap-2 flex-wrap">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-sm text-muted-foreground">{num(filtered.length)} Treffer</span>
@@ -547,7 +549,7 @@ const Markt = () => {
 
             {/* Sponsored — clearly separated */}
             <div className="pt-4">
-              <p className="text-[11px] uppercase tracking-wider text-muted-foreground mb-2">Hilfe in deiner Nähe</p>
+              <h2 className="text-[11px] uppercase tracking-wider text-muted-foreground mb-2 font-normal">Hilfe in deiner Nähe</h2>
               <SponsoredSlot placement="market_top" zip={adZip} city={adCity} kind={adKind} limit={1} />
               <p className="text-[11px] text-muted-foreground mt-2">
                 Anzeigen sind klar gekennzeichnet und beeinflussen nie die Reihenfolge der Treffer.
