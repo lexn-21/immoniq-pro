@@ -1,0 +1,18 @@
+# ImmonIQ
+
+> Die deutsche All-in-One App für jede Lebenslage rund um Immobilien: Tresor, Fristen, Marktwert, Mieten, Suchen, Erben. Verschlüsselt, DSGVO, kostenlos für Privatnutzer.
+
+## Pages
+
+- [Startseite](/): ImmonIQ für Eigentümer, Vermieter, Steuerberater, Käufer, Mieter und Erben — an einem Ort, ohne Fachjargon.
+- [Markt](/markt): Marktwerte, Vergleichsobjekte und privater Markt für Immobilien in Deutschland.
+- [Preise](/pricing): Drei Pläne: Free, Verwalten+ und Pro — mit Funktionsübersicht und Kosten.
+- [Impressum](/impressum): Angaben nach § 5 TMG und Kontakt.
+- [Datenschutz](/datenschutz): DSGVO-konforme Datenschutzerklärung.
+- [AGB](/agb): Allgemeine Geschäftsbedingungen.
+- [Widerruf](/widerruf): Widerrufsbelehrung für digitale Inhalte.
+- [Installieren](/install): Anleitung, um ImmonIQ als App auf dem Smartphone zu installieren.
+
+## Optional
+
+- [Marktvergleich](/markt/vergleich): Seitenweise Vergleich von Marktpreisen und Entwicklungen.
