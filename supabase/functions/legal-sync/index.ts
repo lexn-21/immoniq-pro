@@ -54,8 +54,23 @@ ${newText.slice(0, 4000)}`;
   }
 }
 
+function ctEq(a: string, b: string): boolean {
+  if (a.length !== b.length) return false
+  let r = 0; for (let i = 0; i < a.length; i++) r |= a.charCodeAt(i) ^ b.charCodeAt(i)
+  return r === 0
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+
+  const expectedCron = Deno.env.get("CRON_SECRET") || "";
+  const providedCron = req.headers.get("x-cron-secret") || "";
+  if (!expectedCron || !providedCron || !ctEq(expectedCron, providedCron)) {
+    return new Response(JSON.stringify({ error: "unauthorized" }), {
+      status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
 
   const FIRECRAWL = Deno.env.get("FIRECRAWL_API_KEY");
   const LOVABLE = Deno.env.get("LOVABLE_API_KEY");
