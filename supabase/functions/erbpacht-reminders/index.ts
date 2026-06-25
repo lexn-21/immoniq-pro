@@ -15,10 +15,25 @@ function daysUntil(iso: string): number {
   return Math.round((d - Date.now()) / 86400000)
 }
 
+function ctEq(a: string, b: string): boolean {
+  if (a.length !== b.length) return false
+  let r = 0; for (let i = 0; i < a.length; i++) r |= a.charCodeAt(i) ^ b.charCodeAt(i)
+  return r === 0
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
 
+  const expected = Deno.env.get('CRON_SECRET') || ''
+  const provided = req.headers.get('x-cron-secret') || ''
+  if (!expected || !provided || !ctEq(expected, provided)) {
+    return new Response(JSON.stringify({ error: 'unauthorized' }), {
+      status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
+  }
+
   const sb = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
+
 
   let created = 0
   const skipped: string[] = []
