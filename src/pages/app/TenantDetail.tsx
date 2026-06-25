@@ -45,7 +45,7 @@ export default function TenantDetail() {
   const [chatOpen, setChatOpen] = useState(false);
 
   useEffect(() => {
-    document.title = "Mieter · ImmonIQ";
+    document.title = "Mieterakte — Details · ImmonIQ";
     if (id) load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);

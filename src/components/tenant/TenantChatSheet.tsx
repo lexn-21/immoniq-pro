@@ -137,8 +137,8 @@ export default function TenantChatSheet({ open, onOpenChange, tenant, context }:
             <>
               <Badge variant="outline" className="text-[9px] h-4 px-1.5 shrink-0">Portal aktiv</Badge>
               <span className="truncate text-muted-foreground flex-1">{portalUrl}</span>
-              <Button size="icon" variant="ghost" className="h-6 w-6 shrink-0" onClick={copyPortal}><Copy className="h-3 w-3" /></Button>
-              <Button size="icon" variant="ghost" className="h-6 w-6 shrink-0" onClick={() => window.open(portalUrl, "_blank")}><ExternalLink className="h-3 w-3" /></Button>
+              <Button size="icon" variant="ghost" aria-label="Portal-Link kopieren" className="h-6 w-6 shrink-0" onClick={copyPortal}><Copy className="h-3 w-3" /></Button>
+              <Button size="icon" variant="ghost" aria-label="Portal-Link in neuem Tab öffnen" className="h-6 w-6 shrink-0" onClick={() => window.open(portalUrl, "_blank")}><ExternalLink className="h-3 w-3" /></Button>
             </>
           ) : (
             <>
@@ -227,6 +227,7 @@ export default function TenantChatSheet({ open, onOpenChange, tenant, context }:
             />
             <Button
               size="icon"
+              aria-label="Nachricht an Mieter senden"
               onClick={send}
               disabled={!text.trim()}
               className="shrink-0 h-11 w-11 rounded-full"

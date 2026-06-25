@@ -36,7 +36,7 @@ const Tenants = () => {
 
   const [searchParams, setSearchParams] = useSearchParams();
 
-  useEffect(() => { document.title = "Mieter · ImmonIQ"; load(); }, []);
+  useEffect(() => { document.title = "Mieter — Übersicht · ImmonIQ"; load(); }, []);
 
   // Deep-Link: ?property=<id> öffnet Dialog vorbelegt
   useEffect(() => {
