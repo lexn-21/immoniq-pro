@@ -20,6 +20,26 @@ import {
   Zap, Wrench, Building2, Banknote, Lightbulb, ArrowRight, Quote,
 } from "lucide-react";
 import { toast } from "sonner";
+import { usePageSeo } from "@/hooks/usePageSeo";
+
+const MYADS_FAQ = [
+  {
+    q: "Wie schnell ist meine Anzeige live?",
+    a: "Nach Erstellung prüfen wir innerhalb von 24 Stunden. Sobald freigegeben, einmal \"Buchen\" klicken — und sie ist sofort online.",
+  },
+  {
+    q: "Was wird geprüft?",
+    a: "Dass dein Link funktioniert, der Inhalt seriös ist (kein Spam, keine Schufa-Versprechen, keine irreführende Werbung) und zu Immobilien passt.",
+  },
+  {
+    q: "Was passiert wenn niemand klickt?",
+    a: "Du siehst die Stats live. Wenn nach 3 Tagen keine Klicks kommen: Überschrift überarbeiten oder anderes PLZ-Targeting probieren — neue Anzeigen kostenfrei einreichbar.",
+  },
+  {
+    q: "Kann ich Rechnung bekommen?",
+    a: "Ja — nach Zahlung erhältst du automatisch eine Rechnung mit MwSt. per E-Mail.",
+  },
+] as const;
 
 type AdSlot = {
   id: string;
