@@ -10,6 +10,7 @@ import { StripeEmbeddedCheckout } from "@/components/StripeEmbeddedCheckout";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
+import { usePageSeo } from "@/hooks/usePageSeo";
 
 const FREE_FEATURES = [
   "1 selbstgenutzte Immobilie",
@@ -62,6 +63,11 @@ const fmt = (cents: number) =>
   (cents / 100).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 export default function Pricing() {
+  usePageSeo({
+    title: "Preise & Tarife · ImmonIQ",
+    description: "Tarife für ImmonIQ — kostenlos für Privatnutzer, Verwalten ab 9,90 €/Monat, Pro mit Berater-Funktionen. 30 Tage kostenlos testen.",
+    canonicalPath: "/pricing",
+  });
   const { user } = useAuth();
   const { hasManageAccess, isTrial, trialDaysLeft, hasActiveSubscription, tier } = useSubscription();
   const navigate = useNavigate();

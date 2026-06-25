@@ -12,6 +12,7 @@ import { ArrowLeft, MapPin, Bed, Maximize2, Calendar, Euro, ShieldCheck, Heart, 
 import { toast } from "sonner";
 import { SponsoredSlot } from "@/components/market/SponsoredSlot";
 import LegalSnippet from "@/components/LegalSnippet";
+import { usePageSeo } from "@/hooks/usePageSeo";
 
 const MarktDetail = () => {
   const { id } = useParams();
@@ -46,6 +47,48 @@ const MarktDetail = () => {
 
   const photoUrl = (p?: string) =>
     p ? supabase.storage.from("listing-photos").getPublicUrl(p).data.publicUrl : null;
+
+  const heroImage = l?.photos?.[0] ? photoUrl(l.photos[0]) : undefined;
+  usePageSeo({
+    title: l ? `${l.title} · ImmonIQ` : "Inserat · ImmonIQ",
+    description: l
+      ? `${l.kind === "rent" ? "Zur Miete" : l.kind === "sale" ? "Zum Kauf" : "WG-Zimmer"} in ${[l.zip, l.city].filter(Boolean).join(" ") || "Deutschland"} — direkt vom Eigentümer auf ImmonIQ.`
+      : "Wohnungsinserat — direkt vom Eigentümer auf ImmonIQ.",
+    canonicalPath: id ? `/markt/${id}` : "/markt",
+    ogImage: heroImage || undefined,
+    jsonLdId: "listing",
+    jsonLd: l
+      ? {
+          "@context": "https://schema.org",
+          "@type": l.kind === "sale" ? "Product" : "Accommodation",
+          name: l.title,
+          description: l.description || `${l.kind === "rent" ? "Mietwohnung" : l.kind === "sale" ? "Kaufobjekt" : "WG-Zimmer"} in ${l.city || ""}`.trim(),
+          url: `https://immoniq.xyz/markt/${l.id}`,
+          image: heroImage,
+          numberOfRooms: l.rooms ?? l.wg_total_rooms ?? undefined,
+          floorSize: l.living_space
+            ? { "@type": "QuantitativeValue", value: l.living_space, unitCode: "MTK" }
+            : undefined,
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: l.street_public || undefined,
+            postalCode: l.zip || undefined,
+            addressLocality: l.city || undefined,
+            addressCountry: "DE",
+          },
+          offers: l.price
+            ? {
+                "@type": "Offer",
+                price: Number(l.price),
+                priceCurrency: "EUR",
+                availability: "https://schema.org/InStock",
+                url: `https://immoniq.xyz/markt/${l.id}`,
+              }
+            : undefined,
+        }
+      : undefined,
+  });
+
 
   const apply = async () => {
     if (!user) { nav(`/auth?redirect=/markt/${id}`); return; }

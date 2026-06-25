@@ -1,6 +1,30 @@
 import { Link } from "react-router-dom";
+import { usePageSeo } from "@/hooks/usePageSeo";
 
 export default function Impressum() {
+  usePageSeo({
+    title: "Impressum · ImmonIQ",
+    description: "Impressum und Anbieterkennzeichnung gemäß § 5 TMG für ImmonIQ — die App für Privatvermieter.",
+    canonicalPath: "/impressum",
+    jsonLdId: "localbusiness",
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      name: "ENTERVENTUS — ImmonIQ",
+      founder: { "@type": "Person", name: "Leon Boomgaarden" },
+      email: "leonboomgaarden@gmail.com",
+      telephone: "+49 152 28943502",
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "Kastanienallee 13",
+        postalCode: "59320",
+        addressLocality: "Ennigerloh",
+        addressCountry: "DE",
+      },
+      url: "https://immoniq.xyz/impressum",
+    },
+  });
+
   return (
     <div className="min-h-screen bg-background py-16 px-6">
       <div className="max-w-2xl mx-auto space-y-6">
