@@ -1,6 +1,12 @@
 import { Link } from "react-router-dom";
+import { usePageSeo } from "@/hooks/usePageSeo";
 
 export default function AGB() {
+  usePageSeo({
+    title: "Allgemeine Geschäftsbedingungen · ImmonIQ",
+    description: "AGB von ImmonIQ: Vertragsschluss, 30-Tage-Testphase, monatliche Laufzeit, Kündigung und Nutzungsbedingungen für Privatvermieter.",
+    canonicalPath: "/agb",
+  });
   return (
     <div className="min-h-screen bg-background py-16 px-6">
       <div className="max-w-2xl mx-auto space-y-6">

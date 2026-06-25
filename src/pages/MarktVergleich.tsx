@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Logo } from "@/components/Logo";
 import { eur } from "@/lib/format";
 import { ArrowLeft, MapPin, Check, X as XIcon } from "lucide-react";
+import { usePageSeo } from "@/hooks/usePageSeo";
 
 const KEYS: { key: string; label: string; format?: (v: any) => string }[] = [
   { key: "price", label: "Preis", format: (v) => eur(v) },
@@ -27,6 +28,11 @@ const FEATURE_LABELS: Record<string, string> = {
 };
 
 export default function MarktVergleich() {
+  usePageSeo({
+    title: "Inserate vergleichen · ImmonIQ Markt",
+    description: "Bis zu 3 Wohnungs- oder Kaufinserate Seite an Seite vergleichen — Preis, Wohnfläche, Energieklasse, Ausstattung. Nur auf ImmonIQ.",
+    canonicalPath: "/markt/vergleich",
+  });
   const [params] = useSearchParams();
   const ids = (params.get("ids") || "").split(",").filter(Boolean);
   const [items, setItems] = useState<any[]>([]);

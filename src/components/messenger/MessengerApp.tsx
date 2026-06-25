@@ -208,7 +208,7 @@ export default function MessengerApp({ mode = "landlord" }: { mode?: "landlord" 
   const ChatPanel = active ? (
     <div className="h-full flex flex-col bg-muted/5">
       <div className="border-b bg-card px-3 py-2.5 flex items-center gap-3">
-        <Button variant="ghost" size="icon" className="md:hidden h-8 w-8" onClick={() => setActiveId(null)}>
+        <Button variant="ghost" size="icon" aria-label="Zurück zur Chat-Liste" className="md:hidden h-8 w-8" onClick={() => setActiveId(null)}>
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <Avatar className="h-9 w-9">
@@ -224,7 +224,7 @@ export default function MessengerApp({ mode = "landlord" }: { mode?: "landlord" 
         </div>
         {active.kind !== "direct" && (
           <Sheet>
-            <SheetTrigger asChild><Button variant="ghost" size="icon" className="h-8 w-8"><Users className="h-4 w-4" /></Button></SheetTrigger>
+            <SheetTrigger asChild><Button variant="ghost" size="icon" aria-label="Mitglieder anzeigen" className="h-8 w-8"><Users className="h-4 w-4" /></Button></SheetTrigger>
             <SheetContent>
               <SheetHeader><SheetTitle>{active.title || "Gruppe"}</SheetTitle></SheetHeader>
               <div className="mt-4 space-y-2">
@@ -295,7 +295,7 @@ export default function MessengerApp({ mode = "landlord" }: { mode?: "landlord" 
           onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
           placeholder="Nachricht schreiben… (Enter = senden, Shift+Enter = neue Zeile)"
           rows={1} className="resize-none min-h-[42px] max-h-32 text-sm" />
-        <Button size="icon" onClick={send} disabled={!text.trim() || sending} className="shrink-0 h-10 w-10 rounded-full">
+        <Button size="icon" aria-label="Nachricht senden" onClick={send} disabled={!text.trim() || sending} className="shrink-0 h-10 w-10 rounded-full">
           {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
         </Button>
       </div>
@@ -365,7 +365,7 @@ function NewGroupDialog({ onCreated }: { onCreated: (id: string) => void }) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild><Button size="icon" variant="outline" className="h-8 w-8"><Plus className="h-4 w-4" /></Button></DialogTrigger>
+      <DialogTrigger asChild><Button size="icon" variant="outline" aria-label="Neue Gruppe erstellen" className="h-8 w-8"><Plus className="h-4 w-4" /></Button></DialogTrigger>
       <DialogContent>
         <DialogHeader><DialogTitle>Neue Gruppe</DialogTitle></DialogHeader>
         <div className="space-y-4">

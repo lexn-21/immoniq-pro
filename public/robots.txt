@@ -1,9 +1,16 @@
 User-agent: *
 Allow: /
+# Private / auth-only or token-protected routes — intentionally excluded from sitemap
 Disallow: /app/
 Disallow: /auth
 Disallow: /checkout/
 Disallow: /advisor/
+Disallow: /berater
+Disallow: /berater/
 Disallow: /mieter/
+Disallow: /mein-immoniq
+Disallow: /wg-casting/
+Disallow: /pass/
+Disallow: /unsubscribe
 
 Sitemap: https://immoniq.xyz/sitemap.xml

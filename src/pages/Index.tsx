@@ -9,6 +9,7 @@ import {
   HeartHandshake, Clock, MapPin, Star, UserPlus,
 } from "lucide-react";
 import QuickStartFlow from "@/components/QuickStartFlow";
+import { usePageSeo } from "@/hooks/usePageSeo";
 
 type PersonaKey = "owner" | "landlord" | "advisor" | "buyer" | "tenant" | "family";
 
@@ -113,13 +114,11 @@ const PERSONAS: Record<PersonaKey, {
 const Index = () => {
   const [persona, setPersona] = useState<PersonaKey>("owner");
 
-  useEffect(() => {
-    document.title = "ImmonIQ — Deine Immobilie. Endlich verstanden. An einem Ort.";
-    const meta = document.querySelector('meta[name="description"]') || (() => {
-      const m = document.createElement("meta"); m.setAttribute("name", "description"); document.head.appendChild(m); return m;
-    })();
-    meta.setAttribute("content", "Die deutsche All-in-One App für jede Lebenslage rund um Immobilien: Tresor, Fristen, Marktwert, Mieten, Suchen, Erben. Verschlüsselt, DSGVO, kostenlos für Privatnutzer.");
-  }, []);
+  usePageSeo({
+    title: "ImmonIQ — Deine Immobilie. Endlich verstanden. An einem Ort.",
+    description: "Die deutsche All-in-One App rund um Immobilien: Tresor, Fristen, Marktwert, Mieten, Suchen, Erben. Verschlüsselt, DSGVO, kostenlos für Privatnutzer.",
+    canonicalPath: "/",
+  });
 
   const p = PERSONAS[persona];
 

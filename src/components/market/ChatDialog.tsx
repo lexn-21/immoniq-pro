@@ -68,7 +68,7 @@ const ChatDialog = ({ app, onClose }: Props) => {
         </div>
         <div className="flex gap-2">
           <Input value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => e.key === "Enter" && send()} placeholder="Nachricht…" />
-          <Button onClick={send} className="bg-gradient-gold text-primary-foreground shadow-gold"><Send className="h-4 w-4" /></Button>
+          <Button onClick={send} aria-label="Nachricht senden" className="bg-gradient-gold text-primary-foreground shadow-gold"><Send className="h-4 w-4" /></Button>
         </div>
       </DialogContent>
     </Dialog>

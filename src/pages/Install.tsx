@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Smartphone, Monitor, Apple, Chrome, Share, Plus, Download, CheckCircle2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { usePageSeo } from "@/hooks/usePageSeo";
 
 declare global {
   interface WindowEventMap {
@@ -13,6 +14,12 @@ declare global {
 const Install = () => {
   const [deferred, setDeferred] = useState<any>(null);
   const [installed, setInstalled] = useState(false);
+
+  usePageSeo({
+    title: "App installieren — iPhone, Android, Desktop · ImmonIQ",
+    description: "ImmonIQ als App auf dem Homescreen installieren — iOS, Android, Chrome, Safari. In wenigen Sekunden eingerichtet, ohne App-Store.",
+    canonicalPath: "/install",
+  });
 
   useEffect(() => {
     const handler = (e: any) => { e.preventDefault(); setDeferred(e); };

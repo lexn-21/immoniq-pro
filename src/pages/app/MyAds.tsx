@@ -20,6 +20,26 @@ import {
   Zap, Wrench, Building2, Banknote, Lightbulb, ArrowRight, Quote,
 } from "lucide-react";
 import { toast } from "sonner";
+import { usePageSeo } from "@/hooks/usePageSeo";
+
+const MYADS_FAQ = [
+  {
+    q: "Wie schnell ist meine Anzeige live?",
+    a: "Nach Erstellung prüfen wir innerhalb von 24 Stunden. Sobald freigegeben, einmal \"Buchen\" klicken — und sie ist sofort online.",
+  },
+  {
+    q: "Was wird geprüft?",
+    a: "Dass dein Link funktioniert, der Inhalt seriös ist (kein Spam, keine Schufa-Versprechen, keine irreführende Werbung) und zu Immobilien passt.",
+  },
+  {
+    q: "Was passiert wenn niemand klickt?",
+    a: "Du siehst die Stats live. Wenn nach 3 Tagen keine Klicks kommen: Überschrift überarbeiten oder anderes PLZ-Targeting probieren — neue Anzeigen kostenfrei einreichbar.",
+  },
+  {
+    q: "Kann ich Rechnung bekommen?",
+    a: "Ja — nach Zahlung erhältst du automatisch eine Rechnung mit MwSt. per E-Mail.",
+  },
+] as const;
 
 type AdSlot = {
   id: string;
@@ -51,6 +71,21 @@ const PRICE_PER_WEEK = 49;
 
 export default function MyAds() {
   const { user } = useAuth();
+  usePageSeo({
+    title: "Meine Anzeigen — Werbeplätze · ImmonIQ",
+    description: "Verwalte deine bezahlten Werbeplätze auf ImmonIQ: Markt-Banner, Grid-Platzierungen und Handwerker-Kategorie. Statistiken in Echtzeit.",
+    canonicalPath: "/app/my-ads",
+    jsonLdId: "myads-faq",
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: MYADS_FAQ.map((item) => ({
+        "@type": "Question",
+        name: item.q,
+        acceptedAnswer: { "@type": "Answer", text: item.a },
+      })),
+    },
+  });
   const [slots, setSlots] = useState<AdSlot[]>([]);
   const [loading, setLoading] = useState(true);
   const [createOpen, setCreateOpen] = useState(false);
@@ -454,24 +489,14 @@ export default function MyAds() {
 
       {/* FAQ */}
       <Card className="p-5">
-        <p className="font-semibold flex items-center gap-2 mb-3"><HelpCircle className="h-4 w-4" /> Häufige Fragen</p>
+        <h2 className="font-semibold flex items-center gap-2 mb-3 text-base"><HelpCircle className="h-4 w-4" /> Häufige Fragen</h2>
         <div className="space-y-3 text-sm">
-          <div>
-            <p className="font-medium">Wie schnell ist meine Anzeige live?</p>
-            <p className="text-muted-foreground text-xs">Nach Erstellung prüfen wir innerhalb von 24h. Sobald freigegeben, einmal "Buchen" klicken — und sie ist sofort online.</p>
-          </div>
-          <div>
-            <p className="font-medium">Was wird geprüft?</p>
-            <p className="text-muted-foreground text-xs">Dass dein Link funktioniert, der Inhalt seriös ist (kein Spam, keine Schufa-Versprechen, keine irreführende Werbung) und zu Immobilien passt.</p>
-          </div>
-          <div>
-            <p className="font-medium">Was passiert wenn niemand klickt?</p>
-            <p className="text-muted-foreground text-xs">Du siehst die Stats live. Wenn nach 3 Tagen keine Klicks kommen: Überschrift überarbeiten oder anderes PLZ-Targeting probieren — neue Anzeigen kostenfrei einreichbar.</p>
-          </div>
-          <div>
-            <p className="font-medium">Kann ich Rechnung bekommen?</p>
-            <p className="text-muted-foreground text-xs">Ja — nach Zahlung erhältst du automatisch eine Rechnung mit MwSt. per E-Mail.</p>
-          </div>
+          {MYADS_FAQ.map((item) => (
+            <div key={item.q}>
+              <p className="font-medium">{item.q}</p>
+              <p className="text-muted-foreground text-xs">{item.a}</p>
+            </div>
+          ))}
         </div>
       </Card>
 

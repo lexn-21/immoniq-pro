@@ -1,6 +1,12 @@
 import { Link } from "react-router-dom";
+import { usePageSeo } from "@/hooks/usePageSeo";
 
 export default function Widerruf() {
+  usePageSeo({
+    title: "Widerrufsbelehrung · ImmonIQ",
+    description: "14-tägiges Widerrufsrecht für Verbraucher bei ImmonIQ — Belehrung, Form, Fristen und Muster-Widerrufsformular.",
+    canonicalPath: "/widerruf",
+  });
   return (
     <div className="min-h-screen bg-background py-16 px-6">
       <div className="max-w-2xl mx-auto space-y-6">
