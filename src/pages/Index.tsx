@@ -9,6 +9,7 @@ import {
   HeartHandshake, Clock, MapPin, Star, UserPlus,
 } from "lucide-react";
 import QuickStartFlow from "@/components/QuickStartFlow";
+import { usePageSeo } from "@/hooks/usePageSeo";
 
 type PersonaKey = "owner" | "landlord" | "advisor" | "buyer" | "tenant" | "family";
 
