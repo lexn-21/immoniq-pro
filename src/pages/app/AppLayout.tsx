@@ -75,6 +75,7 @@ const groups: NavGroup[] = [
       { to: "/app/vault", label: "Immo-Tresor", icon: Lock, personas: ["privat", "vermieter", "pro"] },
       { to: "/app/vault?scope=personal", label: "Lebensbürokratie", icon: Lock },
       { to: "/app/law", label: "Rechts-Ecke", icon: Scale, personas: ["pro"] },
+      { to: "/app/legal", label: "Legal-Zentrum", icon: ShieldCheck },
       { to: "/app/advisor", label: "Steuerberater", icon: ShieldCheck, personas: ["vermieter", "pro"] },
     ],
   },

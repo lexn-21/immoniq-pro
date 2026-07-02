@@ -35,6 +35,7 @@ const Vault = lazy(() => import("./pages/app/Vault"));
 const Marketplace = lazy(() => import("./pages/app/Marketplace"));
 const Deadlines = lazy(() => import("./pages/app/Deadlines"));
 const LawCorner = lazy(() => import("./pages/app/LawCorner"));
+const Legal = lazy(() => import("./pages/app/Legal"));
 const AdvisorView = lazy(() => import("./pages/AdvisorView"));
 const AdvisorDashboard = lazy(() => import("./pages/advisor/AdvisorDashboard"));
 const AdvisorMandate = lazy(() => import("./pages/advisor/AdvisorMandate"));
@@ -185,6 +186,7 @@ const App = () => (
                 <Route path="templates" element={<Templates />} />
                 <Route path="deadlines" element={<Deadlines />} />
                 <Route path="law" element={<LawCorner />} />
+                <Route path="legal" element={<Legal />} />
                 <Route path="feed" element={<Feed />} />
                 <Route path="parcels" element={<LandParcels />} />
                 <Route path="org" element={<OrgUnits />} />
