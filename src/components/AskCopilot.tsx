@@ -152,6 +152,9 @@ export const AskCopilot = () => {
                 )}
               </div>
 
+              <div className="px-3 pt-2 text-[10px] text-muted-foreground text-center">
+                KI-Antworten können Fehler enthalten. Keine Rechts- oder Steuerberatung.
+              </div>
               <form onSubmit={(e) => { e.preventDefault(); send(input); }} className="p-3 border-t border-border flex gap-2">
                 <input
                   value={input} onChange={(e) => setInput(e.target.value)}
@@ -163,6 +166,7 @@ export const AskCopilot = () => {
                   <Send className="h-4 w-4" />
                 </Button>
               </form>
+
             </motion.div>
           </motion.div>
         )}
