@@ -96,12 +96,12 @@ export default function PropertyShowcase() {
           </p>
         </div>
 
-        <motion.div style={{ y, opacity }} className="relative aspect-[16/10] md:aspect-[16/9] max-w-5xl mx-auto">
+        <motion.div style={{ y, opacity }} className="relative aspect-[4/5] sm:aspect-[16/10] md:aspect-[16/9] max-w-5xl mx-auto">
           {/* Glow */}
           <div className="absolute inset-0 rounded-3xl blur-3xl opacity-30" style={{ background: "radial-gradient(ellipse at center, hsl(38 55% 55% / 0.5), transparent 60%)" }} />
 
           <Suspense fallback={<div className="absolute inset-0 rounded-3xl bg-gradient-to-b from-primary/5 to-transparent" />}>
-            <Canvas camera={{ position: [3.5, 2, 5], fov: 40 }} dpr={[1, 2]} gl={{ alpha: true, antialias: true }}>
+            <Canvas camera={{ position: [3.5, 2, 5], fov: 40 }} dpr={[1, 2]} gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}>
               <ambientLight intensity={0.4} />
               <directionalLight position={[5, 8, 5]} intensity={1.4} color="#f0d78c" />
               <directionalLight position={[-3, -2, -4]} intensity={0.3} color="#4a3a1a" />
@@ -115,14 +115,14 @@ export default function PropertyShowcase() {
           {cards.map((c, i) => (
             <motion.div
               key={c.l}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 20, scale: 0.92 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
               viewport={{ once: true, margin: "-15%" }}
-              transition={{ duration: 0.8, delay: i * 0.15, ease: [0.22, 1, 0.36, 1] }}
-              className={`absolute ${c.pos} backdrop-blur-xl bg-background/60 border border-border/40 rounded-2xl px-4 py-3 shadow-[0_20px_60px_-20px_rgba(201,168,76,0.25)]`}
+              transition={{ duration: 0.9, delay: 0.2 + i * 0.15, ease: [0.22, 1, 0.36, 1] }}
+              className={`absolute ${c.pos} backdrop-blur-xl bg-background/60 border border-border/40 rounded-2xl px-3 py-2 md:px-4 md:py-3 shadow-[0_20px_60px_-20px_rgba(201,168,76,0.35)]`}
             >
-              <div className="font-display text-lg md:text-xl tabular-nums text-gradient-gold">{c.k}</div>
-              <div className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground mt-0.5">{c.l}</div>
+              <div className="font-display text-base md:text-xl tabular-nums text-gradient-gold">{c.k}</div>
+              <div className="text-[9px] md:text-[10px] tracking-[0.2em] uppercase text-muted-foreground mt-0.5">{c.l}</div>
             </motion.div>
           ))}
         </motion.div>
