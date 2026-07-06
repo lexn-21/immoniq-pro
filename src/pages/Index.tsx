@@ -64,26 +64,26 @@ export default function Index() {
 
       {/* HERO — one screen, one message, one wow */}
       <section className="relative">
-        <div className="container relative pt-16 md:pt-24 pb-16 md:pb-28">
+        <div className="container relative pt-12 md:pt-24 pb-14 md:pb-28">
           <div className="grid lg:grid-cols-[1fr_1.05fr] gap-10 lg:gap-16 items-center">
             {/* Left: type only */}
             <div className="max-w-xl">
-              <div className="inline-flex items-center gap-2 text-[11px] tracking-[0.22em] uppercase text-muted-foreground mb-8">
+              <div className="inline-flex items-center gap-2 text-[10px] md:text-[11px] tracking-[0.22em] uppercase text-muted-foreground mb-6 md:mb-8">
                 <span className="h-1 w-1 rounded-full bg-primary" />
                 Made in Germany
               </div>
-              <h1 className="font-display font-medium tracking-[-0.035em] leading-[0.92] text-[clamp(3rem,7.5vw,6rem)]">
+              <h1 className="font-display font-medium tracking-[-0.035em] leading-[0.95] md:leading-[0.92] text-[clamp(2.5rem,11vw,6rem)]">
                 Deine Immobilie.
                 <br />
                 <span className="text-gradient-gold">Ein Ort.</span>
                 <br />
                 Ein Blick.
               </h1>
-              <p className="mt-8 text-lg md:text-xl text-muted-foreground max-w-md leading-relaxed">
+              <p className="mt-6 md:mt-8 text-base md:text-xl text-muted-foreground max-w-md leading-relaxed">
                 Verwalten, verstehen, versteuern — verschlüsselt in Deutschland.
               </p>
-              <div className="mt-10 flex items-center gap-4">
-                <Button asChild size="lg" className="rounded-full bg-foreground text-background hover:bg-foreground/90 px-7 h-12 text-[15px] font-medium">
+              <div className="mt-8 md:mt-10 flex flex-wrap items-center gap-x-5 gap-y-3">
+                <Button asChild size="lg" className="rounded-full bg-foreground text-background hover:bg-foreground/90 px-6 md:px-7 h-12 text-[15px] font-medium">
                   <Link
                     to="/auth"
                     onClick={() => trackCta("hero_signup", { source: "index_hero" })}
@@ -99,7 +99,7 @@ export default function Index() {
                   Markt ansehen
                 </Link>
               </div>
-              <p className="mt-6 text-xs text-muted-foreground">
+              <p className="mt-5 md:mt-6 text-[11px] md:text-xs text-muted-foreground">
                 Privat 0 € · Keine Kreditkarte · 60 Sekunden
               </p>
             </div>
