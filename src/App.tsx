@@ -77,6 +77,7 @@ const Banking = lazy(() => import("./pages/app/Banking"));
 const SmartInbox = lazy(() => import("./pages/app/SmartInbox"));
 const Tickets = lazy(() => import("./pages/app/Tickets"));
 const PassPublic = lazy(() => import("./pages/PassPublic"));
+const Connect = lazy(() => import("./pages/Connect"));
 const Messenger = lazy(() => import("./pages/app/Messenger"));
 const Chat = lazy(() => import("./pages/app/Chat"));
 const Profile = lazy(() => import("./pages/app/Profile"));
@@ -131,6 +132,8 @@ const App = () => (
               </Route>
               <Route path="/wg-casting/:token" element={<WgCasting />} />
               <Route path="/pass/:code" element={<PassPublic />} />
+              <Route path="/connect" element={<Connect />} />
+              <Route path="/verbinden-ai" element={<Connect />} />
               <Route path="/markt" element={<Markt />} />
               <Route path="/markt/vergleich" element={<MarktVergleich />} />
               <Route path="/markt/:id" element={<MarktDetail />} />
