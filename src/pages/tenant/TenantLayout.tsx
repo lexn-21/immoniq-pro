@@ -28,6 +28,7 @@ type NavItem = { to: string; label: string; icon: any; end?: boolean; needsLink?
 
 const NAV: NavItem[] = [
   { to: "/mein-immoniq", label: "Übersicht", icon: Home, end: true },
+  { to: "/mein-immoniq/insights", label: "Insights", icon: TrendingUp, needsLink: true },
   { to: "/mein-immoniq/chat", label: "Chat", icon: MessageCircle, needsLink: true },
   { to: "/mein-immoniq/dokumente", label: "Dokumente", icon: FileText, needsLink: true },
   { to: "/mein-immoniq/schaeden", label: "Schäden", icon: AlertTriangle, needsLink: true },
