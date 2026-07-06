@@ -244,18 +244,20 @@ function CameraRig({ reduced }: { reduced: boolean }) {
   return null;
 }
 
-function Scene({ reduced, scrollRef }: { reduced: boolean; scrollRef: ScrollRef }) {
+function Scene({ reduced, scrollRef, isMobile }: { reduced: boolean; scrollRef: ScrollRef; isMobile: boolean }) {
   return (
     <>
       <CameraRig reduced={reduced} />
       <ambientLight intensity={0.4} />
-      <directionalLight position={[5, 5, 5]} intensity={1.3} color="#f0d78c" castShadow />
+      <directionalLight position={[5, 5, 5]} intensity={1.3} color="#f0d78c" castShadow={!isMobile} />
       <directionalLight position={[-4, -2, -3]} intensity={0.35} color="#3a2f18" />
       <pointLight position={[3, 2.4, 2]} intensity={2.2} color="#c9a84c" distance={9} />
-      <Globe reduced={reduced} scrollRef={scrollRef} />
+      <Globe reduced={reduced} scrollRef={scrollRef} isMobile={isMobile} />
       <FloatingHouse reduced={reduced} />
-      <Sparkles count={50} scale={7} size={2.2} speed={reduced ? 0 : 0.35} color="#f0d78c" opacity={0.65} />
-      <ContactShadows position={[0, -1.7, 0]} opacity={0.5} scale={8} blur={2.6} far={4} color="#000" />
+      <Sparkles count={isMobile ? 22 : 50} scale={7} size={2.2} speed={reduced ? 0 : 0.35} color="#f0d78c" opacity={0.65} />
+      {!isMobile && (
+        <ContactShadows position={[0, -1.7, 0]} opacity={0.5} scale={8} blur={2.6} far={4} color="#000" />
+      )}
       <Environment preset="night" />
     </>
   );
