@@ -126,35 +126,64 @@ export default function Index() {
 
       {/* USP — drei Worte, drei Zeilen, viel Luft */}
       <section id="produkt" className="border-t border-border/40">
-        <div className="container py-20 md:py-40 max-w-4xl">
-          <p className="text-[10px] md:text-[11px] tracking-[0.28em] uppercase text-muted-foreground mb-14 md:mb-20 text-center">
-            Was ImmonIQ ist
-          </p>
-          <ul className="divide-y divide-border/40">
+        <div className="container py-20 md:py-32 max-w-6xl">
+          <div className="max-w-3xl mx-auto text-center mb-14 md:mb-20">
+            <p className="text-[10px] md:text-[11px] tracking-[0.28em] uppercase text-muted-foreground mb-4">
+              All in One
+            </p>
+            <h2 className="font-display font-medium tracking-[-0.03em] leading-[0.95] text-[clamp(2rem,7vw,4.5rem)]">
+              Jeder m² Deutschlands.
+              <br />
+              <span className="text-gradient-gold">In einer App.</span>
+            </h2>
+            <p className="mt-6 text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              Kein Excel. Kein Zettel-Ordner. Kein Portal-Zoo.
+              Von der Grundstücksgrenze bis zur Anlage V — alles in einem Konto.
+            </p>
+          </div>
+
+          {/* Scope-Grid: 8 Bereiche, kein Feature-Bingo, sondern Territorien */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-border/40 border border-border/40 rounded-2xl overflow-hidden">
             {[
-              { h: "Ein Tresor.",   s: "Verträge, Grundbuch, Rechnungen. Ende-zu-Ende verschlüsselt." },
-              { h: "Ein Marktwert.", s: "Live-Daten für jede deutsche PLZ. Mietspiegel, Rendite, Vergleich." },
-              { h: "Ein Handgriff.", s: "Vermieten ohne Excel. Anlage V ohne Steuerberater-Stress." },
+              { k: "Grundstück",    d: "Grenzen, Grundbuch, Flurstück, Bodenrichtwert." },
+              { k: "Gebäude",       d: "Wohnung, Haus, WEG, Mehrfamilien — beliebig viele." },
+              { k: "Mieter",        d: "Verträge, Kaution, Kommunikation, Bonität, Portal." },
+              { k: "Vermieter",     d: "Cockpit, Cashflow, Rendite, Übergaben, Termine." },
+              { k: "Bürokratie",    d: "Nebenkosten, Mieterhöhung, Kündigung, Formulare." },
+              { k: "Steuer",        d: "Anlage V, Belege, AfA, DATEV-ready Export." },
+              { k: "Zahlungen",     d: "Miete, SEPA, Mahnungen, Rücklastschriften — automatisch." },
+              { k: "Markt",         d: "Live-Daten für 8.187 PLZ. Vergleich, Trend, Alerts." },
             ].map((f, i) => (
-              <motion.li
-                key={f.h}
-                initial={{ opacity: 0, y: 40 }}
+              <motion.div
+                key={f.k}
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-10% 0px" }}
-                transition={{ duration: 0.8, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                className="py-8 md:py-14 flex flex-col md:flex-row md:items-baseline md:gap-12"
+                transition={{ duration: 0.6, delay: i * 0.05, ease: [0.22, 1, 0.36, 1] }}
+                className="bg-background p-6 md:p-8 hover:bg-primary/5 transition-colors group"
               >
-                <h3 className="font-display font-medium tracking-[-0.03em] leading-[0.95] text-[clamp(2rem,9vw,4.5rem)] md:w-[52%]">
-                  {f.h}
-                </h3>
-                <p className="mt-3 md:mt-0 text-[15px] md:text-base text-muted-foreground max-w-md leading-relaxed">
-                  {f.s}
+                <div className="flex items-baseline gap-2 mb-3">
+                  <span className="text-[10px] tabular-nums text-muted-foreground/60 tracking-[0.2em]">
+                    0{i + 1}
+                  </span>
+                  <h3 className="font-display text-lg md:text-xl tracking-[-0.01em] font-medium">
+                    {f.k}
+                  </h3>
+                </div>
+                <p className="text-[13px] md:text-sm text-muted-foreground leading-relaxed">
+                  {f.d}
                 </p>
-              </motion.li>
+              </motion.div>
             ))}
-          </ul>
+          </div>
+
+          <p className="text-center mt-10 md:mt-14 text-[13px] md:text-sm text-muted-foreground">
+            Ein Login. Ein Preis. Ein System.
+            <span className="text-foreground"> Alles andere ist Zettelwirtschaft.</span>
+          </p>
         </div>
       </section>
+
 
       {/* SO GEHT'S — Live-Demo des Anmeldeprozesses */}
       <QuickStartFlow />
