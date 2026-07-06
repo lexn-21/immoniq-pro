@@ -43,7 +43,7 @@ export default function AGB() {
         </section>
 
         <section className="space-y-2 text-sm">
-          <h2 className="text-lg font-semibold">§ 4 Leistungsumfang</h2>
+          <h2 className="text-lg font-semibold">§ 5 Leistungsumfang</h2>
           <p>
             ImmonIQ ist ein Werkzeug zur Selbstverwaltung. Wir <strong>geben keine Steuer- oder Rechtsberatung</strong>.
             Generierte Reports sind Arbeitshilfen — die rechtliche/steuerliche Bewertung erfolgt
@@ -52,22 +52,22 @@ export default function AGB() {
         </section>
 
         <section className="space-y-2 text-sm">
-          <h2 className="text-lg font-semibold">§ 5 Haftung</h2>
-          <p>Haftung nur bei Vorsatz und grober Fahrlässigkeit. Für leichte Fahrlässigkeit nur bei Verletzung wesentlicher Vertragspflichten und begrenzt auf den vorhersehbaren Schaden.</p>
+          <h2 className="text-lg font-semibold">§ 6 Haftung</h2>
+          <p>Haftung nur bei Vorsatz und grober Fahrlässigkeit. Für leichte Fahrlässigkeit nur bei Verletzung wesentlicher Vertragspflichten (Kardinalpflichten) und begrenzt auf den vorhersehbaren, vertragstypischen Schaden. Die Haftung nach dem Produkthaftungsgesetz und für Schäden aus der Verletzung von Leben, Körper oder Gesundheit bleibt unberührt.</p>
         </section>
 
         <section className="space-y-2 text-sm">
-          <h2 className="text-lg font-semibold">§ 6 Datenexport bei Kündigung</h2>
-          <p>Nach Kündigung können alle Daten 30 Tage lang als CSV/PDF exportiert werden. Danach werden sie gelöscht (Ausnahme: gesetzliche Aufbewahrungspflichten).</p>
+          <h2 className="text-lg font-semibold">§ 7 Datenexport bei Kündigung</h2>
+          <p>Nach Kündigung können alle Daten 30 Tage lang als CSV/PDF exportiert werden. Danach werden sie gelöscht (Ausnahme: gesetzliche Aufbewahrungspflichten, insb. § 147 AO).</p>
         </section>
 
         <section className="space-y-2 text-sm">
-          <h2 className="text-lg font-semibold">§ 7 Änderungen</h2>
+          <h2 className="text-lg font-semibold">§ 8 Änderungen der AGB</h2>
           <p>Änderungen werden mind. 30 Tage vorher per E-Mail angekündigt. Widerspruch möglich = Sonderkündigungsrecht.</p>
         </section>
 
         <section className="space-y-2 text-sm">
-          <h2 className="text-lg font-semibold">§ 8 Auftragsverarbeitung (AVV) für Vermieter</h2>
+          <h2 className="text-lg font-semibold">§ 9 Auftragsverarbeitung (AVV) für Vermieter</h2>
           <p>
             Soweit der Nutzer (Vermieter) im Rahmen von ImmonIQ personenbezogene Daten Dritter
             (insb. Mieter, Bewerber, Handwerker) verarbeitet, ist der Nutzer datenschutzrechtlich
@@ -78,7 +78,7 @@ export default function AGB() {
             Mit Abschluss dieser AGB schließen die Parteien zugleich einen Auftragsverarbeitungs­vertrag
             (AVV) auf Grundlage der EU-Standardvertragsklauseln. Die vollständigen AVV-Bedingungen
             (Gegenstand, Dauer, Art und Zweck, Datenkategorien, TOMs nach Art. 32 DSGVO,
-            Sub-Auftragsverarbeiter: Lovable Cloud / Supabase, Stripe, ggf. E-Mail-Versand)
+            Sub-Auftragsverarbeiter: Supabase EU, Stripe, Mailgun, Enable Banking, Lovable AI Gateway)
             sind in der <Link to="/datenschutz" className="text-primary underline">Datenschutzerklärung</Link>{" "}
             ausgewiesen und können jederzeit unter{" "}
             <a href="mailto:leonboomgaarden@gmail.com" className="text-primary underline">leonboomgaarden@gmail.com</a>{" "}
@@ -90,6 +90,45 @@ export default function AGB() {
             zu informieren.
           </p>
         </section>
+
+        <section className="space-y-2 text-sm">
+          <h2 className="text-lg font-semibold">§ 10 Widerrufsrecht</h2>
+          <p>
+            Verbrauchern steht ein 14-tägiges Widerrufsrecht zu. Details und Muster-Widerrufsformular
+            in der <Link to="/widerruf" className="text-primary underline">Widerrufsbelehrung</Link>.
+          </p>
+        </section>
+
+        <section className="space-y-2 text-sm">
+          <h2 className="text-lg font-semibold">§ 11 Streitbeilegung</h2>
+          <p>
+            Plattform der EU zur Online-Streitbeilegung:{" "}
+            <a href="https://ec.europa.eu/consumers/odr/" target="_blank" rel="noopener noreferrer" className="text-primary underline">
+              ec.europa.eu/consumers/odr/
+            </a>. Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer
+            Verbraucherschlichtungsstelle teilzunehmen (§ 36 VSBG).
+          </p>
+        </section>
+
+        <section className="space-y-2 text-sm">
+          <h2 className="text-lg font-semibold">§ 12 Anwendbares Recht & Gerichtsstand</h2>
+          <p>
+            Es gilt das Recht der Bundesrepublik Deutschland unter Ausschluss des UN-Kaufrechts. Für
+            Verbraucher gilt diese Rechtswahl nur, soweit dadurch der durch zwingende Bestimmungen
+            des Staates des gewöhnlichen Aufenthaltes gewährte Schutz nicht entzogen wird.
+            Gerichtsstand für Kaufleute, juristische Personen des öffentlichen Rechts und
+            öffentlich-rechtliche Sondervermögen ist Ennigerloh, Deutschland.
+          </p>
+        </section>
+
+        <section className="space-y-2 text-sm">
+          <h2 className="text-lg font-semibold">§ 13 Salvatorische Klausel</h2>
+          <p>Sollten einzelne Bestimmungen unwirksam sein, bleibt die Wirksamkeit der übrigen Bestimmungen unberührt.</p>
+        </section>
+
+        <p className="text-xs text-muted-foreground pt-4">
+          Stand: {new Date().toLocaleDateString("de-DE", { month: "long", year: "numeric" })}
+        </p>
       </div>
       <LegalFooter />
       </div>
