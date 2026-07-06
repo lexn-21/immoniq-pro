@@ -150,6 +150,7 @@ export default function WinWinUsp() {
                     </li>
                   ))}
                 </ul>
+                {w.role === "Vermieter" && <LandlordMath />}
               </div>
             </motion.div>
           ))}
