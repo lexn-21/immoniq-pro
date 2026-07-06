@@ -137,7 +137,16 @@ export default function NebenkostenVorlageDownload() {
               </div>
             </div>
           </div>
-          <a href={DOWNLOAD_PATH} download={FILE_NAME}>
+          <a
+            href={DOWNLOAD_PATH}
+            download={FILE_NAME}
+            onClick={() =>
+              trackDownload(FILE_NAME, {
+                source,
+                metadata: { slug: SLUG, trigger: "manual_retry" },
+              })
+            }
+          >
             <Button size="sm" className="gap-2">
               <Download className="w-4 h-4" />
               Erneut laden
