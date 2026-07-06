@@ -105,9 +105,9 @@ export default function Index() {
               </p>
             </div>
 
-            {/* Right: interactive 3D globe — lazy + WebGL/reduced-motion aware */}
+            {/* Right: premium animated stage — Radar + DE-Pins + Data-Cards */}
             <div className="relative">
-              <PropertyGlobeLazy />
+              <HeroStage />
             </div>
           </div>
         </div>
