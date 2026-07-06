@@ -152,7 +152,7 @@ function FloatingHouse({ reduced }: { reduced: boolean }) {
   });
   return (
     <Float speed={reduced ? 0 : 1.4} rotationIntensity={reduced ? 0 : 0.2} floatIntensity={reduced ? 0 : 0.6}>
-      <group ref={houseRef} position={[2.35, 1.1, 0.2]} scale={0.55}>
+      <group ref={houseRef} position={[1.95, 1.0, 0.3]} scale={0.5}>
         <mesh castShadow receiveShadow>
           <boxGeometry args={[1.2, 0.9, 0.9]} />
           <meshPhysicalMaterial color="#151517" metalness={0.7} roughness={0.22} clearcoat={0.4} />
@@ -206,7 +206,7 @@ function CameraRig({ reduced }: { reduced: boolean }) {
     mounted.current = Math.min(1, mounted.current + dt * 0.5);
     const ease = 1 - Math.pow(1 - mounted.current, 3);
     // Cinematic intro: start pulled-back, settle in
-    const baseZ = size.width < 640 ? 6.2 : 5.2;
+    const baseZ = size.width < 640 ? 5.8 : 4.8;
     const targetZ = baseZ + (1 - ease) * 2.5;
     const parX = reduced ? 0 : target.current.x * 0.35;
     const parY = reduced ? 0.4 : 0.4 - target.current.y * 0.2;
@@ -249,7 +249,7 @@ export default function HeroWorld() {
       />
       <Suspense fallback={<div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/10 to-transparent" />}>
         <Canvas
-          camera={{ position: [0, 0.4, 7.5], fov: 42 }}
+          camera={{ position: [0, 0.4, 7.5], fov: 50 }}
           dpr={[1, 2]}
           gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
           style={{ background: "transparent" }}
