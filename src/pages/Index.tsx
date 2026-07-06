@@ -3,8 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
 import { ArrowRight, Shield, Lock, MapPin } from "lucide-react";
 import { usePageSeo } from "@/hooks/usePageSeo";
-import PropertyGlobeLazy from "@/components/PropertyGlobeLazy";
+import HeroStage from "@/components/HeroStage";
 import { trackCta } from "@/lib/analytics";
+import { motion } from "framer-motion";
 
 // Preise werden 1:1 aus Pricing.tsx gespiegelt — sichtbar, aber bewusst leise.
 const PLANS = [
@@ -104,9 +105,9 @@ export default function Index() {
               </p>
             </div>
 
-            {/* Right: interactive 3D globe — lazy + WebGL/reduced-motion aware */}
+            {/* Right: premium animated stage — Radar + DE-Pins + Data-Cards */}
             <div className="relative">
-              <PropertyGlobeLazy />
+              <HeroStage />
             </div>
           </div>
         </div>
@@ -123,17 +124,54 @@ export default function Index() {
               { h: "Ein Tresor.",   s: "Verträge, Grundbuch, Rechnungen. Ende-zu-Ende verschlüsselt." },
               { h: "Ein Marktwert.", s: "Live-Daten für jede deutsche PLZ. Mietspiegel, Rendite, Vergleich." },
               { h: "Ein Handgriff.", s: "Vermieten ohne Excel. Anlage V ohne Steuerberater-Stress." },
-            ].map((f) => (
-              <li key={f.h} className="py-8 md:py-14 flex flex-col md:flex-row md:items-baseline md:gap-12">
+            ].map((f, i) => (
+              <motion.li
+                key={f.h}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-10% 0px" }}
+                transition={{ duration: 0.8, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                className="py-8 md:py-14 flex flex-col md:flex-row md:items-baseline md:gap-12"
+              >
                 <h3 className="font-display font-medium tracking-[-0.03em] leading-[0.95] text-[clamp(2rem,9vw,4.5rem)] md:w-[52%]">
                   {f.h}
                 </h3>
                 <p className="mt-3 md:mt-0 text-[15px] md:text-base text-muted-foreground max-w-md leading-relaxed">
                   {f.s}
                 </p>
-              </li>
+              </motion.li>
             ))}
           </ul>
+        </div>
+      </section>
+
+      {/* METRICS BAND — leiser Beweis, scrollt sanft rein */}
+      <section className="border-t border-border/40 overflow-hidden">
+        <div className="container py-16 md:py-24">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-y-10 md:gap-x-6">
+            {[
+              { k: "8.187", l: "PLZ-Gebiete live" },
+              { k: "AES-256", l: "Verschlüsselung" },
+              { k: "60 s", l: "bis zum ersten Tresor" },
+              { k: "0 €", l: "Privat · für immer" },
+            ].map((m, i) => (
+              <motion.div
+                key={m.l}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-10% 0px" }}
+                transition={{ duration: 0.7, delay: i * 0.07, ease: [0.22, 1, 0.36, 1] }}
+                className="text-center md:text-left"
+              >
+                <div className="font-display text-[clamp(1.8rem,4.5vw,2.75rem)] tracking-[-0.02em] tabular-nums text-gradient-gold">
+                  {m.k}
+                </div>
+                <div className="mt-2 text-[10px] md:text-[11px] tracking-[0.24em] uppercase text-muted-foreground">
+                  {m.l}
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
