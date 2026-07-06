@@ -32,6 +32,9 @@ const TenantPass = () => {
   const [pass, setPass] = useState<Pass | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [consentOpen, setConsentOpen] = useState(false);
+  const [consentChecked, setConsentChecked] = useState(false);
+  const [computing, setComputing] = useState(false);
 
   const ensurePass = async () => {
     setLoading(true);
