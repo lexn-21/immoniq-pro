@@ -155,6 +155,9 @@ export default function TenantLayout() {
           <Outlet context={ctx} />
         </main>
       </div>
+      <LegalFooter compact />
+
+
 
       <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-card/95 backdrop-blur border-t border-border/60">
         <div className="grid" style={{ gridTemplateColumns: `repeat(${bottom.length}, minmax(0, 1fr))` }}>
