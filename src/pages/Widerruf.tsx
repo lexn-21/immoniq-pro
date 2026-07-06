@@ -28,8 +28,11 @@ export default function Widerruf() {
             diesen Vertrag zu widerrufen, informieren:
           </p>
           <p className="bg-muted p-4 rounded-md">
-            Leon Boomgaarden / ENTERVENTUS<br />
-            Ennigerloh, NRW<br />
+            Leon Boomgaarden (ENTERVENTUS)<br />
+            Kastanienallee 13<br />
+            59320 Ennigerloh<br />
+            Deutschland<br />
+            Telefon: +49 152 28943502<br />
             E-Mail: <a href="mailto:leonboomgaarden@gmail.com" className="underline">leonboomgaarden@gmail.com</a>
           </p>
           <p>
