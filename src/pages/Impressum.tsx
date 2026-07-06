@@ -14,6 +14,7 @@ export default function Impressum() {
       "@type": "LocalBusiness",
       name: "ENTERVENTUS — ImmonIQ",
       founder: { "@type": "Person", name: "Leon Boomgaarden" },
+      vatID: "DE365353142",
       email: "leonboomgaarden@gmail.com",
       telephone: "+49 152 28943502",
       address: {
