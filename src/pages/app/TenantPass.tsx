@@ -63,6 +63,39 @@ const TenantPass = () => {
     setPass(data as any);
   };
 
+  const grantConsent = async () => {
+    if (!pass || !consentChecked) return;
+    setComputing(true);
+    const { error: gErr } = await supabase.rpc("grant_score_consent" as any, {
+      _pass_id: pass.id, _ip: null, _ua: navigator.userAgent,
+    });
+    if (gErr) { setComputing(false); return toast.error(gErr.message); }
+    const { error: cErr } = await supabase.rpc("compute_immoniq_score" as any, { _pass_id: pass.id });
+    if (cErr) { setComputing(false); return toast.error(cErr.message); }
+    setConsentOpen(false); setConsentChecked(false); setComputing(false);
+    toast.success("ImmonIQ Score berechnet");
+    await ensurePass();
+  };
+
+  const withdrawConsent = async () => {
+    if (!pass) return;
+    if (!confirm("Score-Berechnung widerrufen? Dein Score wird gelöscht.")) return;
+    const { error } = await supabase.rpc("withdraw_score_consent" as any, { _pass_id: pass.id });
+    if (error) return toast.error(error.message);
+    toast.success("Einwilligung widerrufen, Score gelöscht");
+    await ensurePass();
+  };
+
+  const recomputeScore = async () => {
+    if (!pass) return;
+    setComputing(true);
+    const { error } = await supabase.rpc("compute_immoniq_score" as any, { _pass_id: pass.id });
+    setComputing(false);
+    if (error) return toast.error(error.message);
+    toast.success("Score neu berechnet");
+    await ensurePass();
+  };
+
   const publicUrl = pass ? `${window.location.origin}/pass/${pass.pass_code}` : "";
 
   if (loading) return <Card className="p-8 text-center text-muted-foreground">Lädt…</Card>;
