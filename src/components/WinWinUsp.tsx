@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
-import { Check, TrendingUp, Clock, Users, Zap, Lock } from "lucide-react";
+import { Check, TrendingUp, Clock, Users, Zap, Lock, HelpCircle, Shield, FileText, Download } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ArrowRight } from "lucide-react";
 
 /**
@@ -84,6 +85,27 @@ const FOMO = [
   { icon: Users,      k: "Marktplatz",   d: "Wer früh startet, wird zuerst gelistet — sichtbar für Millionen Suchen." },
   { icon: Clock,      k: "Historie",     d: "Jeder Tag ohne ImmonIQ = ein Tag ohne Belege, ohne AfA-Track, ohne Rendite-Historie." },
   { icon: Zap,        k: "Zinsvorteil",  d: "Banken fragen Cashflow-Historien. Ohne Track-Record: schlechtere Konditionen." },
+];
+
+const FAQS = [
+  {
+    value: "rechtssicher",
+    icon: Shield,
+    q: "Ist ImmonIQ rechtssicher?",
+    a: "ImmonIQ ist nach geltendem Mietrecht (BGB) und der DSGVO aufgebaut: Vertragsvorlagen und Kündigungsformulare enthalten Pflichtfelder, damit rechtliche Mindestanforderungen nicht vergessen werden. Alle Daten werden in Deutschland gehostet, verschlüsselt übertragen und regelmäßig gesichert. Bei komplexen Einzelfällen ersetzt die Software keine anwaltliche Beratung, schafft aber eine deutlich bessere Ausgangslage.",
+  },
+  {
+    value: "revisionssicher",
+    icon: FileText,
+    q: "Was bedeutet revisionssichere Dokumentation?",
+    a: "Jede Nachricht, jede Zahlung und jedes Dokument wird mit Zeitstempel und Beteiligten abgelegt, sodass eine lückenlose Nachweiskette entsteht. Das hilft dir bei Mieterwechseln, Instandhaltungsstreitigkeiten oder Prüfungen durch das Finanzamt. Statt lose E-Mails und Notizen liegen alle Belege zentral, sortiert und jederzeit abrufbar vor.",
+  },
+  {
+    value: "datev",
+    icon: Download,
+    q: "Wie funktioniert der DATEV-Export?",
+    a: "Du exportierst deine Buchungsdaten mit einem Klick als DATEV-kompatible CSV-Datei. Dein Steuerberater kann die Datei direkt in seine Kanzleisoftware importieren, ohne sie manuell umzutippen. Das spart Stunden, reduziert Tippfehler und sorgt dafür, dass Umsatzsteuer, Mieteinnahmen und Werbungskosten sauber gebucht werden.",
+  },
 ];
 
 export default function WinWinUsp() {
@@ -191,6 +213,33 @@ export default function WinWinUsp() {
               </div>
             </motion.div>
           ))}
+        </div>
+
+        {/* FAQ */}
+        <div className="max-w-3xl mx-auto mt-16 md:mt-24">
+          <div className="text-center mb-10 md:mb-12">
+            <p className="text-[10px] md:text-[11px] tracking-[0.28em] uppercase text-muted-foreground mb-4">
+              Häufige Fragen
+            </p>
+            <h3 className="font-display font-medium tracking-[-0.02em] leading-[1] text-[clamp(1.6rem,5vw,2.75rem)]">
+              Rechtssicherheit & Dokumentation
+            </h3>
+          </div>
+          <Accordion type="single" collapsible className="w-full">
+            {FAQS.map((f) => (
+              <AccordionItem key={f.value} value={f.value} className="border-border/40">
+                <AccordionTrigger className="text-left text-[13px] md:text-sm font-medium hover:no-underline">
+                  <span className="flex items-center gap-3">
+                    <f.icon className="h-4 w-4 text-primary shrink-0" />
+                    {f.q}
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="text-[13px] md:text-sm text-muted-foreground leading-relaxed">
+                  {f.a}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
         </div>
 
         {/* CTA */}
