@@ -182,7 +182,9 @@ const App = () => (
                 <Route path="profile-seeker" element={<Profile />} />
                 <Route path="pass" element={<Profile />} />
                 <Route path="seeker" element={<Profile />} />
-                <Route path="tenant-pass" element={<Profile />} />
+                <Route path="tenant-pass" element={<TenantPass />} />
+                <Route path="mieter-pass" element={<TenantPass />} />
+                <Route path="score" element={<TenantPass />} />
                 <Route path="applications" element={<Messenger />} />
                 <Route path="my-applications" element={<Messenger />} />
                 <Route path="marketplace" element={<Marketplace />} />
