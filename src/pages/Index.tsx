@@ -64,26 +64,26 @@ export default function Index() {
 
       {/* HERO — one screen, one message, one wow */}
       <section className="relative">
-        <div className="container relative pt-16 md:pt-24 pb-16 md:pb-28">
+        <div className="container relative pt-12 md:pt-24 pb-14 md:pb-28">
           <div className="grid lg:grid-cols-[1fr_1.05fr] gap-10 lg:gap-16 items-center">
             {/* Left: type only */}
             <div className="max-w-xl">
-              <div className="inline-flex items-center gap-2 text-[11px] tracking-[0.22em] uppercase text-muted-foreground mb-8">
+              <div className="inline-flex items-center gap-2 text-[10px] md:text-[11px] tracking-[0.22em] uppercase text-muted-foreground mb-6 md:mb-8">
                 <span className="h-1 w-1 rounded-full bg-primary" />
                 Made in Germany
               </div>
-              <h1 className="font-display font-medium tracking-[-0.035em] leading-[0.92] text-[clamp(3rem,7.5vw,6rem)]">
+              <h1 className="font-display font-medium tracking-[-0.035em] leading-[0.95] md:leading-[0.92] text-[clamp(2.5rem,11vw,6rem)]">
                 Deine Immobilie.
                 <br />
                 <span className="text-gradient-gold">Ein Ort.</span>
                 <br />
                 Ein Blick.
               </h1>
-              <p className="mt-8 text-lg md:text-xl text-muted-foreground max-w-md leading-relaxed">
+              <p className="mt-6 md:mt-8 text-base md:text-xl text-muted-foreground max-w-md leading-relaxed">
                 Verwalten, verstehen, versteuern — verschlüsselt in Deutschland.
               </p>
-              <div className="mt-10 flex items-center gap-4">
-                <Button asChild size="lg" className="rounded-full bg-foreground text-background hover:bg-foreground/90 px-7 h-12 text-[15px] font-medium">
+              <div className="mt-8 md:mt-10 flex flex-wrap items-center gap-x-5 gap-y-3">
+                <Button asChild size="lg" className="rounded-full bg-foreground text-background hover:bg-foreground/90 px-6 md:px-7 h-12 text-[15px] font-medium">
                   <Link
                     to="/auth"
                     onClick={() => trackCta("hero_signup", { source: "index_hero" })}
@@ -99,7 +99,7 @@ export default function Index() {
                   Markt ansehen
                 </Link>
               </div>
-              <p className="mt-6 text-xs text-muted-foreground">
+              <p className="mt-5 md:mt-6 text-[11px] md:text-xs text-muted-foreground">
                 Privat 0 € · Keine Kreditkarte · 60 Sekunden
               </p>
             </div>
@@ -114,8 +114,8 @@ export default function Index() {
 
       {/* USP — drei Worte, drei Zeilen, viel Luft */}
       <section id="produkt" className="border-t border-border/40">
-        <div className="container py-28 md:py-40 max-w-4xl">
-          <p className="text-[11px] tracking-[0.28em] uppercase text-muted-foreground mb-20 text-center">
+        <div className="container py-20 md:py-40 max-w-4xl">
+          <p className="text-[10px] md:text-[11px] tracking-[0.28em] uppercase text-muted-foreground mb-14 md:mb-20 text-center">
             Was ImmonIQ ist
           </p>
           <ul className="divide-y divide-border/40">
@@ -124,11 +124,11 @@ export default function Index() {
               { h: "Ein Marktwert.", s: "Live-Daten für jede deutsche PLZ. Mietspiegel, Rendite, Vergleich." },
               { h: "Ein Handgriff.", s: "Vermieten ohne Excel. Anlage V ohne Steuerberater-Stress." },
             ].map((f) => (
-              <li key={f.h} className="py-10 md:py-14 flex flex-col md:flex-row md:items-baseline md:gap-12">
-                <h3 className="font-display font-medium tracking-[-0.03em] leading-[0.95] text-[clamp(2.5rem,6vw,4.5rem)] md:w-[52%]">
+              <li key={f.h} className="py-8 md:py-14 flex flex-col md:flex-row md:items-baseline md:gap-12">
+                <h3 className="font-display font-medium tracking-[-0.03em] leading-[0.95] text-[clamp(2rem,9vw,4.5rem)] md:w-[52%]">
                   {f.h}
                 </h3>
-                <p className="mt-4 md:mt-0 text-[15px] md:text-base text-muted-foreground max-w-md leading-relaxed">
+                <p className="mt-3 md:mt-0 text-[15px] md:text-base text-muted-foreground max-w-md leading-relaxed">
                   {f.s}
                 </p>
               </li>
@@ -139,11 +139,11 @@ export default function Index() {
 
       {/* PREISE — bewusst klein, ehrlich, ohne Lautstärke */}
       <section id="preise" className="border-t border-border/40">
-        <div className="container py-20 md:py-24 max-w-3xl">
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
+        <div className="container py-16 md:py-24 max-w-3xl">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-5 md:gap-6 mb-8 md:mb-10">
             <div>
-              <p className="text-[11px] tracking-[0.28em] uppercase text-muted-foreground mb-3">Preise</p>
-              <h2 className="font-display text-3xl md:text-4xl font-medium tracking-[-0.02em]">
+              <p className="text-[10px] md:text-[11px] tracking-[0.28em] uppercase text-muted-foreground mb-3">Preise</p>
+              <h2 className="font-display text-[clamp(1.75rem,6vw,2.5rem)] font-medium tracking-[-0.02em] leading-[1.05]">
                 Privat kostenlos. <span className="text-gradient-gold">Immer.</span>
               </h2>
             </div>
@@ -156,20 +156,20 @@ export default function Index() {
             </Link>
           </div>
 
-          {/* Drei Zeilen. Kein Karten-Marketing. */}
+          {/* Drei Zeilen. Kein Karten-Marketing. Mobile: Note darunter, damit nichts umbricht. */}
           <dl className="divide-y divide-border/40 border-y border-border/40">
             {PLANS.map((p) => (
-              <div key={p.name} className="py-4 flex items-baseline justify-between gap-4">
-                <dt className="text-sm font-medium tracking-tight">{p.name}</dt>
-                <dd className="flex items-baseline gap-3 text-right">
-                  <span className="text-sm tabular-nums text-foreground/90">{p.price}</span>
-                  <span className="text-[11px] text-muted-foreground tabular-nums">{p.note}</span>
+              <div key={p.name} className="py-5 md:py-4 flex items-baseline justify-between gap-4">
+                <dt className="text-[15px] md:text-sm font-medium tracking-tight">{p.name}</dt>
+                <dd className="flex flex-col md:flex-row md:items-baseline md:gap-3 text-right">
+                  <span className="text-[15px] md:text-sm tabular-nums text-foreground/90 whitespace-nowrap">{p.price}</span>
+                  <span className="text-[11px] text-muted-foreground tabular-nums whitespace-nowrap">{p.note}</span>
                 </dd>
               </div>
             ))}
           </dl>
 
-          <p className="text-[11px] text-muted-foreground mt-5">
+          <p className="text-[11px] text-muted-foreground mt-5 leading-relaxed">
             Alle Preise inkl. 19 % MwSt · monatlich kündbar · 30 Tage Geld-zurück
           </p>
         </div>
