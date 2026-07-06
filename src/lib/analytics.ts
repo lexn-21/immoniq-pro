@@ -113,7 +113,7 @@ export async function trackEvent(
       user_agent: navigator.userAgent,
       session_id: sessionId(),
       consent_analytics: consent,
-      metadata,
+      metadata: metadata as never,
     });
   } catch {
     // absichtlich still
