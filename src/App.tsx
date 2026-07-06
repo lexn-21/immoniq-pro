@@ -80,6 +80,7 @@ const PassPublic = lazy(() => import("./pages/PassPublic"));
 const Messenger = lazy(() => import("./pages/app/Messenger"));
 const Chat = lazy(() => import("./pages/app/Chat"));
 const Profile = lazy(() => import("./pages/app/Profile"));
+const TenantPass = lazy(() => import("./pages/app/TenantPass"));
 
 const TenantLayout = lazy(() => import("./pages/tenant/TenantLayout"));
 const TenantHome = lazy(() => import("./pages/tenant/TenantHome"));
