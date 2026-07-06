@@ -343,29 +343,57 @@ export default function HeroWorld() {
   }, [reduced]);
 
   return (
-    <div ref={setRefs} className="relative aspect-square w-full max-w-[560px] sm:max-w-[600px] md:max-w-[640px] mx-auto touch-none select-none">
+    <div
+      ref={setRefs}
+      className="group relative aspect-square w-full max-w-[560px] sm:max-w-[600px] md:max-w-[640px] mx-auto touch-none select-none rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-4 focus-visible:ring-offset-background"
+      role="img"
+      aria-labelledby="hero-globe-title"
+      aria-describedby="hero-globe-desc"
+      tabIndex={0}
+    >
+      {/* Screenreader-only Alternative */}
+      <h2 id="hero-globe-title" className="sr-only">
+        Interaktiver 3D-Globus des deutschen Immobilienmarktes
+      </h2>
+      <p id="hero-globe-desc" className="sr-only">
+        Dreidimensionale Visualisierung: Ein goldenes Haus schwebt vor einem
+        dunklen, langsam rotierenden Globus mit leuchtenden Markierungen für
+        Berlin, Hamburg, München, Köln, Frankfurt, Stuttgart und weitere deutsche
+        Städte. Umliegende Datenpunkte symbolisieren die Live-Abdeckung von
+        8.187 Postleitzahlen. Die Grafik ist rein dekorativ; alle Funktionen
+        der Seite sind auch ohne sie erreichbar.
+      </p>
+
       <div
+        aria-hidden="true"
         className="absolute inset-0 rounded-full blur-3xl opacity-40 pointer-events-none"
         style={{ background: "radial-gradient(circle at 60% 40%, hsl(38 55% 55% / 0.55), transparent 65%)" }}
       />
       <div
+        aria-hidden="true"
         className="absolute inset-x-0 bottom-0 h-1/3 blur-2xl opacity-30 pointer-events-none"
         style={{ background: "radial-gradient(ellipse at center, hsl(38 55% 55% / 0.35), transparent 70%)" }}
       />
-      <Suspense fallback={<div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/10 to-transparent" />}>
-        <Canvas
-          camera={{ position: [0, 0.4, 7.5], fov: 50 }}
-          dpr={isMobile ? [1, 1.5] : [1, 2]}
-          frameloop={reduced && introDone ? "never" : inView ? "always" : "never"}
-          gl={{ antialias: !isMobile, alpha: true, powerPreference: "high-performance" }}
-          style={{ background: "transparent" }}
-        >
-          <Scene reduced={reduced} scrollRef={scrollRef} isMobile={isMobile} />
-        </Canvas>
+      <Suspense fallback={<div aria-hidden="true" className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/10 to-transparent" />}>
+        <div aria-hidden="true" className="absolute inset-0">
+          <Canvas
+            camera={{ position: [0, 0.4, 7.5], fov: 50 }}
+            dpr={isMobile ? [1, 1.5] : [1, 2]}
+            frameloop={reduced && introDone ? "never" : inView ? "always" : "never"}
+            gl={{ antialias: !isMobile, alpha: true, powerPreference: "high-performance" }}
+            style={{ background: "transparent" }}
+          >
+            <Scene reduced={reduced} scrollRef={scrollRef} isMobile={isMobile} />
+          </Canvas>
+        </div>
       </Suspense>
-      <div className="absolute bottom-4 left-4 md:bottom-6 md:left-6 backdrop-blur-xl bg-background/40 border border-border/40 rounded-full px-3 py-1.5 text-[10px] tracking-[0.24em] uppercase text-muted-foreground">
-        <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary mr-2 animate-pulse" />
-        Live · 8.187 PLZ
+      <div
+        className="absolute bottom-4 left-4 md:bottom-6 md:left-6 backdrop-blur-xl bg-background/40 border border-border/40 rounded-full px-3 py-1.5 text-[10px] tracking-[0.24em] uppercase text-muted-foreground"
+        role="status"
+        aria-live="polite"
+      >
+        <span aria-hidden="true" className="inline-block h-1.5 w-1.5 rounded-full bg-primary mr-2 animate-pulse" />
+        <span className="sr-only">Status: </span>Live · 8.187 PLZ
       </div>
     </div>
   );
