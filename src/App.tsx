@@ -131,6 +131,8 @@ const App = () => (
               </Route>
               <Route path="/wg-casting/:token" element={<WgCasting />} />
               <Route path="/pass/:code" element={<PassPublic />} />
+              <Route path="/connect" element={<Connect />} />
+              <Route path="/verbinden-ai" element={<Connect />} />
               <Route path="/markt" element={<Markt />} />
               <Route path="/markt/vergleich" element={<MarktVergleich />} />
               <Route path="/markt/:id" element={<MarktDetail />} />
