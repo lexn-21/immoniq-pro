@@ -252,13 +252,26 @@ function CameraRig({ reduced }: { reduced: boolean }) {
   const mounted = useRef(0);
 
   useEffect(() => {
+    if (reduced) return;
+    let scheduled = false;
+    let nx = 0, ny = 0;
+    const flush = () => {
+      scheduled = false;
+      target.current.x = nx;
+      target.current.y = ny;
+    };
     const onMove = (e: PointerEvent) => {
-      target.current.x = ((e.clientX / window.innerWidth) - 0.5) * 2;
-      target.current.y = ((e.clientY / window.innerHeight) - 0.5) * 2;
+      // Nur echte Maus/Pen — Touch triggert kein Parallax (spart Arbeit auf mobilen Geräten)
+      if (e.pointerType === "touch") return;
+      nx = ((e.clientX / window.innerWidth) - 0.5) * 2;
+      ny = ((e.clientY / window.innerHeight) - 0.5) * 2;
+      if (scheduled) return;
+      scheduled = true;
+      requestAnimationFrame(flush);
     };
     window.addEventListener("pointermove", onMove, { passive: true });
     return () => window.removeEventListener("pointermove", onMove);
-  }, []);
+  }, [reduced]);
 
   useFrame((_, dt) => {
     mounted.current = Math.min(1, mounted.current + dt * 0.5);
@@ -275,6 +288,7 @@ function CameraRig({ reduced }: { reduced: boolean }) {
   });
   return null;
 }
+
 
 function Scene({ reduced, scrollRef, isMobile }: { reduced: boolean; scrollRef: ScrollRef; isMobile: boolean }) {
   return (
