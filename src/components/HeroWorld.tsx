@@ -316,21 +316,38 @@ export default function HeroWorld() {
   };
 
   useEffect(() => {
-    if (reduced) return;
+    if (reduced || !inView) return;
     let raf = 0;
+    let scheduled = false;
+    let lastTs = 0;
+    const MIN_INTERVAL = 1000 / 30; // cap scroll sampling at ~30 Hz — genug für 3D-Parallax
     const compute = () => {
+      scheduled = false;
       const el = containerRef.current;
       if (!el) return;
       const rect = el.getBoundingClientRect();
       const vh = window.innerHeight || 1;
+      // Off-screen? Nichts messen, nichts schreiben.
+      if (rect.bottom < -200 || rect.top > vh + 200) return;
       const total = rect.height + vh;
       const traveled = vh - rect.top;
       const p = Math.min(1, Math.max(0, traveled / total));
-      scrollRef.current.v = p;
+      // Nur schreiben wenn sich etwas relevant geändert hat → verhindert unnötige three-updates
+      if (Math.abs(p - scrollRef.current.v) > 0.002) {
+        scrollRef.current.v = p;
+      }
     };
     const onScroll = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(compute);
+      if (scheduled) return;
+      const now = performance.now();
+      const wait = Math.max(0, MIN_INTERVAL - (now - lastTs));
+      scheduled = true;
+      const run = () => {
+        lastTs = performance.now();
+        raf = requestAnimationFrame(compute);
+      };
+      if (wait === 0) run();
+      else window.setTimeout(run, wait);
     };
     compute();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -340,7 +357,8 @@ export default function HeroWorld() {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
     };
-  }, [reduced]);
+  }, [reduced, inView]);
+
 
   return (
     <div
