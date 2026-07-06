@@ -336,6 +336,16 @@ const Dashboard = () => {
             />
           </div>
 
+          {/* Move 5 — Quartalsübersicht */}
+          <Item>
+            <QuarterOverview
+              payments={payments}
+              expenses={expenses}
+              nkaDraft={nkaDraft}
+              nkaOpen={nkaOpen}
+            />
+          </Item>
+
           {/* Visueller 12-Monats-Verlauf */}
           <Item>
             <Card className="p-6 glass">
