@@ -71,22 +71,57 @@ function Globe({ reduced, scrollRef, isMobile }: { reduced: boolean; scrollRef: 
     [],
   );
 
+  const introRef = useRef(0); // 0..1, one-shot reveal for reduced motion
+
   useFrame((state, dt) => {
     const t = state.clock.elapsedTime;
     const s = scrollRef.current.v; // 0..1
+
+    if (reduced) {
+      // One-shot cinematic intro: ~1.4s ease-out, then hold.
+      if (introRef.current < 1) {
+        introRef.current = Math.min(1, introRef.current + dt / 1.4);
+      }
+      const p = introRef.current;
+      const eased = 1 - Math.pow(1 - p, 3); // easeOutCubic
+
+      if (globeRef.current) {
+        globeRef.current.rotation.y = -0.6 + eased * 0.6;
+        globeRef.current.rotation.x = 0.35;
+        globeRef.current.rotation.z = 0.05;
+        globeRef.current.scale.setScalar(0.94 + eased * 0.06);
+      }
+      if (dotsRef.current) {
+        const mat = dotsRef.current.material as THREE.PointsMaterial;
+        mat.opacity = eased * 0.7;
+      }
+      if (wireRef.current) {
+        const mat = wireRef.current.material as THREE.MeshBasicMaterial;
+        mat.opacity = eased * 0.28;
+      }
+      pinsRef.current.forEach((m) => {
+        if (!m) return;
+        m.scale.setScalar(1);
+        const mat = m.material as THREE.MeshBasicMaterial;
+        mat.opacity = eased * 0.28;
+      });
+      if (auraRef.current) {
+        const mat = auraRef.current.material as THREE.MeshBasicMaterial;
+        mat.opacity = eased * 0.06;
+        auraRef.current.scale.setScalar(1);
+      }
+      return;
+    }
+
     // Ambient auto-rotation + scroll acceleration
     if (globeRef.current) {
-      if (!reduced) autoRotRef.current += dt * 0.09;
-      // scroll adds up to ~2.4 rad of extra spin
+      autoRotRef.current += dt * 0.09;
       globeRef.current.rotation.y = autoRotRef.current + s * 2.4;
-      // Tilt "unfolds" as you scroll
       globeRef.current.rotation.x = 0.35 - s * 0.55;
       globeRef.current.rotation.z = 0.05 + s * 0.2;
-      // Slight scale breath
       const sc = 1 + s * 0.08;
       globeRef.current.scale.setScalar(sc);
     }
-    // Data dots "scatter outward" as globe unfolds
     if (dotsRef.current) {
       const scatter = 1 + s * 0.18;
       dotsRef.current.scale.setScalar(scatter);
@@ -94,12 +129,10 @@ function Globe({ reduced, scrollRef, isMobile }: { reduced: boolean; scrollRef: 
       mat.opacity = 0.7 + s * 0.25;
       mat.size = 0.018 + s * 0.012;
     }
-    // Wireframe grows brighter — reveals structure
     if (wireRef.current) {
       const mat = wireRef.current.material as THREE.MeshBasicMaterial;
       mat.opacity = 0.28 + s * 0.4;
     }
-    // Pulsing pins
     pinsRef.current.forEach((m, i) => {
       if (!m) return;
       const sPulse = 1 + Math.sin(t * 2 + i * 0.7) * 0.25 + s * 0.35;
@@ -107,7 +140,6 @@ function Globe({ reduced, scrollRef, isMobile }: { reduced: boolean; scrollRef: 
       const mat = m.material as THREE.MeshBasicMaterial;
       mat.opacity = 0.18 + Math.max(0, Math.sin(t * 2 + i * 0.7)) * 0.25 + s * 0.2;
     });
-    // Atmosphere expands + brightens
     if (auraRef.current) {
       const mat = auraRef.current.material as THREE.MeshBasicMaterial;
       mat.opacity = 0.05 + Math.sin(t * 0.8) * 0.02 + s * 0.15;
@@ -269,6 +301,13 @@ export default function HeroWorld() {
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef({ v: 0 });
   const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+  const [introDone, setIntroDone] = useState(false);
+
+  useEffect(() => {
+    if (!reduced) return;
+    const id = window.setTimeout(() => setIntroDone(true), 1600);
+    return () => window.clearTimeout(id);
+  }, [reduced]);
 
   // Merge external inViewRef with containerRef
   const setRefs = (el: HTMLDivElement | null) => {
@@ -317,7 +356,7 @@ export default function HeroWorld() {
         <Canvas
           camera={{ position: [0, 0.4, 7.5], fov: 50 }}
           dpr={isMobile ? [1, 1.5] : [1, 2]}
-          frameloop={inView ? "always" : "never"}
+          frameloop={reduced && introDone ? "never" : inView ? "always" : "never"}
           gl={{ antialias: !isMobile, alpha: true, powerPreference: "high-performance" }}
           style={{ background: "transparent" }}
         >
