@@ -252,13 +252,26 @@ function CameraRig({ reduced }: { reduced: boolean }) {
   const mounted = useRef(0);
 
   useEffect(() => {
+    if (reduced) return;
+    let scheduled = false;
+    let nx = 0, ny = 0;
+    const flush = () => {
+      scheduled = false;
+      target.current.x = nx;
+      target.current.y = ny;
+    };
     const onMove = (e: PointerEvent) => {
-      target.current.x = ((e.clientX / window.innerWidth) - 0.5) * 2;
-      target.current.y = ((e.clientY / window.innerHeight) - 0.5) * 2;
+      // Nur echte Maus/Pen — Touch triggert kein Parallax (spart Arbeit auf mobilen Geräten)
+      if (e.pointerType === "touch") return;
+      nx = ((e.clientX / window.innerWidth) - 0.5) * 2;
+      ny = ((e.clientY / window.innerHeight) - 0.5) * 2;
+      if (scheduled) return;
+      scheduled = true;
+      requestAnimationFrame(flush);
     };
     window.addEventListener("pointermove", onMove, { passive: true });
     return () => window.removeEventListener("pointermove", onMove);
-  }, []);
+  }, [reduced]);
 
   useFrame((_, dt) => {
     mounted.current = Math.min(1, mounted.current + dt * 0.5);
@@ -275,6 +288,7 @@ function CameraRig({ reduced }: { reduced: boolean }) {
   });
   return null;
 }
+
 
 function Scene({ reduced, scrollRef, isMobile }: { reduced: boolean; scrollRef: ScrollRef; isMobile: boolean }) {
   return (
@@ -300,7 +314,7 @@ export default function HeroWorld() {
   const [inViewRef, inView] = useInView<HTMLDivElement>("200px");
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef({ v: 0 });
-  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+  const [isMobile] = useState(() => typeof window !== "undefined" && window.innerWidth < 768);
   const [introDone, setIntroDone] = useState(false);
 
   useEffect(() => {
@@ -316,21 +330,38 @@ export default function HeroWorld() {
   };
 
   useEffect(() => {
-    if (reduced) return;
+    if (reduced || !inView) return;
     let raf = 0;
+    let scheduled = false;
+    let lastTs = 0;
+    const MIN_INTERVAL = 1000 / 30; // cap scroll sampling at ~30 Hz — genug für 3D-Parallax
     const compute = () => {
+      scheduled = false;
       const el = containerRef.current;
       if (!el) return;
       const rect = el.getBoundingClientRect();
       const vh = window.innerHeight || 1;
+      // Off-screen? Nichts messen, nichts schreiben.
+      if (rect.bottom < -200 || rect.top > vh + 200) return;
       const total = rect.height + vh;
       const traveled = vh - rect.top;
       const p = Math.min(1, Math.max(0, traveled / total));
-      scrollRef.current.v = p;
+      // Nur schreiben wenn sich etwas relevant geändert hat → verhindert unnötige three-updates
+      if (Math.abs(p - scrollRef.current.v) > 0.002) {
+        scrollRef.current.v = p;
+      }
     };
     const onScroll = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(compute);
+      if (scheduled) return;
+      const now = performance.now();
+      const wait = Math.max(0, MIN_INTERVAL - (now - lastTs));
+      scheduled = true;
+      const run = () => {
+        lastTs = performance.now();
+        raf = requestAnimationFrame(compute);
+      };
+      if (wait === 0) run();
+      else window.setTimeout(run, wait);
     };
     compute();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -340,7 +371,8 @@ export default function HeroWorld() {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
     };
-  }, [reduced]);
+  }, [reduced, inView]);
+
 
   return (
     <div
