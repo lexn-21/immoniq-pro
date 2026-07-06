@@ -45,6 +45,40 @@ const WINS = [
   },
 ];
 
+const LandlordMath = () => (
+  <div className="mt-6 pt-5 border-t border-border/40">
+    <p className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground mb-3">
+      Konkrete Vermieter-Ersparnis
+    </p>
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 md:gap-3 mb-3">
+      {[
+        { units: 5, hours: 4, euros: 180 },
+        { units: 15, hours: 12, euros: 540 },
+        { units: 30, hours: 25, euros: 1125 },
+      ].map((ex) => (
+        <div
+          key={ex.units}
+          className="rounded-xl bg-background/80 border border-border/40 p-2.5 md:p-3 text-center"
+        >
+          <div className="font-display text-base md:text-lg font-medium tracking-tight">
+            {ex.units} WE
+          </div>
+          <div className="text-[11px] text-muted-foreground mt-1">
+            {ex.hours} h/Monat
+          </div>
+          <div className="text-[12px] md:text-[13px] text-primary font-medium mt-0.5">
+            ≈ {ex.euros.toLocaleString("de-DE")} €
+          </div>
+        </div>
+      ))}
+    </div>
+    <p className="text-[10px] text-muted-foreground leading-relaxed">
+      Annahmen: 30 min/Objekt/Monat Verwaltung + 1 h/Objekt/Quartal Nebenkosten; bewertet mit 45 €/h (eigener Zeitwert oder Steuerberater). Ergebnis ohne Gewähr.
+    </p>
+  </div>
+);
+
+
 const FOMO = [
   { icon: TrendingUp, k: "Preis steigt", d: "Founders-Preis 0 € Privat gilt nur für die ersten 10.000 Accounts." },
   { icon: Users,      k: "Marktplatz",   d: "Wer früh startet, wird zuerst gelistet — sichtbar für Millionen Suchen." },
@@ -116,6 +150,7 @@ export default function WinWinUsp() {
                     </li>
                   ))}
                 </ul>
+                {w.role === "Vermieter" && <LandlordMath />}
               </div>
             </motion.div>
           ))}
