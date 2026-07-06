@@ -23,7 +23,7 @@ import { usePageSeo } from "@/hooks/usePageSeo";
 type SortKey = "newest" | "price_asc" | "price_desc" | "size_desc" | "ppm2_asc";
 
 const FALLBACK_IMG = "/markt-fallback.jpg";
-const FALLBACK_ALT = "Wohnungsvorschau im ImmonIQ Markt";
+const FALLBACK_ALT = "ImmonIQ Markt-Platzhalter: Logo mit Globus und Haus";
 
 function ListingImage({ src, alt, className }: { src: string; alt: string; className?: string }) {
   const [failed, setFailed] = useState(false);
@@ -39,7 +39,7 @@ function ListingImage({ src, alt, className }: { src: string; alt: string; class
       width={640}
       height={360}
       onError={() => setFailed(true)}
-      className={`w-full h-full object-cover group-hover:scale-105 transition duration-500 ${isFallback ? "dark:brightness-[0.75] dark:contrast-[1.1] dark:saturate-[0.85]" : ""} ${className ?? ""}`}
+      className={`w-full h-full object-cover group-hover:scale-105 transition duration-500 ${className ?? ""}`}
     />
   );
 }
