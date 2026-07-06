@@ -63,6 +63,33 @@ export default function Widerruf() {
             beendbar, ohne dass Kosten entstehen.
           </p>
         </section>
+
+        <section className="space-y-3 text-sm leading-relaxed">
+          <h2 className="text-lg font-semibold">Muster-Widerrufsformular</h2>
+          <p className="text-muted-foreground">
+            (Wenn Sie den Vertrag widerrufen wollen, füllen Sie bitte dieses Formular aus und senden es zurück.)
+          </p>
+          <div className="bg-muted p-4 rounded-md space-y-2 whitespace-pre-line">
+            {`An:
+Leon Boomgaarden (ENTERVENTUS)
+Kastanienallee 13
+59320 Ennigerloh
+E-Mail: leonboomgaarden@gmail.com
+
+Hiermit widerrufe(n) ich/wir (*) den von mir/uns (*) abgeschlossenen Vertrag über
+die Erbringung der folgenden Dienstleistung (*):
+
+ImmonIQ — Nutzung der Software als Dienstleistung (SaaS)
+
+Bestellt am (*) / erhalten am (*): __________________________
+Name des/der Verbraucher(s):     __________________________
+Anschrift des/der Verbraucher(s): __________________________
+Unterschrift (nur bei Mitteilung auf Papier): __________________________
+Datum:                            __________________________
+
+(*) Unzutreffendes streichen.`}
+          </div>
+        </section>
       </div>
       <LegalFooter />
       </div>
