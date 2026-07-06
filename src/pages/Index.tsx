@@ -205,11 +205,6 @@ export default function Index() {
                   <span className="absolute bottom-0 right-0 h-6 w-6 border-r border-b border-[#c9a84c]/50" />
                 </div>
                 <HeroWorld />
-                {/* Signatur-Label unten */}
-                <div className="pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-3 text-[10px] tracking-[0.28em] uppercase text-[#f5f2ea]/55">
-                  <span className="h-1 w-1 rounded-full bg-[#c9a84c] animate-pulse" />
-                  Live · 8.187 PLZ
-                </div>
               </motion.div>
             </div>
           </div>
