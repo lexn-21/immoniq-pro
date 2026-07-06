@@ -3,8 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
 import { ArrowRight, Shield, Lock, MapPin } from "lucide-react";
 import { usePageSeo } from "@/hooks/usePageSeo";
-import PropertyGlobeLazy from "@/components/PropertyGlobeLazy";
+import HeroStage from "@/components/HeroStage";
 import { trackCta } from "@/lib/analytics";
+import { motion } from "framer-motion";
 
 // Preise werden 1:1 aus Pricing.tsx gespiegelt — sichtbar, aber bewusst leise.
 const PLANS = [
