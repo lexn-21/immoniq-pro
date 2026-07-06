@@ -1,11 +1,9 @@
 import { Link } from "react-router-dom";
-import { Suspense, lazy } from "react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
 import { ArrowRight, Shield, Lock, MapPin } from "lucide-react";
 import { usePageSeo } from "@/hooks/usePageSeo";
-
-const PropertyGlobe = lazy(() => import("@/components/PropertyGlobe"));
+import PropertyGlobeLazy from "@/components/PropertyGlobeLazy";
 
 const PLANS = [
   { name: "Privat", price: "0", unit: "€", note: "für immer", cta: "Kostenlos starten", to: "/auth", highlight: false },
@@ -95,11 +93,9 @@ export default function Index() {
               </p>
             </div>
 
-            {/* Right: interactive 3D globe */}
+            {/* Right: interactive 3D globe — lazy + WebGL/reduced-motion aware */}
             <div className="relative">
-              <Suspense fallback={<div className="aspect-square max-w-[560px] mx-auto rounded-full bg-gradient-to-br from-primary/5 to-transparent animate-pulse" />}>
-                <PropertyGlobe />
-              </Suspense>
+              <PropertyGlobeLazy />
             </div>
           </div>
         </div>
