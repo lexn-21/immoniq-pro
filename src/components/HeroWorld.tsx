@@ -310,7 +310,7 @@ export default function HeroWorld() {
           gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
           style={{ background: "transparent" }}
         >
-          <Scene reduced={reduced} />
+          <Scene reduced={reduced} scrollRef={scrollRef} />
         </Canvas>
       </Suspense>
       <div className="absolute bottom-4 left-4 md:bottom-6 md:left-6 backdrop-blur-xl bg-background/40 border border-border/40 rounded-full px-3 py-1.5 text-[10px] tracking-[0.24em] uppercase text-muted-foreground">
