@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { Home, MessageCircle, FileText, AlertTriangle, Scale, LogOut, Loader2, Menu, Lock, Link2 } from "lucide-react";
+import { Home, MessageCircle, FileText, AlertTriangle, Scale, LogOut, Loader2, Menu, Lock, Link2, TrendingUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Logo } from "@/components/Logo";
