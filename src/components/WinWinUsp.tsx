@@ -234,6 +234,12 @@ export default function WinWinUsp() {
                 <p className="text-[13px] md:text-sm text-muted-foreground leading-relaxed">
                   {f.d}
                 </p>
+                <div className="mt-3 text-[11px] md:text-xs font-medium text-foreground">
+                  {f.milestone}
+                </div>
+                <p className="mt-1 text-[10px] md:text-[11px] text-muted-foreground/80 leading-relaxed">
+                  {f.source}
+                </p>
               </div>
             </motion.div>
           ))}
