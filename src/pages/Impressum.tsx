@@ -6,6 +6,7 @@ export default function Impressum() {
     title: "Impressum · ImmonIQ",
     description: "Impressum und Anbieterkennzeichnung gemäß § 5 TMG für ImmonIQ — die App für Privatvermieter.",
     canonicalPath: "/impressum",
+    ogDescription: "Impressum gemäß § 5 TMG: ENTERVENTUS / ImmonIQ, Kastanienallee 13, 59320 Ennigerloh.",
     jsonLdId: "localbusiness",
     jsonLd: {
       "@context": "https://schema.org",
