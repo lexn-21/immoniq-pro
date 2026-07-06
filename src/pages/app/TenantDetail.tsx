@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import {
   ArrowLeft, Mail, Phone, Building2, CalendarDays, Wallet, FileText, Upload, MessageCircle,
   Download, Trash2, StickyNote, ShieldCheck, AlertTriangle, CheckCircle2, Clock, Link2,
-  Archive, ArchiveRestore,
+  Archive, ArchiveRestore, QrCode,
 } from "lucide-react";
 import { eur, date } from "@/lib/format";
 import { toast } from "sonner";
@@ -175,6 +175,10 @@ export default function TenantDetail() {
             }
           }}>
             <Link2 className="h-3.5 w-3.5 mr-1.5" /> Portal-Link
+          </Button>
+
+          <Button variant="outline" size="sm" onClick={() => window.open(`/mieter-qr/${tenant.id}`, "_blank")}>
+            <QrCode className="h-3.5 w-3.5 mr-1.5" /> QR drucken
           </Button>
 
           {tenant.archived_at ? (
