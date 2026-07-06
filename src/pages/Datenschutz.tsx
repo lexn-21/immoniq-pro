@@ -14,11 +14,21 @@ export default function Datenschutz() {
       <div className="max-w-2xl mx-auto space-y-6">
         <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">← Zurück</Link>
         <h1 className="text-3xl font-bold">Datenschutzerklärung</h1>
-        <p className="text-xs text-muted-foreground">Stand: Juni 2026</p>
+        <p className="text-xs text-muted-foreground">Stand: {new Date().toLocaleDateString("de-DE", { month: "long", year: "numeric" })}</p>
 
         <section className="space-y-2 text-sm">
           <h2 className="text-lg font-semibold">1. Verantwortlicher</h2>
-          <p>Leon Boomgaarden, Kastanienallee 13, 59320 Ennigerloh — leonboomgaarden@gmail.com</p>
+          <p>
+            Leon Boomgaarden (ENTERVENTUS)<br />
+            Kastanienallee 13, 59320 Ennigerloh, Deutschland<br />
+            Telefon: +49 152 28943502 · E-Mail:{" "}
+            <a href="mailto:leonboomgaarden@gmail.com" className="text-primary underline">leonboomgaarden@gmail.com</a><br />
+            USt-IdNr.: DE365353142
+          </p>
+          <p className="text-muted-foreground">
+            Ein Datenschutzbeauftragter ist gesetzlich nicht erforderlich; Anfragen richte bitte
+            an die oben genannte E-Mail-Adresse.
+          </p>
         </section>
 
         <section className="space-y-2 text-sm">
@@ -109,26 +119,82 @@ export default function Datenschutz() {
         </section>
 
         <section className="space-y-2 text-sm">
-          <h2 className="text-lg font-semibold">8. Cookies & Tracking</h2>
-          <p>Ausschließlich technisch notwendige Cookies (Session-Token). Kein Tracking, keine Werbe-Cookies, kein Profiling.</p>
+          <h2 className="text-lg font-semibold">8. Registrierung & Login (inkl. Google OAuth)</h2>
+          <p>
+            Die Registrierung erfolgt per E-Mail + Passwort oder optional über den Login-Anbieter
+            <strong> Google (Google Ireland Ltd., Gordon House, Barrow Street, Dublin 4, Irland)</strong>.
+            Bei Nutzung von „Mit Google anmelden" übermittelt Google an uns Name, E-Mail und
+            Profilbild. Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO (Vertragserfüllung) bzw. lit. a
+            (Einwilligung). Details zur Datenverarbeitung durch Google:{" "}
+            <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-primary underline">
+              policies.google.com/privacy
+            </a>.
+          </p>
         </section>
 
         <section className="space-y-2 text-sm">
-          <h2 className="text-lg font-semibold">9. Speicherdauer</h2>
+          <h2 className="text-lg font-semibold">9. Server-Logs</h2>
+          <p>
+            Beim Aufruf der Anwendung werden technisch notwendige Zugriffsdaten in Server-Logs
+            gespeichert (IP-Adresse gekürzt, Zeitstempel, User-Agent, aufgerufene URL, Referrer,
+            HTTP-Status). Zweck: Betrieb, Sicherheit, Missbrauchsabwehr. Rechtsgrundlage:
+            Art. 6 Abs. 1 lit. f DSGVO. Speicherdauer: max. 30 Tage, anschließend Löschung oder
+            Anonymisierung.
+          </p>
+        </section>
+
+        <section className="space-y-2 text-sm">
+          <h2 className="text-lg font-semibold">10. Cookies, Speicher & Reichweitenmessung</h2>
+          <p>
+            <strong>Technisch notwendig (ohne Einwilligung):</strong> Session-Token (Auth),
+            Consent-Speicher, CSRF-Schutz. Rechtsgrundlage: § 25 Abs. 2 Nr. 2 TDDDG, Art. 6 Abs. 1
+            lit. f DSGVO.
+          </p>
+          <p>
+            <strong>Nur mit Einwilligung („Analyse" im Cookie-Banner):</strong> Wir erfassen
+            pseudonyme Ereignisse (Seitenaufrufe, Klicks auf Call-to-Action-Buttons, Formular-Starts)
+            in unserer eigenen Tabelle <em>analytics_events</em> auf Servern in der EU. Es werden
+            keine IP-Adressen im Klartext gespeichert. Optional werden diese Events an ein
+            selbstgehostetes/EU-basiertes Analytics-Tool (z.&nbsp;B. Plausible, Umami, GA4 via GTM)
+            weitergegeben – aber ausschließlich, wenn du zuvor eingewilligt hast. Rechtsgrundlage:
+            Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG. Widerruf jederzeit über den Link
+            „Cookie-Einstellungen" im Footer.
+          </p>
+          <p>
+            <strong>Kein Marketing-Tracking, kein Profiling, keine Werbe-Cookies, keine
+            Social-Plugins.</strong>
+          </p>
+        </section>
+
+        <section className="space-y-2 text-sm">
+          <h2 className="text-lg font-semibold">11. Speicherdauer</h2>
           <p>
             Daten bleiben bis zur Kündigung gespeichert. Danach 30 Tage Export-Möglichkeit, anschließend
             Löschung. Steuerlich relevante Daten bis zu 10 Jahre (§ 147 AO). Bank-Einwilligungen max.
-            180 Tage (PSD2).
+            180 Tage (PSD2). Server-Logs max. 30 Tage.
           </p>
         </section>
 
         <section className="space-y-2 text-sm">
-          <h2 className="text-lg font-semibold">10. Drittland-Übermittlung</h2>
+          <h2 className="text-lg font-semibold">12. Drittland-Übermittlung</h2>
           <p>
-            Soweit Auftragsverarbeiter Server in Drittländern (USA) nutzen, erfolgt die Übermittlung
-            auf Basis EU-Standardvertragsklauseln (SCCs) und ggf. Data Privacy Framework (DPF).
+            Soweit Auftragsverarbeiter Server in Drittländern (insb. USA) nutzen, erfolgt die
+            Übermittlung auf Basis EU-Standardvertragsklauseln (SCCs, Durchführungsbeschluss (EU)
+            2021/914) und – wo verfügbar – auf Grundlage des EU-US Data Privacy Framework (DPF).
+            Der überwiegende Datenverkehr bleibt auf EU-Servern (Supabase EU, Stripe EU, Mailgun EU,
+            Enable Banking FI).
           </p>
         </section>
+
+        <section className="space-y-2 text-sm">
+          <h2 className="text-lg font-semibold">13. Aufsichtsbehörde</h2>
+          <p>
+            Zuständige Aufsichtsbehörde: Landesbeauftragte für Datenschutz und Informationsfreiheit
+            Nordrhein-Westfalen (LDI NRW), Kavalleriestraße 2–4, 40213 Düsseldorf,{" "}
+            <a href="https://www.ldi.nrw.de" target="_blank" rel="noopener noreferrer" className="text-primary underline">ldi.nrw.de</a>.
+          </p>
+        </section>
+
       </div>
       <LegalFooter />
       </div>

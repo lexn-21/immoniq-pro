@@ -28,8 +28,11 @@ export default function Widerruf() {
             diesen Vertrag zu widerrufen, informieren:
           </p>
           <p className="bg-muted p-4 rounded-md">
-            Leon Boomgaarden / ENTERVENTUS<br />
-            Ennigerloh, NRW<br />
+            Leon Boomgaarden (ENTERVENTUS)<br />
+            Kastanienallee 13<br />
+            59320 Ennigerloh<br />
+            Deutschland<br />
+            Telefon: +49 152 28943502<br />
             E-Mail: <a href="mailto:leonboomgaarden@gmail.com" className="underline">leonboomgaarden@gmail.com</a>
           </p>
           <p>
@@ -59,6 +62,33 @@ export default function Widerruf() {
             Hinweis: Ihre kostenlose 30-Tage-Testphase ist davon nicht betroffen — diese ist jederzeit
             beendbar, ohne dass Kosten entstehen.
           </p>
+        </section>
+
+        <section className="space-y-3 text-sm leading-relaxed">
+          <h2 className="text-lg font-semibold">Muster-Widerrufsformular</h2>
+          <p className="text-muted-foreground">
+            (Wenn Sie den Vertrag widerrufen wollen, füllen Sie bitte dieses Formular aus und senden es zurück.)
+          </p>
+          <div className="bg-muted p-4 rounded-md space-y-2 whitespace-pre-line">
+            {`An:
+Leon Boomgaarden (ENTERVENTUS)
+Kastanienallee 13
+59320 Ennigerloh
+E-Mail: leonboomgaarden@gmail.com
+
+Hiermit widerrufe(n) ich/wir (*) den von mir/uns (*) abgeschlossenen Vertrag über
+die Erbringung der folgenden Dienstleistung (*):
+
+ImmonIQ — Nutzung der Software als Dienstleistung (SaaS)
+
+Bestellt am (*) / erhalten am (*): __________________________
+Name des/der Verbraucher(s):     __________________________
+Anschrift des/der Verbraucher(s): __________________________
+Unterschrift (nur bei Mitteilung auf Papier): __________________________
+Datum:                            __________________________
+
+(*) Unzutreffendes streichen.`}
+          </div>
         </section>
       </div>
       <LegalFooter />
