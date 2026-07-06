@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ArrowRight } from "lucide-react";
+import SavingsCalculator from "@/components/SavingsCalculator";
 
 /**
  * WinWinUsp — der Kern-Pitch.
@@ -271,6 +272,17 @@ export default function WinWinUsp() {
             ))}
           </Accordion>
         </div>
+
+        {/* Savings Calculator */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-10% 0px" }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="mt-16 md:mt-24"
+        >
+          <SavingsCalculator />
+        </motion.div>
 
         {/* CTA */}
         <motion.div
