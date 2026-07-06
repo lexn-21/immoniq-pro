@@ -95,6 +95,8 @@ const TenantIssues = lazy(() => import("./pages/tenant/TenantIssues"));
 const TenantRights = lazy(() => import("./pages/tenant/TenantRights"));
 const TenantVault = lazy(() => import("./pages/tenant/TenantVault"));
 const TenantConnect = lazy(() => import("./pages/tenant/TenantConnect"));
+const TenantInsights = lazy(() => import("./pages/tenant/TenantInsights"));
+const Insights = lazy(() => import("./pages/app/Insights"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -133,6 +135,7 @@ const App = () => (
                 <Route path="tresor" element={<TenantVault />} />
                 <Route path="rechte" element={<TenantRights />} />
                 <Route path="verbinden" element={<TenantConnect />} />
+                <Route path="insights" element={<TenantInsights />} />
               </Route>
               <Route path="/wg-casting/:token" element={<WgCasting />} />
               <Route path="/pass/:code" element={<PassPublic />} />
@@ -173,6 +176,7 @@ const App = () => (
                 <Route path="properties" element={<Properties />} />
                 <Route path="properties/:id" element={<PropertyDetail />} />
                 <Route path="tenants" element={<Tenants />} />
+                <Route path="insights" element={<Insights />} />
                 <Route path="tenants/:id" element={<TenantDetail />} />
                 <Route path="payments" element={<Payments />} />
                 <Route path="expenses" element={<Expenses />} />

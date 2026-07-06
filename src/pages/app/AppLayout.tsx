@@ -47,6 +47,7 @@ const groups: NavGroup[] = [
     title: "Start",
     items: [
       { to: "/app", label: "Dashboard", icon: Home, end: true },
+      { to: "/app/insights", label: "Insights", icon: TrendingUp },
       { to: "/app/tasks", label: "Mein Plan", icon: CalendarCheck },
       { to: "/app/chat", label: "Postfach", icon: MessageSquare },
       { to: "/app/inbox", label: "Smart Inbox", icon: Inbox, personas: ["vermieter", "pro"] },
