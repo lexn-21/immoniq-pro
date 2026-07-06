@@ -215,6 +215,33 @@ export default function WinWinUsp() {
           ))}
         </div>
 
+        {/* FAQ */}
+        <div className="max-w-3xl mx-auto mt-16 md:mt-24">
+          <div className="text-center mb-10 md:mb-12">
+            <p className="text-[10px] md:text-[11px] tracking-[0.28em] uppercase text-muted-foreground mb-4">
+              Häufige Fragen
+            </p>
+            <h3 className="font-display font-medium tracking-[-0.02em] leading-[1] text-[clamp(1.6rem,5vw,2.75rem)]">
+              Rechtssicherheit & Dokumentation
+            </h3>
+          </div>
+          <Accordion type="single" collapsible className="w-full">
+            {FAQS.map((f) => (
+              <AccordionItem key={f.value} value={f.value} className="border-border/40">
+                <AccordionTrigger className="text-left text-[13px] md:text-sm font-medium hover:no-underline">
+                  <span className="flex items-center gap-3">
+                    <f.icon className="h-4 w-4 text-primary shrink-0" />
+                    {f.q}
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="text-[13px] md:text-sm text-muted-foreground leading-relaxed">
+                  {f.a}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
+
         {/* CTA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
