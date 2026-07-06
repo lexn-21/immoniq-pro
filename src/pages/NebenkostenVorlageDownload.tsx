@@ -199,13 +199,23 @@ export default function NebenkostenVorlageDownload() {
                 DSGVO-konform per E-Mail an den Mieter. 30 Tage kostenlos.
               </p>
               <div className="flex flex-wrap gap-2">
-                <Link to="/auth">
+                <Link
+                  to="/auth"
+                  onClick={() =>
+                    trackCta("signup_from_download", { source, metadata: { slug: SLUG } })
+                  }
+                >
                   <Button size="sm" className="gap-2">
                     Jetzt kostenlos testen
                     <ArrowRight className="w-4 h-4" />
                   </Button>
                 </Link>
-                <Link to="/preise">
+                <Link
+                  to="/preise"
+                  onClick={() =>
+                    trackCta("pricing_from_download", { source, metadata: { slug: SLUG } })
+                  }
+                >
                   <Button size="sm" variant="outline">
                     Preise ansehen
                   </Button>
