@@ -12,6 +12,7 @@ import { GameDeck } from "@/components/GameDeck";
 import { LegalUpdatesWidget } from "@/components/LegalUpdatesWidget";
 import { LeitzinsWidget } from "@/components/LeitzinsWidget";
 import { TodayFeed } from "@/components/TodayFeed";
+import { QuarterOverview } from "@/components/QuarterOverview";
 import { MarketPulseWidget } from "@/components/market/MarketPulseWidget";
 import RefinanceAlert from "@/components/RefinanceAlert";
 import OverdueTicketsWidget from "@/components/tickets/OverdueTicketsWidget";
