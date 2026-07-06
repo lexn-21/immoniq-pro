@@ -3755,7 +3755,45 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      advisor_directory_public: {
+        Row: {
+          active: boolean | null
+          city: string | null
+          created_at: string | null
+          firm: string | null
+          id: string | null
+          immobilien_focus: boolean | null
+          name: string | null
+          partner_status: string | null
+          website: string | null
+          zip: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          city?: string | null
+          created_at?: string | null
+          firm?: string | null
+          id?: string | null
+          immobilien_focus?: boolean | null
+          name?: string | null
+          partner_status?: string | null
+          website?: string | null
+          zip?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          city?: string | null
+          created_at?: string | null
+          firm?: string | null
+          id?: string | null
+          immobilien_focus?: boolean | null
+          name?: string | null
+          partner_status?: string | null
+          website?: string | null
+          zip?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       ad_slots_for: {
