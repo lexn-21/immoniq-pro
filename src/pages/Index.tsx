@@ -118,6 +118,34 @@ const Index = () => {
     title: "ImmonIQ — Deine Immobilie. Endlich verstanden. An einem Ort.",
     description: "Die deutsche All-in-One App rund um Immobilien: Tresor, Fristen, Marktwert, Mieten, Suchen, Erben. Verschlüsselt, DSGVO, kostenlos für Privatnutzer.",
     canonicalPath: "/",
+    ogDescription: "Die deutsche All-in-One App rund um Immobilien: Tresor, Fristen, Marktwert, Mieten, Suchen, Erben. Verschlüsselt, DSGVO, kostenlos für Privatnutzer.",
+    jsonLdId: "brand",
+    jsonLd: [
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        name: "ImmonIQ",
+        legalName: "ENTERVENTUS — ImmonIQ",
+        url: "https://immoniq.xyz",
+        logo: "https://immoniq.xyz/favicon.png",
+        email: "leonboomgaarden@gmail.com",
+        telephone: "+49 152 28943502",
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: "Kastanienallee 13",
+          postalCode: "59320",
+          addressLocality: "Ennigerloh",
+          addressCountry: "DE",
+        },
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        name: "ImmonIQ",
+        url: "https://immoniq.xyz",
+        inLanguage: "de-DE",
+      },
+    ],
   });
 
   const p = PERSONAS[persona];
