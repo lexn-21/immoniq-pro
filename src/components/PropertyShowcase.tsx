@@ -99,12 +99,17 @@ export default function PropertyShowcase() {
           </p>
         </div>
 
-        <motion.div style={{ y, opacity }} className="relative aspect-[4/5] sm:aspect-[16/10] md:aspect-[16/9] max-w-5xl mx-auto">
+        <motion.div ref={canvasRef} style={{ y, opacity }} className="relative aspect-[4/5] sm:aspect-[16/10] md:aspect-[16/9] max-w-5xl mx-auto">
           {/* Glow */}
           <div className="absolute inset-0 rounded-3xl blur-3xl opacity-30" style={{ background: "radial-gradient(ellipse at center, hsl(38 55% 55% / 0.5), transparent 60%)" }} />
 
           <Suspense fallback={<div className="absolute inset-0 rounded-3xl bg-gradient-to-b from-primary/5 to-transparent" />}>
-            <Canvas camera={{ position: [3.5, 2, 5], fov: 40 }} dpr={[1, 2]} gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}>
+            <Canvas
+              camera={{ position: [3.5, 2, 5], fov: 40 }}
+              dpr={isMobile ? [1, 1.5] : [1, 2]}
+              frameloop={canvasInView ? "always" : "never"}
+              gl={{ alpha: true, antialias: !isMobile, powerPreference: "high-performance" }}
+            >
               <ambientLight intensity={0.4} />
               <directionalLight position={[5, 8, 5]} intensity={1.4} color="#f0d78c" />
               <directionalLight position={[-3, -2, -4]} intensity={0.3} color="#4a3a1a" />
