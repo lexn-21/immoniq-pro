@@ -3116,12 +3116,18 @@ export type Database = {
         Row: {
           created_at: string
           display_name: string | null
+          dsgvo_consent_at: string | null
+          dsgvo_consent_version: string | null
+          dsgvo_consent_withdrawn_at: string | null
           headline: string | null
           id: string
           is_public: boolean
           landlord_ratings: Json
           pass_code: string
           rental_history: Json
+          score: number | null
+          score_breakdown: Json | null
+          score_computed_at: string | null
           updated_at: string
           user_id: string
           verified_income: Json
@@ -3131,12 +3137,18 @@ export type Database = {
         Insert: {
           created_at?: string
           display_name?: string | null
+          dsgvo_consent_at?: string | null
+          dsgvo_consent_version?: string | null
+          dsgvo_consent_withdrawn_at?: string | null
           headline?: string | null
           id?: string
           is_public?: boolean
           landlord_ratings?: Json
           pass_code?: string
           rental_history?: Json
+          score?: number | null
+          score_breakdown?: Json | null
+          score_computed_at?: string | null
           updated_at?: string
           user_id: string
           verified_income?: Json
@@ -3146,12 +3158,18 @@ export type Database = {
         Update: {
           created_at?: string
           display_name?: string | null
+          dsgvo_consent_at?: string | null
+          dsgvo_consent_version?: string | null
+          dsgvo_consent_withdrawn_at?: string | null
           headline?: string | null
           id?: string
           is_public?: boolean
           landlord_ratings?: Json
           pass_code?: string
           rental_history?: Json
+          score?: number | null
+          score_breakdown?: Json | null
+          score_computed_at?: string | null
           updated_at?: string
           user_id?: string
           verified_income?: Json
@@ -3159,6 +3177,47 @@ export type Database = {
           verified_schufa?: Json
         }
         Relationships: []
+      }
+      tenant_pass_consent_log: {
+        Row: {
+          action: string
+          consent_version: string
+          created_at: string
+          id: string
+          ip_address: string | null
+          pass_id: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          consent_version: string
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          pass_id: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          consent_version?: string
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          pass_id?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tenant_pass_consent_log_pass_id_fkey"
+            columns: ["pass_id"]
+            isOneToOne: false
+            referencedRelation: "tenant_pass"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tenant_payment_mandates: {
         Row: {
@@ -3785,6 +3844,7 @@ export type Database = {
         Args: { _resource: string; _user_id: string }
         Returns: undefined
       }
+      compute_immoniq_score: { Args: { _pass_id: string }; Returns: Json }
       current_user_role: {
         Args: never
         Returns: Database["public"]["Enums"]["app_role"]
@@ -3804,6 +3864,10 @@ export type Database = {
       }
       ensure_default_unit: { Args: { _property_id: string }; Returns: string }
       evaluate_achievements: { Args: never; Returns: Json }
+      grant_score_consent: {
+        Args: { _ip?: string; _pass_id: string; _ua?: string }
+        Returns: undefined
+      }
       has_pro_access: {
         Args: { _env?: string; _user_id: string }
         Returns: boolean
@@ -4013,6 +4077,7 @@ export type Database = {
         }
         Returns: string
       }
+      withdraw_score_consent: { Args: { _pass_id: string }; Returns: undefined }
     }
     Enums: {
       app_role: "landlord" | "tenant" | "admin" | "advisor"
