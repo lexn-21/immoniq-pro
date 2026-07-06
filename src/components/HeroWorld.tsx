@@ -55,7 +55,7 @@ function Globe({ reduced, scrollRef, isMobile }: { reduced: boolean; scrollRef: 
 
   const dots = useMemo(() => {
     const arr: THREE.Vector3[] = [];
-    const N = 1100;
+    const N = isMobile ? 550 : 1100;
     const phi = Math.PI * (3 - Math.sqrt(5));
     for (let i = 0; i < N; i++) {
       const y = 1 - (i / (N - 1)) * 2;
