@@ -241,6 +241,70 @@ export default function NebenkostenVorlage() {
         </div>
       </section>
 
+      {/* VERWANDTE THEMEN — internes Linking für SEO-Autorität */}
+      <section className="container py-12 max-w-3xl border-t">
+        <h2 className="text-2xl md:text-3xl font-bold mb-2">Verwandte Themen</h2>
+        <p className="text-muted-foreground mb-8 text-sm">
+          Alles rund um Betriebskosten, Abrechnung und Fristen — praxisnah für Vermieter.
+        </p>
+        <div className="grid md:grid-cols-2 gap-4">
+          {[
+            {
+              to: "/mietspiegel",
+              title: "Mietspiegel nach PLZ",
+              desc: "Ortsübliche Vergleichsmiete für deinen Standort — Grundlage für Mieterhöhungen nach § 558 BGB.",
+            },
+            {
+              to: "/markt",
+              title: "Immobilienmarkt-Analyse",
+              desc: "Kaufpreise, Renditen und Marktentwicklung pro Region — für Bewertung & Investment-Entscheidungen.",
+            },
+            {
+              to: "/pricing",
+              title: "Betriebskosten automatisch abrechnen",
+              desc: "Belege hochladen, KI verbucht, ImmonIQ verschickt die Abrechnung DSGVO-konform an den Mieter.",
+            },
+            {
+              to: "/nebenkostenabrechnung-vorlage/download?src=related",
+              title: "Vorlage direkt herunterladen",
+              desc: "Springe direkt zum Download der Excel-Vorlage nach § 556 BGB & BetrKV — ohne Umwege.",
+            },
+          ].map((l) => (
+            <Link
+              key={l.to}
+              to={l.to}
+              className="group block rounded-lg border p-5 hover:border-foreground/40 transition-colors"
+            >
+              <div className="flex items-start justify-between gap-3 mb-2">
+                <h3 className="font-semibold group-hover:underline">{l.title}</h3>
+                <ArrowRight className="w-4 h-4 shrink-0 mt-1 text-muted-foreground group-hover:text-foreground transition-colors" />
+              </div>
+              <p className="text-sm text-muted-foreground leading-relaxed">{l.desc}</p>
+            </Link>
+          ))}
+        </div>
+
+        <p className="text-sm text-muted-foreground leading-relaxed mt-8">
+          Weiterführend:{" "}
+          <Link to="/mietspiegel" className="underline hover:text-foreground">
+            ortsübliche Vergleichsmiete
+          </Link>
+          , Fristen zur{" "}
+          <Link to="/nebenkostenabrechnung-vorlage/download?src=inline" className="underline hover:text-foreground">
+            Nebenkostenabrechnung nach § 556 Abs. 3 BGB
+          </Link>{" "}
+          (12 Monate nach Ende des Abrechnungszeitraums), umlagefähige Betriebskosten laut{" "}
+          <Link to="/pricing" className="underline hover:text-foreground">
+            § 2 BetrKV
+          </Link>{" "}
+          sowie regionale{" "}
+          <Link to="/markt" className="underline hover:text-foreground">
+            Kaufpreise &amp; Renditen
+          </Link>
+          .
+        </p>
+      </section>
+
       {/* FOOTER */}
       <footer className="border-t mt-16">
         <div className="container py-8 text-sm text-muted-foreground flex flex-wrap gap-4 justify-between">
