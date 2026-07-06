@@ -301,6 +301,13 @@ export default function HeroWorld() {
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef({ v: 0 });
   const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+  const [introDone, setIntroDone] = useState(false);
+
+  useEffect(() => {
+    if (!reduced) return;
+    const id = window.setTimeout(() => setIntroDone(true), 1600);
+    return () => window.clearTimeout(id);
+  }, [reduced]);
 
   // Merge external inViewRef with containerRef
   const setRefs = (el: HTMLDivElement | null) => {
