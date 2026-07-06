@@ -30,7 +30,7 @@ export default function PassPublic() {
       if (!code) return setState("missing");
       const { data, error } = await supabase
         .from("tenant_pass" as any)
-        .select("pass_code,display_name,headline,verified_income,verified_schufa,verified_mietschuldenfrei,rental_history,landlord_ratings,is_public")
+        .select("pass_code,display_name,headline,verified_income,verified_schufa,verified_mietschuldenfrei,rental_history,landlord_ratings,is_public,score,score_computed_at")
         .eq("pass_code", code)
         .maybeSingle();
       if (error || !data) return setState("missing");
