@@ -20,10 +20,10 @@ const PLANS = [
 
 export default function Index() {
   usePageSeo({
-    title: "ImmonIQ — Deine Immobilie. Ein Ort. Ein Blick.",
-    description: "Die deutsche Immobilien-App: Tresor, Marktwert, Vermieten, Steuer. Privat kostenlos, Verwalten ab 7,90 €. DSGVO, verschlüsselt, made in Germany.",
+    title: "ImmonIQ — Jeder m² Deutschlands. In einer App.",
+    description: "All-in-One für Grundstück, Gebäude, Mieter, Vermieter, Bürokratie und Steuer. Live-Marktdaten für 8.187 PLZ. Privat kostenlos, verschlüsselt, made in Germany.",
     canonicalPath: "/",
-    ogDescription: "Die deutsche Immobilien-App: Tresor, Marktwert, Vermieten, Steuer. Privat kostenlos, Verwalten ab 7,90 €.",
+    ogDescription: "All-in-One für Grundstück, Gebäude, Mieter, Vermieter, Bürokratie & Steuer. Privat 0 €. Verschlüsselt in Deutschland.",
     jsonLdId: "brand",
     jsonLd: [
       {
