@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { usePageSeo } from "@/hooks/usePageSeo";
 import { supabase } from "@/integrations/supabase/client";
+import { trackDownload, trackCta } from "@/lib/analytics";
 import {
   CheckCircle2,
   Download,
@@ -52,13 +53,19 @@ export default function NebenkostenVorlageDownload() {
     if (logged.current) return;
     logged.current = true;
 
-    // Fire-and-forget Tracking.
+    // Legacy first-party log (bleibt bestehen für Backwards-Compat).
     void supabase.from("download_events").insert({
       file_path: DOWNLOAD_PATH,
       slug: SLUG,
       source,
       referrer: typeof document !== "undefined" ? document.referrer || null : null,
       user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
+    });
+
+    // Neues, einheitliches Event ins Analytics-Setup.
+    void trackDownload(FILE_NAME, {
+      source,
+      metadata: { slug: SLUG, file_path: DOWNLOAD_PATH, trigger: "auto" },
     });
 
     // Download nach ~400 ms auslösen, damit UI erst rendert.
