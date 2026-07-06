@@ -30,8 +30,22 @@ export default function NebenkostenVorlageDownload() {
     description:
       "Deine kostenlose Excel-Vorlage für die Nebenkostenabrechnung wird jetzt heruntergeladen.",
     canonicalPath: CANONICAL,
-    noindex: true,
   });
+
+  // Bestätigungsseite nicht indexieren.
+  useEffect(() => {
+    let tag = document.querySelector<HTMLMetaElement>('meta[name="robots"]');
+    if (!tag) {
+      tag = document.createElement("meta");
+      tag.name = "robots";
+      document.head.appendChild(tag);
+    }
+    const prev = tag.content;
+    tag.content = "noindex, nofollow";
+    return () => {
+      tag!.content = prev;
+    };
+  }, []);
 
   // Auto-Download + Tracking (einmalig pro Seitenaufruf).
   useEffect(() => {

@@ -1139,6 +1139,36 @@ export type Database = {
           },
         ]
       }
+      download_events: {
+        Row: {
+          created_at: string
+          file_path: string
+          id: string
+          referrer: string | null
+          slug: string
+          source: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          file_path: string
+          id?: string
+          referrer?: string | null
+          slug: string
+          source?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          file_path?: string
+          id?: string
+          referrer?: string | null
+          slug?: string
+          source?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       email_send_log: {
         Row: {
           created_at: string
