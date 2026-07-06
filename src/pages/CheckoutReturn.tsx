@@ -43,35 +43,37 @@ export default function CheckoutReturn() {
   }, [user]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 bg-background">
-      <Card className="p-8 max-w-md w-full text-center space-y-4">
-        {ready ? (
-          <>
-            <CheckCircle2 className="h-14 w-14 text-success mx-auto" />
-            <h1 className="text-2xl font-bold">Willkommen bei ImmonIQ Pro!</h1>
-            <p className="text-sm text-muted-foreground">
-              Alles freigeschaltet. Eine Rechnung kommt per E-Mail.
+    <div className="min-h-screen flex flex-col bg-background">
+      <div className="flex-1 flex items-center justify-center px-6">
+        <Card className="p-8 max-w-md w-full text-center space-y-4">
+          {ready ? (
+            <>
+              <CheckCircle2 className="h-14 w-14 text-success mx-auto" />
+              <h1 className="text-2xl font-bold">Willkommen bei ImmonIQ Pro!</h1>
+              <p className="text-sm text-muted-foreground">
+                Alles freigeschaltet. Eine Rechnung kommt per E-Mail.
+              </p>
+            </>
+          ) : (
+            <>
+              <Loader2 className="h-14 w-14 text-primary mx-auto animate-spin" />
+              <h1 className="text-2xl font-bold">Zahlung wird verarbeitet…</h1>
+              <p className="text-sm text-muted-foreground">
+                Sekunde, wir aktivieren dein Abo.
+              </p>
+            </>
+          )}
+          {sessionId && (
+            <p className="text-[10px] text-muted-foreground/60 font-mono break-all">
+              Session: {sessionId}
             </p>
-          </>
-        ) : (
-          <>
-            <Loader2 className="h-14 w-14 text-primary mx-auto animate-spin" />
-            <h1 className="text-2xl font-bold">Zahlung wird verarbeitet…</h1>
-            <p className="text-sm text-muted-foreground">
-              Sekunde, wir aktivieren dein Abo.
-            </p>
-          </>
-        )}
-        {sessionId && (
-          <p className="text-[10px] text-muted-foreground/60 font-mono break-all">
-            Session: {sessionId}
-          </p>
-        )}
-        <Button asChild className="w-full" disabled={!ready}>
-          <Link to="/app">Zum Dashboard</Link>
-        </Button>
-      </Card>
-      <LegalFooter />
+          )}
+          <Button asChild className="w-full" disabled={!ready}>
+            <Link to="/app">Zum Dashboard</Link>
+          </Button>
+        </Card>
       </div>
+      <LegalFooter compact />
+    </div>
   );
 }
