@@ -50,7 +50,7 @@ const LandlordMath = () => (
     <p className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground mb-3">
       Konkrete Vermieter-Ersparnis
     </p>
-    <div className="grid grid-cols-3 gap-2 md:gap-3 mb-3">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 md:gap-3 mb-3">
       {[
         { units: 5, hours: 4, euros: 180 },
         { units: 15, hours: 12, euros: 540 },
