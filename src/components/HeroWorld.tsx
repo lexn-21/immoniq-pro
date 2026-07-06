@@ -42,10 +42,15 @@ function usePrefersReducedMotion() {
   return reduced;
 }
 
-function Globe({ reduced }: { reduced: boolean }) {
+type ScrollRef = React.MutableRefObject<{ v: number }>;
+
+function Globe({ reduced, scrollRef }: { reduced: boolean; scrollRef: ScrollRef }) {
   const globeRef = useRef<THREE.Group>(null);
+  const dotsRef = useRef<THREE.Points>(null);
+  const wireRef = useRef<THREE.Mesh>(null);
   const pinsRef = useRef<Array<THREE.Mesh | null>>([]);
   const auraRef = useRef<THREE.Mesh>(null);
+  const autoRotRef = useRef(0);
 
   const dots = useMemo(() => {
     const arr: THREE.Vector3[] = [];
@@ -66,27 +71,51 @@ function Globe({ reduced }: { reduced: boolean }) {
   );
 
   useFrame((state, dt) => {
-    if (globeRef.current && !reduced) {
-      globeRef.current.rotation.y += dt * 0.09;
+    const t = state.clock.elapsedTime;
+    const s = scrollRef.current.v; // 0..1
+    // Ambient auto-rotation + scroll acceleration
+    if (globeRef.current) {
+      if (!reduced) autoRotRef.current += dt * 0.09;
+      // scroll adds up to ~2.4 rad of extra spin
+      globeRef.current.rotation.y = autoRotRef.current + s * 2.4;
+      // Tilt "unfolds" as you scroll
+      globeRef.current.rotation.x = 0.35 - s * 0.55;
+      globeRef.current.rotation.z = 0.05 + s * 0.2;
+      // Slight scale breath
+      const sc = 1 + s * 0.08;
+      globeRef.current.scale.setScalar(sc);
+    }
+    // Data dots "scatter outward" as globe unfolds
+    if (dotsRef.current) {
+      const scatter = 1 + s * 0.18;
+      dotsRef.current.scale.setScalar(scatter);
+      const mat = dotsRef.current.material as THREE.PointsMaterial;
+      mat.opacity = 0.7 + s * 0.25;
+      mat.size = 0.018 + s * 0.012;
+    }
+    // Wireframe grows brighter — reveals structure
+    if (wireRef.current) {
+      const mat = wireRef.current.material as THREE.MeshBasicMaterial;
+      mat.opacity = 0.28 + s * 0.4;
     }
     // Pulsing pins
-    const t = state.clock.elapsedTime;
     pinsRef.current.forEach((m, i) => {
       if (!m) return;
-      const s = 1 + Math.sin(t * 2 + i * 0.7) * 0.25;
-      m.scale.setScalar(s);
+      const sPulse = 1 + Math.sin(t * 2 + i * 0.7) * 0.25 + s * 0.35;
+      m.scale.setScalar(sPulse);
       const mat = m.material as THREE.MeshBasicMaterial;
-      mat.opacity = 0.18 + Math.max(0, Math.sin(t * 2 + i * 0.7)) * 0.25;
+      mat.opacity = 0.18 + Math.max(0, Math.sin(t * 2 + i * 0.7)) * 0.25 + s * 0.2;
     });
+    // Atmosphere expands + brightens
     if (auraRef.current) {
       const mat = auraRef.current.material as THREE.MeshBasicMaterial;
-      mat.opacity = 0.05 + Math.sin(t * 0.8) * 0.02;
+      mat.opacity = 0.05 + Math.sin(t * 0.8) * 0.02 + s * 0.15;
+      auraRef.current.scale.setScalar(1 + s * 0.12);
     }
   });
 
   return (
     <group ref={globeRef} rotation={[0.35, 0, 0.05]}>
-      {/* Core sphere — deep obsidian */}
       <mesh>
         <sphereGeometry args={[1.5, 96, 96]} />
         <meshPhysicalMaterial
@@ -97,13 +126,11 @@ function Globe({ reduced }: { reduced: boolean }) {
           clearcoatRoughness={0.35}
         />
       </mesh>
-      {/* Wireframe overlay */}
-      <mesh>
+      <mesh ref={wireRef}>
         <sphereGeometry args={[1.508, 48, 48]} />
         <meshBasicMaterial color="#3a2f18" wireframe transparent opacity={0.28} />
       </mesh>
-      {/* Data dots via instanced points */}
-      <points>
+      <points ref={dotsRef}>
         <bufferGeometry>
           <bufferAttribute
             attach="attributes-position"
@@ -112,7 +139,6 @@ function Globe({ reduced }: { reduced: boolean }) {
         </bufferGeometry>
         <pointsMaterial size={0.018} color="#c9a84c" transparent opacity={0.7} sizeAttenuation />
       </points>
-      {/* German pins — gold, glowing, pulsing */}
       {pins.map((p, i) => (
         <group key={i} position={p.pos}>
           <mesh>
@@ -134,7 +160,6 @@ function Globe({ reduced }: { reduced: boolean }) {
           </mesh>
         </group>
       ))}
-      {/* Atmosphere glow */}
       <mesh ref={auraRef}>
         <sphereGeometry args={[1.66, 48, 48]} />
         <meshBasicMaterial color="#c9a84c" transparent opacity={0.06} side={THREE.BackSide} />
