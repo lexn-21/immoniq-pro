@@ -81,10 +81,34 @@ const LandlordMath = () => (
 
 
 const FOMO = [
-  { icon: TrendingUp, k: "Preis steigt", d: "Founders-Preis 0 € Privat gilt nur für die ersten 10.000 Accounts." },
-  { icon: Users,      k: "Marktplatz",   d: "Wer früh startet, wird zuerst gelistet — sichtbar für Millionen Suchen." },
-  { icon: Clock,      k: "Historie",     d: "Jeder Tag ohne ImmonIQ = ein Tag ohne Belege, ohne AfA-Track, ohne Rendite-Historie." },
-  { icon: Zap,        k: "Zinsvorteil",  d: "Banken fragen Cashflow-Historien. Ohne Track-Record: schlechtere Konditionen." },
+  {
+    icon: TrendingUp,
+    k: "Preisvorteil",
+    d: "Founders-Accounts nutzen die Privat-Version dauerhaft kostenlos. Sobald der Pro-Plan startet, fallen für neue Nutzer Gebühren an.",
+    milestone: "Meilenstein: Pro-Plan startet nach Abschluss der Beta-Phase (geplant Q3 2026).",
+    source: "Grundlage: Der 0-€-Preis ist eine Early-Adopter-Prämie, keine dauerhafte Subvention.",
+  },
+  {
+    icon: Users,
+    k: "Marktplatz-Listing",
+    d: "Der ImmonIQ-Marktplatz listet verifizierte Anbieter nach Qualität und Aktualität. Frühe Listings sammeln Bewertungen und Sichtbarkeit.",
+    milestone: "Meilenstein: Listings öffnen ab 10.000 gepflegten Objekten.",
+    source: "Vergleich: Marktplätze wie Airbnb oder Immoscout zeigen etablierte Profile bevorzugt (Relevanz-Algorithmus).",
+  },
+  {
+    icon: Clock,
+    k: "Steuer-Historie",
+    d: "Steuerlich relevante Belege und AfA-Berechnungen brauchen lückenlose Daten. Lücken lassen sich nachträglich nur mit erheblichem Aufwand schließen.",
+    milestone: "Meilenstein: Steuererklärung 2026 fällt im Sommer 2026 an.",
+    source: "Grundlage: § 147 AO schreibt eine ordnungsgemäße Aufbewahrung von Geschäftsunterlagen vor.",
+  },
+  {
+    icon: Zap,
+    k: "Finanzierungsvorteil",
+    d: "Banken bewerten bei Immobilienfinanzierungen bestehende Miet-Cashflows. Ohne saubere Historie muss der Sachbearbeiter schätzen.",
+    milestone: "Meilenstein: 12–24 Monate belegte Cashflow-Historie verbessern die Kreditwürdigkeit.",
+    source: "Grundlage: Kreditprüfungspraxis nach Basel-III-/EBA-Leitlinien; siehe auch BVR-Richtlinien.",
+  },
 ];
 
 const FAQS = [
@@ -209,6 +233,12 @@ export default function WinWinUsp() {
                 </div>
                 <p className="text-[13px] md:text-sm text-muted-foreground leading-relaxed">
                   {f.d}
+                </p>
+                <div className="mt-3 text-[11px] md:text-xs font-medium text-foreground">
+                  {f.milestone}
+                </div>
+                <p className="mt-1 text-[10px] md:text-[11px] text-muted-foreground/80 leading-relaxed">
+                  {f.source}
                 </p>
               </div>
             </motion.div>
