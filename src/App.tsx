@@ -135,6 +135,7 @@ const App = () => (
                 <Route path="tresor" element={<TenantVault />} />
                 <Route path="rechte" element={<TenantRights />} />
                 <Route path="verbinden" element={<TenantConnect />} />
+                <Route path="insights" element={<TenantInsights />} />
               </Route>
               <Route path="/wg-casting/:token" element={<WgCasting />} />
               <Route path="/pass/:code" element={<PassPublic />} />
