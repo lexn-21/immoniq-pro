@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ArrowRight } from "lucide-react";
+import { SavingsCalculator } from "@/components/SavingsCalculator";
 
 /**
  * WinWinUsp — der Kern-Pitch.
