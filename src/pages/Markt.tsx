@@ -474,17 +474,31 @@ const Markt = () => {
                         <div className="aspect-video bg-muted relative overflow-hidden">
                           {/* subtle top gradient for badge contrast safety */}
                           <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/30 to-transparent z-10" aria-hidden="true" />
-                          <img
-                            src={cover || "/markt-fallback.jpg"}
-                            alt={cover ? `${l.title} — ${l.rooms ? `${l.rooms} Zimmer, ` : ""}${l.space ? `${l.space} m²` : ""} in ${[l.zip, l.city].filter(Boolean).join(" ") || "Deutschland"}` : "Wohnungsvorschau im ImmonIQ Markt"}
-                            loading="lazy"
-                            decoding="async"
-                            // @ts-expect-error — fetchpriority is valid HTML, TS types lagging
-                            fetchpriority="low"
-                            width={640}
-                            height={360}
-                            className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-                          />
+                          {cover ? (
+                            <img
+                              src={cover}
+                              alt={`${l.title} — ${l.rooms ? `${l.rooms} Zimmer, ` : ""}${l.space ? `${l.space} m²` : ""} in ${[l.zip, l.city].filter(Boolean).join(" ") || "Deutschland"}`}
+                              loading="lazy"
+                              decoding="async"
+                              // @ts-expect-error — fetchpriority is valid HTML, TS types lagging
+                              fetchpriority="low"
+                              width={640}
+                              height={360}
+                              className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                            />
+                          ) : (
+                            <img
+                              src="/markt-fallback.jpg"
+                              alt="Wohnungsvorschau im ImmonIQ Markt"
+                              loading="lazy"
+                              decoding="async"
+                              // @ts-expect-error — fetchpriority is valid HTML, TS types lagging
+                              fetchpriority="low"
+                              width={640}
+                              height={360}
+                              className="w-full h-full object-cover group-hover:scale-105 transition duration-500 dark:brightness-[0.75] dark:contrast-[1.1] dark:saturate-[0.85]"
+                            />
+                          )}
                           <Badge className={`absolute top-2 left-2 backdrop-blur border ${l.kind === "wg_room" ? "bg-violet-500/85 text-white border-violet-500" : "bg-background/85 text-foreground"}`}>
                             {l.kind === "rent" ? "Miete" : l.kind === "sale" ? "Kauf" : "WG-Zimmer"}
                           </Badge>
