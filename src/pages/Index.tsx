@@ -10,6 +10,7 @@ import ScarcityBand from "@/components/ScarcityBand";
 import { trackCta } from "@/lib/analytics";
 import { motion } from "framer-motion";
 import QuickStartFlow from "@/components/QuickStartFlow";
+import WinWinUsp from "@/components/WinWinUsp";
 
 // Preise werden 1:1 aus Pricing.tsx gespiegelt — sichtbar, aber bewusst leise.
 const PLANS = [
@@ -184,6 +185,9 @@ export default function Index() {
         </div>
       </section>
 
+
+      {/* WIN-WIN + FOMO — der eigentliche Pitch */}
+      <WinWinUsp />
 
       {/* SO GEHT'S — Live-Demo des Anmeldeprozesses */}
       <QuickStartFlow />
