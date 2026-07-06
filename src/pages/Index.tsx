@@ -6,10 +6,11 @@ import { usePageSeo } from "@/hooks/usePageSeo";
 import PropertyGlobeLazy from "@/components/PropertyGlobeLazy";
 import { trackCta } from "@/lib/analytics";
 
+// Preise werden 1:1 aus Pricing.tsx gespiegelt — sichtbar, aber bewusst leise.
 const PLANS = [
-  { name: "Privat", price: "0", unit: "€", note: "für immer", cta: "Kostenlos starten", to: "/auth", highlight: false },
-  { name: "Verwalten+", price: "7,90", unit: "€/Mo", note: "jährlich 6,58 €", cta: "14 Tage testen", to: "/pricing", highlight: true },
-  { name: "Pro", price: "19,90", unit: "€/Mo", note: "jährlich 16,58 €", cta: "Konditionen", to: "/pricing", highlight: false },
+  { name: "Privat",      price: "0 €",       note: "für immer" },
+  { name: "Verwalten+",  price: "7,90 €/Mo", note: "jährlich 6,58 €/Mo" },
+  { name: "Pro",         price: "19,90 €/Mo", note: "jährlich 16,58 €/Mo" },
 ];
 
 export default function Index() {
@@ -79,7 +80,7 @@ export default function Index() {
                 Ein Blick.
               </h1>
               <p className="mt-8 text-lg md:text-xl text-muted-foreground max-w-md leading-relaxed">
-                Tresor. Marktwert. Vermieten. Steuer. Alles was zählt — in einer App, verschlüsselt in Deutschland.
+                Verwalten, verstehen, versteuern — verschlüsselt in Deutschland.
               </p>
               <div className="mt-10 flex items-center gap-4">
                 <Button asChild size="lg" className="rounded-full bg-foreground text-background hover:bg-foreground/90 px-7 h-12 text-[15px] font-medium">
@@ -111,63 +112,65 @@ export default function Index() {
         </div>
       </section>
 
-      {/* USP — three lines, huge whitespace */}
+      {/* USP — drei Worte, drei Zeilen, viel Luft */}
       <section id="produkt" className="border-t border-border/40">
-        <div className="container py-24 md:py-32">
-          <p className="text-[11px] tracking-[0.22em] uppercase text-muted-foreground mb-10 text-center">Warum ImmonIQ</p>
-          <div className="grid md:grid-cols-3 gap-12 md:gap-16 max-w-5xl mx-auto">
+        <div className="container py-28 md:py-40 max-w-4xl">
+          <p className="text-[11px] tracking-[0.28em] uppercase text-muted-foreground mb-20 text-center">
+            Was ImmonIQ ist
+          </p>
+          <ul className="divide-y divide-border/40">
             {[
-              { k: "01", h: "Ein Tresor.", s: "Kaufvertrag, Grundbuch, Rechnungen. Ende-zu-Ende verschlüsselt. Nur du hast den Schlüssel." },
-              { k: "02", h: "Ein Marktwert.", s: "Live-Daten für jede deutsche PLZ. Mietspiegel, Vergleiche, Rendite — auf Knopfdruck." },
-              { k: "03", h: "Ein Handgriff.", s: "Vermieten ohne Excel. Anlage V ohne Steuerberater-Stress. DATEV-Export in einem Klick." },
+              { h: "Ein Tresor.",   s: "Verträge, Grundbuch, Rechnungen. Ende-zu-Ende verschlüsselt." },
+              { h: "Ein Marktwert.", s: "Live-Daten für jede deutsche PLZ. Mietspiegel, Rendite, Vergleich." },
+              { h: "Ein Handgriff.", s: "Vermieten ohne Excel. Anlage V ohne Steuerberater-Stress." },
             ].map((f) => (
-              <div key={f.k} className="group">
-                <div className="text-[11px] tracking-[0.22em] text-primary mb-4">{f.k}</div>
-                <h3 className="font-display text-2xl md:text-3xl font-medium tracking-tight mb-3">{f.h}</h3>
-                <p className="text-muted-foreground leading-relaxed">{f.s}</p>
-              </div>
+              <li key={f.h} className="py-10 md:py-14 flex flex-col md:flex-row md:items-baseline md:gap-12">
+                <h3 className="font-display font-medium tracking-[-0.03em] leading-[0.95] text-[clamp(2.5rem,6vw,4.5rem)] md:w-[52%]">
+                  {f.h}
+                </h3>
+                <p className="mt-4 md:mt-0 text-[15px] md:text-base text-muted-foreground max-w-md leading-relaxed">
+                  {f.s}
+                </p>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </section>
 
-      {/* PREISE — small, honest, no shouting */}
-      <section id="preise" className="border-t border-border/40 bg-gradient-to-b from-background to-background/60">
-        <div className="container py-20 md:py-28">
-          <div className="text-center max-w-2xl mx-auto mb-14">
-            <p className="text-[11px] tracking-[0.22em] uppercase text-muted-foreground mb-4">Preise</p>
-            <h2 className="font-display text-4xl md:text-5xl font-medium tracking-[-0.02em]">
-              Privat kostenlos. <span className="text-gradient-gold">Immer.</span>
-            </h2>
+      {/* PREISE — bewusst klein, ehrlich, ohne Lautstärke */}
+      <section id="preise" className="border-t border-border/40">
+        <div className="container py-20 md:py-24 max-w-3xl">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
+            <div>
+              <p className="text-[11px] tracking-[0.28em] uppercase text-muted-foreground mb-3">Preise</p>
+              <h2 className="font-display text-3xl md:text-4xl font-medium tracking-[-0.02em]">
+                Privat kostenlos. <span className="text-gradient-gold">Immer.</span>
+              </h2>
+            </div>
+            <Link
+              to="/pricing"
+              onClick={() => trackCta("pricing_details", { source: "index_prices" })}
+              className="text-[13px] text-foreground/70 hover:text-foreground story-link self-start md:self-auto"
+            >
+              Alle Details ansehen
+            </Link>
           </div>
-          <div className="grid md:grid-cols-3 gap-4 max-w-4xl mx-auto">
+
+          {/* Drei Zeilen. Kein Karten-Marketing. */}
+          <dl className="divide-y divide-border/40 border-y border-border/40">
             {PLANS.map((p) => (
-              <Link
-                key={p.name}
-                to={p.to}
-                className={`group rounded-2xl p-6 border transition-all hover:-translate-y-0.5 ${
-                  p.highlight
-                    ? "border-primary/40 bg-gradient-to-b from-primary/5 to-transparent shadow-[0_0_60px_-20px_hsl(var(--primary)/0.4)]"
-                    : "border-border/60 hover:border-primary/30"
-                }`}
-              >
-                <div className="flex items-baseline justify-between mb-6">
-                  <span className="text-sm font-medium tracking-tight">{p.name}</span>
-                  {p.highlight && <span className="text-[10px] tracking-widest uppercase text-primary">Beliebt</span>}
-                </div>
-                <div className="flex items-baseline gap-1.5">
-                  <span className="font-display text-4xl font-medium tracking-tight">{p.price}</span>
-                  <span className="text-sm text-muted-foreground">{p.unit}</span>
-                </div>
-                <p className="text-xs text-muted-foreground mt-1.5">{p.note}</p>
-                <div className="mt-6 flex items-center text-[13px] font-medium text-foreground/80 group-hover:text-foreground transition">
-                  {p.cta} <ArrowRight className="ml-1.5 h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-                </div>
-              </Link>
+              <div key={p.name} className="py-4 flex items-baseline justify-between gap-4">
+                <dt className="text-sm font-medium tracking-tight">{p.name}</dt>
+                <dd className="flex items-baseline gap-3 text-right">
+                  <span className="text-sm tabular-nums text-foreground/90">{p.price}</span>
+                  <span className="text-[11px] text-muted-foreground tabular-nums">{p.note}</span>
+                </dd>
+              </div>
             ))}
-          </div>
-          <p className="text-center text-xs text-muted-foreground mt-8">
-            Alle Preise inkl. MwSt · Monatlich kündbar · 30 Tage Geld-zurück
+          </dl>
+
+          <p className="text-[11px] text-muted-foreground mt-5">
+            Alle Preise inkl. 19 % MwSt · monatlich kündbar · 30 Tage Geld-zurück
           </p>
         </div>
       </section>
