@@ -6,6 +6,7 @@ import { usePageSeo } from "@/hooks/usePageSeo";
 import HeroStage from "@/components/HeroStage";
 import { trackCta } from "@/lib/analytics";
 import { motion } from "framer-motion";
+import QuickStartFlow from "@/components/QuickStartFlow";
 
 // Preise werden 1:1 aus Pricing.tsx gespiegelt — sichtbar, aber bewusst leise.
 const PLANS = [
@@ -144,6 +145,9 @@ export default function Index() {
           </ul>
         </div>
       </section>
+
+      {/* SO GEHT'S — Live-Demo des Anmeldeprozesses */}
+      <QuickStartFlow />
 
       {/* METRICS BAND — leiser Beweis, scrollt sanft rein */}
       <section className="border-t border-border/40 overflow-hidden">
