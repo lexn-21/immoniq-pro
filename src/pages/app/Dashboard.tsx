@@ -12,6 +12,7 @@ import { GameDeck } from "@/components/GameDeck";
 import { LegalUpdatesWidget } from "@/components/LegalUpdatesWidget";
 import { LeitzinsWidget } from "@/components/LeitzinsWidget";
 import { TodayFeed } from "@/components/TodayFeed";
+import { QuarterOverview } from "@/components/QuarterOverview";
 import { MarketPulseWidget } from "@/components/market/MarketPulseWidget";
 import RefinanceAlert from "@/components/RefinanceAlert";
 import OverdueTicketsWidget from "@/components/tickets/OverdueTicketsWidget";
@@ -334,6 +335,16 @@ const Dashboard = () => {
               progress={occRate}
             />
           </div>
+
+          {/* Move 5 — Quartalsübersicht */}
+          <Item>
+            <QuarterOverview
+              payments={payments}
+              expenses={expenses}
+              nkaDraft={nkaDraft}
+              nkaOpen={nkaOpen}
+            />
+          </Item>
 
           {/* Visueller 12-Monats-Verlauf */}
           <Item>
