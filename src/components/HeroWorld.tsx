@@ -42,10 +42,15 @@ function usePrefersReducedMotion() {
   return reduced;
 }
 
-function Globe({ reduced }: { reduced: boolean }) {
+type ScrollRef = React.MutableRefObject<{ v: number }>;
+
+function Globe({ reduced, scrollRef }: { reduced: boolean; scrollRef: ScrollRef }) {
   const globeRef = useRef<THREE.Group>(null);
+  const dotsRef = useRef<THREE.Points>(null);
+  const wireRef = useRef<THREE.Mesh>(null);
   const pinsRef = useRef<Array<THREE.Mesh | null>>([]);
   const auraRef = useRef<THREE.Mesh>(null);
+  const autoRotRef = useRef(0);
 
   const dots = useMemo(() => {
     const arr: THREE.Vector3[] = [];
@@ -66,27 +71,51 @@ function Globe({ reduced }: { reduced: boolean }) {
   );
 
   useFrame((state, dt) => {
-    if (globeRef.current && !reduced) {
-      globeRef.current.rotation.y += dt * 0.09;
+    const t = state.clock.elapsedTime;
+    const s = scrollRef.current.v; // 0..1
+    // Ambient auto-rotation + scroll acceleration
+    if (globeRef.current) {
+      if (!reduced) autoRotRef.current += dt * 0.09;
+      // scroll adds up to ~2.4 rad of extra spin
+      globeRef.current.rotation.y = autoRotRef.current + s * 2.4;
+      // Tilt "unfolds" as you scroll
+      globeRef.current.rotation.x = 0.35 - s * 0.55;
+      globeRef.current.rotation.z = 0.05 + s * 0.2;
+      // Slight scale breath
+      const sc = 1 + s * 0.08;
+      globeRef.current.scale.setScalar(sc);
+    }
+    // Data dots "scatter outward" as globe unfolds
+    if (dotsRef.current) {
+      const scatter = 1 + s * 0.18;
+      dotsRef.current.scale.setScalar(scatter);
+      const mat = dotsRef.current.material as THREE.PointsMaterial;
+      mat.opacity = 0.7 + s * 0.25;
+      mat.size = 0.018 + s * 0.012;
+    }
+    // Wireframe grows brighter — reveals structure
+    if (wireRef.current) {
+      const mat = wireRef.current.material as THREE.MeshBasicMaterial;
+      mat.opacity = 0.28 + s * 0.4;
     }
     // Pulsing pins
-    const t = state.clock.elapsedTime;
     pinsRef.current.forEach((m, i) => {
       if (!m) return;
-      const s = 1 + Math.sin(t * 2 + i * 0.7) * 0.25;
-      m.scale.setScalar(s);
+      const sPulse = 1 + Math.sin(t * 2 + i * 0.7) * 0.25 + s * 0.35;
+      m.scale.setScalar(sPulse);
       const mat = m.material as THREE.MeshBasicMaterial;
-      mat.opacity = 0.18 + Math.max(0, Math.sin(t * 2 + i * 0.7)) * 0.25;
+      mat.opacity = 0.18 + Math.max(0, Math.sin(t * 2 + i * 0.7)) * 0.25 + s * 0.2;
     });
+    // Atmosphere expands + brightens
     if (auraRef.current) {
       const mat = auraRef.current.material as THREE.MeshBasicMaterial;
-      mat.opacity = 0.05 + Math.sin(t * 0.8) * 0.02;
+      mat.opacity = 0.05 + Math.sin(t * 0.8) * 0.02 + s * 0.15;
+      auraRef.current.scale.setScalar(1 + s * 0.12);
     }
   });
 
   return (
     <group ref={globeRef} rotation={[0.35, 0, 0.05]}>
-      {/* Core sphere — deep obsidian */}
       <mesh>
         <sphereGeometry args={[1.5, 96, 96]} />
         <meshPhysicalMaterial
@@ -97,13 +126,11 @@ function Globe({ reduced }: { reduced: boolean }) {
           clearcoatRoughness={0.35}
         />
       </mesh>
-      {/* Wireframe overlay */}
-      <mesh>
+      <mesh ref={wireRef}>
         <sphereGeometry args={[1.508, 48, 48]} />
         <meshBasicMaterial color="#3a2f18" wireframe transparent opacity={0.28} />
       </mesh>
-      {/* Data dots via instanced points */}
-      <points>
+      <points ref={dotsRef}>
         <bufferGeometry>
           <bufferAttribute
             attach="attributes-position"
@@ -112,7 +139,6 @@ function Globe({ reduced }: { reduced: boolean }) {
         </bufferGeometry>
         <pointsMaterial size={0.018} color="#c9a84c" transparent opacity={0.7} sizeAttenuation />
       </points>
-      {/* German pins — gold, glowing, pulsing */}
       {pins.map((p, i) => (
         <group key={i} position={p.pos}>
           <mesh>
@@ -134,7 +160,6 @@ function Globe({ reduced }: { reduced: boolean }) {
           </mesh>
         </group>
       ))}
-      {/* Atmosphere glow */}
       <mesh ref={auraRef}>
         <sphereGeometry args={[1.66, 48, 48]} />
         <meshBasicMaterial color="#c9a84c" transparent opacity={0.06} side={THREE.BackSide} />
@@ -218,7 +243,7 @@ function CameraRig({ reduced }: { reduced: boolean }) {
   return null;
 }
 
-function Scene({ reduced }: { reduced: boolean }) {
+function Scene({ reduced, scrollRef }: { reduced: boolean; scrollRef: ScrollRef }) {
   return (
     <>
       <CameraRig reduced={reduced} />
@@ -226,7 +251,7 @@ function Scene({ reduced }: { reduced: boolean }) {
       <directionalLight position={[5, 5, 5]} intensity={1.3} color="#f0d78c" castShadow />
       <directionalLight position={[-4, -2, -3]} intensity={0.35} color="#3a2f18" />
       <pointLight position={[3, 2.4, 2]} intensity={2.2} color="#c9a84c" distance={9} />
-      <Globe reduced={reduced} />
+      <Globe reduced={reduced} scrollRef={scrollRef} />
       <FloatingHouse reduced={reduced} />
       <Sparkles count={50} scale={7} size={2.2} speed={reduced ? 0 : 0.35} color="#f0d78c" opacity={0.65} />
       <ContactShadows position={[0, -1.7, 0]} opacity={0.5} scale={8} blur={2.6} far={4} color="#000" />
@@ -237,8 +262,39 @@ function Scene({ reduced }: { reduced: boolean }) {
 
 export default function HeroWorld() {
   const reduced = usePrefersReducedMotion();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef({ v: 0 });
+
+  useEffect(() => {
+    if (reduced) return;
+    let raf = 0;
+    const compute = () => {
+      const el = containerRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const vh = window.innerHeight || 1;
+      // 0 while element top is at viewport top; 1 when element bottom leaves viewport top.
+      const total = rect.height + vh;
+      const traveled = vh - rect.top;
+      const p = Math.min(1, Math.max(0, traveled / total));
+      scrollRef.current.v = p;
+    };
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(compute);
+    };
+    compute();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, [reduced]);
+
   return (
-    <div className="relative aspect-square w-full max-w-[560px] sm:max-w-[600px] md:max-w-[640px] mx-auto touch-none select-none">
+    <div ref={containerRef} className="relative aspect-square w-full max-w-[560px] sm:max-w-[600px] md:max-w-[640px] mx-auto touch-none select-none">
       <div
         className="absolute inset-0 rounded-full blur-3xl opacity-40 pointer-events-none"
         style={{ background: "radial-gradient(circle at 60% 40%, hsl(38 55% 55% / 0.55), transparent 65%)" }}
@@ -254,7 +310,7 @@ export default function HeroWorld() {
           gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
           style={{ background: "transparent" }}
         >
-          <Scene reduced={reduced} />
+          <Scene reduced={reduced} scrollRef={scrollRef} />
         </Canvas>
       </Suspense>
       <div className="absolute bottom-4 left-4 md:bottom-6 md:left-6 backdrop-blur-xl bg-background/40 border border-border/40 rounded-full px-3 py-1.5 text-[10px] tracking-[0.24em] uppercase text-muted-foreground">
