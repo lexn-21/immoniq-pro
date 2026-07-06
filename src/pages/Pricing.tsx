@@ -11,6 +11,7 @@ import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { usePageSeo } from "@/hooks/usePageSeo";
+import { LegalFooter } from "@/components/LegalFooter";
 
 const FREE_FEATURES = [
   "1 selbstgenutzte Immobilie",
@@ -300,6 +301,7 @@ export default function Pricing() {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+      <LegalFooter />
+      </div>
   );
 }

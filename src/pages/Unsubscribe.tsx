@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader2, CheckCircle2, XCircle, MailX } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { LegalFooter } from "@/components/LegalFooter";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const SUPABASE_ANON = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string;
@@ -104,6 +105,7 @@ export default function Unsubscribe() {
           </>
         )}
       </Card>
-    </div>
+      <LegalFooter />
+      </div>
   );
 }

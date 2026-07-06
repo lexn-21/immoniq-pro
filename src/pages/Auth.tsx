@@ -11,6 +11,7 @@ import { Logo } from "@/components/Logo";
 import { toast } from "sonner";
 import { z } from "zod";
 import { trackFormSubmit } from "@/lib/analytics";
+import { LegalFooter } from "@/components/LegalFooter";
 
 const emailSchema = z.string().trim().email("Ungültige E-Mail").max(255);
 const passSchema = z.string().min(8, "Mindestens 8 Zeichen").max(72);
@@ -222,7 +223,8 @@ const Auth = () => {
           </p>
         </Card>
       </div>
-    </div>
+      <LegalFooter />
+      </div>
   );
 };
 

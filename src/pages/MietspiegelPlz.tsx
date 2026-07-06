@@ -6,6 +6,7 @@ import { ArrowRight, ArrowUpRight, MapPin, TrendingUp, TrendingDown, Info, Exter
 import { usePageSeo } from "@/hooks/usePageSeo";
 import { MIETSPIEGEL_BY_ZIP, MIETSPIEGEL_ROWS, NATIONAL_AVG_RENT, NATIONAL_AVG_PURCHASE, type MietspiegelRow } from "@/data/mietspiegel";
 import { supabase } from "@/integrations/supabase/client";
+import { LegalFooter } from "@/components/LegalFooter";
 
 const fmt = (n: number, d = 2) => n.toLocaleString("de-DE", { minimumFractionDigits: d, maximumFractionDigits: d });
 const fmt0 = (n: number) => Math.round(n).toLocaleString("de-DE");
@@ -396,6 +397,7 @@ function Stat({
           <span className="text-muted-foreground ml-1">{deltaLabel}</span>
         </div>
       )}
-    </div>
+      <LegalFooter />
+      </div>
   );
 }

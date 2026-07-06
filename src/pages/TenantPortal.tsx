@@ -14,6 +14,7 @@ import { Logo } from "@/components/Logo";
 import { eur, date } from "@/lib/format";
 import { Home, AlertTriangle, Plus, ShieldCheck, Loader2, FileText, Download, Camera, Mic, Square, Sparkles, MessageCircle, Send } from "lucide-react";
 import { toast } from "sonner";
+import { LegalFooter } from "@/components/LegalFooter";
 
 type Resolved = {
   tenant: { full_name: string; email: string | null; phone: string | null };
@@ -454,7 +455,8 @@ const TenantPortal = () => {
           Sicher · DSGVO · End-to-End verschlüsselt · ImmonIQ
         </p>
       </main>
-    </div>
+      <LegalFooter />
+      </div>
   );
 };
 

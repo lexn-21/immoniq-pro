@@ -13,6 +13,7 @@ import {
   Sparkles,
   Mail,
 } from "lucide-react";
+import { LegalFooter } from "@/components/LegalFooter";
 
 const DOWNLOAD_PATH = "/downloads/nebenkostenabrechnung-vorlage-immoniq.xlsx";
 const FILE_NAME = "nebenkostenabrechnung-vorlage-immoniq.xlsx";
@@ -230,6 +231,7 @@ export default function NebenkostenVorlageDownload() {
           Fragen zur Vorlage? Antwortet dir das Team unter hallo@immoniq.xyz.
         </p>
       </section>
-    </div>
+      <LegalFooter />
+      </div>
   );
 }

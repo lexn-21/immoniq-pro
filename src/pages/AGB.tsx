@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { usePageSeo } from "@/hooks/usePageSeo";
+import { LegalFooter } from "@/components/LegalFooter";
 
 export default function AGB() {
   usePageSeo({
@@ -78,6 +79,7 @@ export default function AGB() {
           </p>
         </section>
       </div>
-    </div>
+      <LegalFooter />
+      </div>
   );
 }

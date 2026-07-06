@@ -5,6 +5,7 @@ import { ArrowRight, MapPin, TrendingUp } from "lucide-react";
 import { usePageSeo } from "@/hooks/usePageSeo";
 import { MIETSPIEGEL_ROWS, NATIONAL_AVG_RENT } from "@/data/mietspiegel";
 import { useMemo } from "react";
+import { LegalFooter } from "@/components/LegalFooter";
 
 const fmt = (n: number, d = 2) => n.toLocaleString("de-DE", { minimumFractionDigits: d, maximumFractionDigits: d });
 
@@ -130,6 +131,7 @@ export default function MietspiegelIndex() {
           </div>
         </div>
       </footer>
-    </div>
+      <LegalFooter />
+      </div>
   );
 }

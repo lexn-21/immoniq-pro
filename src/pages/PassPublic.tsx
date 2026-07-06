@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { IdCard, ShieldCheck, Home as HomeIcon, Star, CheckCircle2, ArrowRight, Sparkles } from "lucide-react";
+import { LegalFooter } from "@/components/LegalFooter";
 
 type Pass = {
   pass_code: string;
@@ -154,6 +155,7 @@ export default function PassPublic() {
           <Button asChild className="mt-3 gap-2"><Link to="/">Kostenlos starten <ArrowRight className="h-4 w-4" /></Link></Button>
         </Card>
       </main>
-    </div>
+      <LegalFooter />
+      </div>
   );
 }

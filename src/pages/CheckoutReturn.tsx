@@ -6,6 +6,7 @@ import { CheckCircle2, Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { getStripeEnvironment } from "@/lib/stripe";
+import { LegalFooter } from "@/components/LegalFooter";
 
 export default function CheckoutReturn() {
   const [params] = useSearchParams();
@@ -70,6 +71,7 @@ export default function CheckoutReturn() {
           <Link to="/app">Zum Dashboard</Link>
         </Button>
       </Card>
-    </div>
+      <LegalFooter />
+      </div>
   );
 }
