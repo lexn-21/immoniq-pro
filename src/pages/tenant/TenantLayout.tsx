@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { toast } from "sonner";
+import { LegalFooter } from "@/components/LegalFooter";
 
 export type TenantCtx = {
   tenant: {
