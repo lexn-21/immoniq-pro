@@ -75,17 +75,18 @@ export default function Index() {
             <div className="max-w-xl">
               <div className="inline-flex items-center gap-2 text-[10px] md:text-[11px] tracking-[0.22em] uppercase text-muted-foreground mb-6 md:mb-8">
                 <span className="h-1 w-1 rounded-full bg-primary" />
-                Made in Germany
+                All in One · Made in Germany
               </div>
               <h1 className="font-display font-medium tracking-[-0.035em] leading-[0.95] md:leading-[0.92] text-[clamp(2.5rem,11vw,6rem)]">
-                Deine Immobilie.
+                Jeder m².
                 <br />
                 <span className="text-gradient-gold">Ein Ort.</span>
                 <br />
                 Ein Blick.
               </h1>
               <p className="mt-6 md:mt-8 text-base md:text-xl text-muted-foreground max-w-md leading-relaxed">
-                Verwalten, verstehen, versteuern — verschlüsselt in Deutschland.
+                Grundstück, Wohnung, Mieter, Vermieter, Bürokratie, Steuer —
+                komplett in einer App. Verschlüsselt in Deutschland.
               </p>
               <div className="mt-8 md:mt-10 flex flex-wrap items-center gap-x-5 gap-y-3">
                 <Button asChild size="lg" className="rounded-full bg-foreground text-background hover:bg-foreground/90 px-6 md:px-7 h-12 text-[15px] font-medium">
