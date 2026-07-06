@@ -16,6 +16,41 @@
     <priority>0.9</priority>
   </url>
   <url>
+    <loc>https://immoniq.xyz/mietspiegel</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url><loc>https://immoniq.xyz/mietspiegel/10115</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://immoniq.xyz/mietspiegel/10243</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://immoniq.xyz/mietspiegel/10785</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://immoniq.xyz/mietspiegel/20095</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://immoniq.xyz/mietspiegel/20355</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://immoniq.xyz/mietspiegel/22767</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://immoniq.xyz/mietspiegel/28195</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://immoniq.xyz/mietspiegel/30159</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://immoniq.xyz/mietspiegel/39104</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://immoniq.xyz/mietspiegel/40213</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://immoniq.xyz/mietspiegel/40476</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://immoniq.xyz/mietspiegel/44135</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://immoniq.xyz/mietspiegel/45127</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://immoniq.xyz/mietspiegel/50667</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://immoniq.xyz/mietspiegel/50937</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://immoniq.xyz/mietspiegel/55116</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://immoniq.xyz/mietspiegel/60311</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://immoniq.xyz/mietspiegel/60486</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://immoniq.xyz/mietspiegel/66111</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://immoniq.xyz/mietspiegel/70173</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://immoniq.xyz/mietspiegel/70197</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://immoniq.xyz/mietspiegel/76133</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://immoniq.xyz/mietspiegel/79098</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://immoniq.xyz/mietspiegel/80331</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://immoniq.xyz/mietspiegel/80801</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://immoniq.xyz/mietspiegel/81675</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://immoniq.xyz/mietspiegel/90402</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://immoniq.xyz/mietspiegel/99084</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://immoniq.xyz/mietspiegel/01067</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://immoniq.xyz/mietspiegel/04109</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url>
     <loc>https://immoniq.xyz/markt/vergleich</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
