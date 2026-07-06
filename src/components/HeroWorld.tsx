@@ -356,7 +356,7 @@ export default function HeroWorld() {
         <Canvas
           camera={{ position: [0, 0.4, 7.5], fov: 50 }}
           dpr={isMobile ? [1, 1.5] : [1, 2]}
-          frameloop={inView ? "always" : "never"}
+          frameloop={reduced && introDone ? "never" : inView ? "always" : "never"}
           gl={{ antialias: !isMobile, alpha: true, powerPreference: "high-performance" }}
           style={{ background: "transparent" }}
         >
