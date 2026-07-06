@@ -472,11 +472,12 @@ const Markt = () => {
                     <Link to={`/markt/${l.id}`}>
                       <Card className="overflow-hidden glass hover:shadow-gold transition h-full flex flex-col">
                         <div className="aspect-video bg-muted relative">
-                          {cover ? (
-                            <img src={cover} alt={l.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">Kein Foto</div>
-                          )}
+                          <img
+                            src={cover || "/markt-fallback.jpg"}
+                            alt={l.title}
+                            loading="lazy"
+                            className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                          />
                           <Badge className={`absolute top-2 left-2 backdrop-blur border ${l.kind === "wg_room" ? "bg-violet-500/85 text-white border-violet-500" : "bg-background/85 text-foreground"}`}>
                             {l.kind === "rent" ? "Miete" : l.kind === "sale" ? "Kauf" : "WG-Zimmer"}
                           </Badge>
