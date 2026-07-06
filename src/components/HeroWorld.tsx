@@ -243,7 +243,7 @@ function CameraRig({ reduced }: { reduced: boolean }) {
   return null;
 }
 
-function Scene({ reduced }: { reduced: boolean }) {
+function Scene({ reduced, scrollRef }: { reduced: boolean; scrollRef: ScrollRef }) {
   return (
     <>
       <CameraRig reduced={reduced} />
@@ -251,7 +251,7 @@ function Scene({ reduced }: { reduced: boolean }) {
       <directionalLight position={[5, 5, 5]} intensity={1.3} color="#f0d78c" castShadow />
       <directionalLight position={[-4, -2, -3]} intensity={0.35} color="#3a2f18" />
       <pointLight position={[3, 2.4, 2]} intensity={2.2} color="#c9a84c" distance={9} />
-      <Globe reduced={reduced} />
+      <Globe reduced={reduced} scrollRef={scrollRef} />
       <FloatingHouse reduced={reduced} />
       <Sparkles count={50} scale={7} size={2.2} speed={reduced ? 0 : 0.35} color="#f0d78c" opacity={0.65} />
       <ContactShadows position={[0, -1.7, 0]} opacity={0.5} scale={8} blur={2.6} far={4} color="#000" />
@@ -262,8 +262,39 @@ function Scene({ reduced }: { reduced: boolean }) {
 
 export default function HeroWorld() {
   const reduced = usePrefersReducedMotion();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef({ v: 0 });
+
+  useEffect(() => {
+    if (reduced) return;
+    let raf = 0;
+    const compute = () => {
+      const el = containerRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const vh = window.innerHeight || 1;
+      // 0 while element top is at viewport top; 1 when element bottom leaves viewport top.
+      const total = rect.height + vh;
+      const traveled = vh - rect.top;
+      const p = Math.min(1, Math.max(0, traveled / total));
+      scrollRef.current.v = p;
+    };
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(compute);
+    };
+    compute();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, [reduced]);
+
   return (
-    <div className="relative aspect-square w-full max-w-[560px] sm:max-w-[600px] md:max-w-[640px] mx-auto touch-none select-none">
+    <div ref={containerRef} className="relative aspect-square w-full max-w-[560px] sm:max-w-[600px] md:max-w-[640px] mx-auto touch-none select-none">
       <div
         className="absolute inset-0 rounded-full blur-3xl opacity-40 pointer-events-none"
         style={{ background: "radial-gradient(circle at 60% 40%, hsl(38 55% 55% / 0.55), transparent 65%)" }}
