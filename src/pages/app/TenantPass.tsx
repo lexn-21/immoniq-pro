@@ -6,8 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { IdCard, Copy, ShieldCheck, Home as HomeIcon, Star } from "lucide-react";
+import { IdCard, Copy, ShieldCheck, Home as HomeIcon, Star, Sparkles, Info } from "lucide-react";
 import { toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 
 type Pass = {
   id: string;
@@ -20,6 +21,11 @@ type Pass = {
   rental_history: any[];
   landlord_ratings: any[];
   is_public: boolean;
+  score: number | null;
+  score_computed_at: string | null;
+  score_breakdown: any;
+  dsgvo_consent_at: string | null;
+  dsgvo_consent_withdrawn_at: string | null;
 };
 
 const TenantPass = () => {
