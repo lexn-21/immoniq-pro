@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
-import { ArrowRight, Shield, Lock, MapPin } from "lucide-react";
+import { ArrowRight, Shield, Lock, MapPin, Check, Sparkles } from "lucide-react";
 import { usePageSeo } from "@/hooks/usePageSeo";
 import HeroWorld from "@/components/HeroWorld";
 import LiveActivityTicker from "@/components/LiveActivityTicker";
