@@ -6,6 +6,7 @@ export default function Datenschutz() {
     title: "Datenschutzerklärung · ImmonIQ",
     description: "Datenschutzerklärung von ImmonIQ — wie wir Daten von Privatvermietern verarbeiten. DSGVO-konform, transparent, mit Auftragsverarbeitern aus der EU.",
     canonicalPath: "/datenschutz",
+    ogDescription: "DSGVO-konforme Datenschutzerklärung von ImmonIQ: transparente Verarbeitung, EU-Auftragsverarbeiter, Rechte der Betroffenen.",
   });
   return (
     <div className="min-h-screen bg-background py-16 px-6">

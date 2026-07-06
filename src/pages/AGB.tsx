@@ -6,6 +6,7 @@ export default function AGB() {
     title: "Allgemeine Geschäftsbedingungen · ImmonIQ",
     description: "AGB von ImmonIQ: Vertragsschluss, 30-Tage-Testphase, monatliche Laufzeit, Kündigung und Nutzungsbedingungen für Privatvermieter.",
     canonicalPath: "/agb",
+    ogDescription: "AGB von ImmonIQ: Vertragsschluss, 30-Tage-Testphase, monatliche Laufzeit und Kündigung für Privatvermieter.",
   });
   return (
     <div className="min-h-screen bg-background py-16 px-6">
