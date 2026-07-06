@@ -1,0 +1,169 @@
+{
+  "version": 1,
+  "sdk_version": "0.20.0",
+  "path": "/functions/v1/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://ikgwsdviewtvaitlpijg.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "immoniq-mcp",
+      "version": "0.1.0",
+      "title": "ImmonIQ"
+    },
+    "tools": [
+      {
+        "name": "list_properties",
+        "title": "Immobilien auflisten",
+        "description": "Listet alle Immobilien des angemeldeten Vermieters mit Adresse, Baujahr und Kaufpreis.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_tenants",
+        "title": "Mieter auflisten",
+        "description": "Listet Mieter des angemeldeten Vermieters. Optional nach Objekt-ID gefiltert.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "property_id": {
+              "type": "string",
+              "format": "uuid",
+              "description": "Optional: nur Mieter dieses Objekts"
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_payments",
+        "title": "Zahlungen auflisten",
+        "description": "Listet die letzten Zahlungen (Mieteingänge, NK-Vorauszahlungen) des Vermieters.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200,
+              "description": "Maximale Anzahl (Standard 50)"
+            },
+            "since": {
+              "type": "string",
+              "description": "Nur Zahlungen ab diesem Datum (YYYY-MM-DD)"
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "create_expense",
+        "title": "Ausgabe erfassen",
+        "description": "Erfasst eine neue Ausgabe (Handwerker, Versicherung, Zinsen etc.) für ein Objekt.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "property_id": {
+              "type": "string",
+              "format": "uuid",
+              "description": "Objekt-ID (aus list_properties)"
+            },
+            "spent_on": {
+              "type": "string",
+              "description": "Datum YYYY-MM-DD"
+            },
+            "amount": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "description": "Betrag in Euro"
+            },
+            "description": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Kurzbeschreibung"
+            },
+            "vendor": {
+              "type": "string",
+              "description": "Rechnungssteller"
+            },
+            "category": {
+              "type": "string",
+              "enum": [
+                "immediate",
+                "depreciable",
+                "financing",
+                "utilities_passthrough",
+                "other"
+              ],
+              "description": "Steuerkategorie"
+            }
+          },
+          "required": [
+            "property_id",
+            "spent_on",
+            "amount",
+            "description"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_tasks",
+        "title": "Aufgaben auflisten",
+        "description": "Listet offene Aufgaben des Vermieters (Fristen, TODOs).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "include_done": {
+              "type": "boolean",
+              "description": "Auch erledigte Aufgaben anzeigen"
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}

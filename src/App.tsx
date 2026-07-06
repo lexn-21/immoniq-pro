@@ -15,6 +15,7 @@ import { PWAInstallPrompt } from "./components/PWAInstallPrompt";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import OAuthConsent from "./pages/OAuthConsent";
 
 // Lazy: alles andere — verkleinert das Initial-Bundle drastisch und
 // verhindert Mobile-Timeouts beim ersten Laden.
@@ -110,6 +111,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
               <Route path="/advisor/:token" element={<AdvisorView />} />
               <Route path="/berater/einladung/:token" element={<AdvisorAcceptInvite />} />
               <Route path="/berater" element={<ProtectedRoute><AdvisorDashboard /></ProtectedRoute>} />
