@@ -5,6 +5,7 @@ import { Environment, Float } from "@react-three/drei";
 import { Suspense } from "react";
 import * as THREE from "three";
 import { useRef as useR } from "react";
+import { useInView } from "@/hooks/useInView";
 
 /**
  * PropertyShowcase — Apple-style pinned scroll section.
