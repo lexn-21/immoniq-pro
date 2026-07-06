@@ -28,7 +28,7 @@ const Advisor = () => {
   const load = async () => {
     const [links, dir, mand, inv] = await Promise.all([
       supabase.from("advisor_links").select("*").order("created_at", { ascending: false }),
-      supabase.from("advisor_directory").select("*").order("partner_status", { ascending: true }).limit(5),
+      supabase.from("advisor_directory_public" as any).select("*").order("partner_status", { ascending: true }).limit(5),
       supabase.from("advisor_mandates").select("*").order("created_at", { ascending: false }),
       supabase.from("advisor_invites").select("*").is("accepted_at", null).order("created_at", { ascending: false }),
     ]);
