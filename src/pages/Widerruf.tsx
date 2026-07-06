@@ -6,6 +6,7 @@ export default function Widerruf() {
     title: "Widerrufsbelehrung · ImmonIQ",
     description: "14-tägiges Widerrufsrecht für Verbraucher bei ImmonIQ — Belehrung, Form, Fristen und Muster-Widerrufsformular.",
     canonicalPath: "/widerruf",
+    ogDescription: "14-tägiges Widerrufsrecht bei ImmonIQ: Belehrung, Fristen und Muster-Widerrufsformular für Verbraucher.",
   });
   return (
     <div className="min-h-screen bg-background py-16 px-6">
