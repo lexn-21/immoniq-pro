@@ -26,6 +26,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
 import { useTicketCounts } from "@/hooks/useTicketCounts";
+import { LegalFooter } from "@/components/LegalFooter";
 
 type Persona = "privat" | "vermieter" | "suchender" | "pro";
 
