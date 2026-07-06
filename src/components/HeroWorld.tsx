@@ -314,7 +314,7 @@ export default function HeroWorld() {
   const [inViewRef, inView] = useInView<HTMLDivElement>("200px");
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef({ v: 0 });
-  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+  const [isMobile] = useState(() => typeof window !== "undefined" && window.innerWidth < 768);
   const [introDone, setIntroDone] = useState(false);
 
   useEffect(() => {
