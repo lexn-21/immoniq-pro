@@ -2,6 +2,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Float, Environment, Sparkles, ContactShadows } from "@react-three/drei";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
+import { useInView } from "@/hooks/useInView";
 
 /**
  * HeroWorld — Apple-grade 3D stage.
