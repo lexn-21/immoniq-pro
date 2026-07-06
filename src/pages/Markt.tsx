@@ -484,6 +484,10 @@ const Markt = () => {
                               fetchpriority="low"
                               width={640}
                               height={360}
+                              onError={(e) => {
+                                e.currentTarget.src = "/markt-fallback.jpg";
+                                e.currentTarget.alt = "Wohnungsvorschau im ImmonIQ Markt";
+                              }}
                               className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                             />
                           ) : (
