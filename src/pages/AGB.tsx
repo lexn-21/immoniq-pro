@@ -26,8 +26,20 @@ export default function AGB() {
         </section>
 
         <section className="space-y-2 text-sm">
-          <h2 className="text-lg font-semibold">§ 3 Laufzeit & Kündigung</h2>
-          <p>Monatliche Laufzeit, kündbar zum Monatsende ohne Angabe von Gründen — direkt in den App-Einstellungen.</p>
+          <h2 className="text-lg font-semibold">§ 3 Preise, Zahlung & Fälligkeit</h2>
+          <p>
+            Alle Preise verstehen sich in Euro inkl. der jeweils gesetzlichen Umsatzsteuer (derzeit
+            19 % MwSt). Die Zahlung erfolgt monatlich oder jährlich im Voraus per SEPA-Lastschrift,
+            Kreditkarte oder anderen von unserem Zahlungsdienstleister <strong>Stripe Payments
+            Europe Ltd.</strong> (Dublin, IE) angebotenen Verfahren. Rechnungen werden elektronisch
+            im Kundenbereich bereitgestellt. Bei Zahlungsverzug behalten wir uns die Sperrung des
+            Zugangs nach vorheriger Mahnung vor.
+          </p>
+        </section>
+
+        <section className="space-y-2 text-sm">
+          <h2 className="text-lg font-semibold">§ 4 Laufzeit & Kündigung</h2>
+          <p>Monatliche Laufzeit, kündbar zum Monatsende ohne Angabe von Gründen — direkt in den App-Einstellungen. Jahresabonnements verlängern sich um jeweils einen Monat, sofern nicht bis zum Ende der Laufzeit gekündigt wird (§ 309 Nr. 9 BGB).</p>
         </section>
 
         <section className="space-y-2 text-sm">
