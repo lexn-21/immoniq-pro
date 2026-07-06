@@ -3,7 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
 import { ArrowRight, Shield, Lock, MapPin } from "lucide-react";
 import { usePageSeo } from "@/hooks/usePageSeo";
-import HeroStage from "@/components/HeroStage";
+import HeroWorld from "@/components/HeroWorld";
+import LiveActivityTicker from "@/components/LiveActivityTicker";
+import PropertyShowcase from "@/components/PropertyShowcase";
+import ScarcityBand from "@/components/ScarcityBand";
 import { trackCta } from "@/lib/analytics";
 import { motion } from "framer-motion";
 import QuickStartFlow from "@/components/QuickStartFlow";
@@ -106,13 +109,19 @@ export default function Index() {
               </p>
             </div>
 
-            {/* Right: premium animated stage — Radar + DE-Pins + Data-Cards */}
+            {/* Right: WOW — 3D globe + floating house */}
             <div className="relative">
-              <HeroStage />
+              <HeroWorld />
             </div>
           </div>
         </div>
       </section>
+
+      {/* FOMO Live-Ticker */}
+      <LiveActivityTicker />
+
+      {/* Apple-Scroll: 3D Immobilie */}
+      <PropertyShowcase />
 
       {/* USP — drei Worte, drei Zeilen, viel Luft */}
       <section id="produkt" className="border-t border-border/40">
@@ -178,6 +187,10 @@ export default function Index() {
           </div>
         </div>
       </section>
+
+      {/* SCARCITY — Founders Access */}
+      <ScarcityBand />
+
 
       {/* PREISE — bewusst klein, ehrlich, ohne Lautstärke */}
       <section id="preise" className="border-t border-border/40">
