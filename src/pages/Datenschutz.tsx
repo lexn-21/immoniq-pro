@@ -14,11 +14,21 @@ export default function Datenschutz() {
       <div className="max-w-2xl mx-auto space-y-6">
         <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">← Zurück</Link>
         <h1 className="text-3xl font-bold">Datenschutzerklärung</h1>
-        <p className="text-xs text-muted-foreground">Stand: Juni 2026</p>
+        <p className="text-xs text-muted-foreground">Stand: {new Date().toLocaleDateString("de-DE", { month: "long", year: "numeric" })}</p>
 
         <section className="space-y-2 text-sm">
           <h2 className="text-lg font-semibold">1. Verantwortlicher</h2>
-          <p>Leon Boomgaarden, Kastanienallee 13, 59320 Ennigerloh — leonboomgaarden@gmail.com</p>
+          <p>
+            Leon Boomgaarden (ENTERVENTUS)<br />
+            Kastanienallee 13, 59320 Ennigerloh, Deutschland<br />
+            Telefon: +49 152 28943502 · E-Mail:{" "}
+            <a href="mailto:leonboomgaarden@gmail.com" className="text-primary underline">leonboomgaarden@gmail.com</a><br />
+            USt-IdNr.: DE365353142
+          </p>
+          <p className="text-muted-foreground">
+            Ein Datenschutzbeauftragter ist gesetzlich nicht erforderlich; Anfragen richte bitte
+            an die oben genannte E-Mail-Adresse.
+          </p>
         </section>
 
         <section className="space-y-2 text-sm">
