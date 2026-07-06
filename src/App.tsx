@@ -16,6 +16,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import OAuthConsent from "./pages/OAuthConsent";
+const TenantQrPoster = lazy(() => import("./pages/TenantQrPoster"));
 
 // Lazy: alles andere — verkleinert das Initial-Bundle drastisch und
 // verhindert Mobile-Timeouts beim ersten Laden.
@@ -112,6 +113,7 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
+              <Route path="/mieter-qr/:tenantId" element={<ProtectedRoute><TenantQrPoster /></ProtectedRoute>} />
               <Route path="/advisor/:token" element={<AdvisorView />} />
               <Route path="/berater/einladung/:token" element={<AdvisorAcceptInvite />} />
               <Route path="/berater" element={<ProtectedRoute><AdvisorDashboard /></ProtectedRoute>} />
