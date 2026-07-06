@@ -79,6 +79,8 @@ const Tickets = lazy(() => import("./pages/app/Tickets"));
 const PassPublic = lazy(() => import("./pages/PassPublic"));
 const Connect = lazy(() => import("./pages/Connect"));
 const NebenkostenVorlage = lazy(() => import("./pages/NebenkostenVorlage"));
+const MietspiegelIndex = lazy(() => import("./pages/MietspiegelIndex"));
+const MietspiegelPlz = lazy(() => import("./pages/MietspiegelPlz"));
 const Messenger = lazy(() => import("./pages/app/Messenger"));
 const Chat = lazy(() => import("./pages/app/Chat"));
 const Profile = lazy(() => import("./pages/app/Profile"));
@@ -136,6 +138,8 @@ const App = () => (
               <Route path="/connect" element={<Connect />} />
               <Route path="/verbinden-ai" element={<Connect />} />
               <Route path="/nebenkostenabrechnung-vorlage" element={<NebenkostenVorlage />} />
+              <Route path="/mietspiegel" element={<MietspiegelIndex />} />
+              <Route path="/mietspiegel/:plz" element={<MietspiegelPlz />} />
               <Route path="/markt" element={<Markt />} />
               <Route path="/markt/vergleich" element={<MarktVergleich />} />
               <Route path="/markt/:id" element={<MarktDetail />} />
