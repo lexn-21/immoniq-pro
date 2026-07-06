@@ -45,7 +45,7 @@ function usePrefersReducedMotion() {
 
 type ScrollRef = React.MutableRefObject<{ v: number }>;
 
-function Globe({ reduced, scrollRef }: { reduced: boolean; scrollRef: ScrollRef }) {
+function Globe({ reduced, scrollRef, isMobile }: { reduced: boolean; scrollRef: ScrollRef; isMobile: boolean }) {
   const globeRef = useRef<THREE.Group>(null);
   const dotsRef = useRef<THREE.Points>(null);
   const wireRef = useRef<THREE.Mesh>(null);
