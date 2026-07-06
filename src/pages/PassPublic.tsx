@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { IdCard, ShieldCheck, Home as HomeIcon, Star, CheckCircle2, ArrowRight } from "lucide-react";
+import { IdCard, ShieldCheck, Home as HomeIcon, Star, CheckCircle2, ArrowRight, Sparkles } from "lucide-react";
 
 type Pass = {
   pass_code: string;
@@ -16,6 +16,8 @@ type Pass = {
   rental_history: any[];
   landlord_ratings: any[];
   is_public: boolean;
+  score: number | null;
+  score_computed_at: string | null;
 };
 
 export default function PassPublic() {
