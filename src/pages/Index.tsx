@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
-import { ArrowRight, Shield, Lock, MapPin } from "lucide-react";
+import { ArrowRight, Shield, Lock, MapPin, Check, Sparkles } from "lucide-react";
 import { usePageSeo } from "@/hooks/usePageSeo";
 import HeroWorld from "@/components/HeroWorld";
 import LiveActivityTicker from "@/components/LiveActivityTicker";
@@ -111,9 +111,63 @@ export default function Index() {
               </p>
             </div>
 
-            {/* Right: WOW — 3D globe + floating house */}
+            {/* Right: WOW — 3D globe + floating house + CTA-Box */}
             <div className="relative">
               <HeroWorld />
+
+              {/* CTA-Box — sibling of the Canvas, not inside it → keine 3D-Kosten.
+                  Desktop: schwebt unten rechts über dem Globus.
+                  Tablet/Mobile: rückt darunter in den Textfluss. */}
+              <aside
+                aria-label="Schnellstart"
+                className="
+                  mt-6 lg:mt-0
+                  lg:absolute lg:right-0 lg:bottom-2 xl:bottom-6
+                  lg:w-[280px] xl:w-[300px]
+                  rounded-2xl border border-border/50
+                  bg-background/70 backdrop-blur-xl
+                  shadow-[0_20px_60px_-20px_hsl(0_0%_0%/0.6)]
+                  p-5 xl:p-6
+                  z-10
+                "
+              >
+                <div className="flex items-center gap-2 text-[10px] tracking-[0.22em] uppercase text-muted-foreground mb-3">
+                  <Sparkles className="h-3 w-3 text-primary" aria-hidden="true" />
+                  Sofort loslegen
+                </div>
+                <div className="flex items-baseline gap-1.5 mb-3">
+                  <span className="font-display text-3xl xl:text-4xl tracking-[-0.03em] leading-none">0 €</span>
+                  <span className="text-xs text-muted-foreground">/ für immer</span>
+                </div>
+                <ul className="space-y-2 mb-5 text-[13px] text-foreground/85">
+                  <li className="flex items-start gap-2">
+                    <Check className="h-4 w-4 mt-0.5 shrink-0 text-primary" aria-hidden="true" />
+                    Objekte, Mieter & Belege in einer App
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-4 w-4 mt-0.5 shrink-0 text-primary" aria-hidden="true" />
+                    DSGVO · verschlüsselt in Deutschland
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-4 w-4 mt-0.5 shrink-0 text-primary" aria-hidden="true" />
+                    In 60 Sekunden startklar
+                  </li>
+                </ul>
+                <Button
+                  asChild
+                  className="w-full rounded-full bg-foreground text-background hover:bg-foreground/90 h-11 text-[14px] font-medium"
+                >
+                  <Link
+                    to="/auth"
+                    onClick={() => trackCta("hero_cta_box", { source: "index_hero_box" })}
+                  >
+                    Kostenlos starten <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
+                  </Link>
+                </Button>
+                <p className="mt-3 text-[11px] text-muted-foreground text-center">
+                  Keine Kreditkarte erforderlich
+                </p>
+              </aside>
             </div>
           </div>
         </div>
