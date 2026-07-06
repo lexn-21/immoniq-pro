@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Logo } from "@/components/Logo";
 import { toast } from "sonner";
 import { z } from "zod";
+import { trackFormSubmit } from "@/lib/analytics";
 
 const emailSchema = z.string().trim().email("Ungültige E-Mail").max(255);
 const passSchema = z.string().min(8, "Mindestens 8 Zeichen").max(72);
@@ -101,7 +102,11 @@ const Auth = () => {
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({ email: ev.data, password: pv.data });
     setLoading(false);
-    if (error) return toast.error(error.message === "Invalid login credentials" ? "E-Mail oder Passwort falsch." : error.message);
+    if (error) {
+      void trackFormSubmit("signin", { metadata: { ok: false, reason: error.message } });
+      return toast.error(error.message === "Invalid login credentials" ? "E-Mail oder Passwort falsch." : error.message);
+    }
+    void trackFormSubmit("signin", { metadata: { ok: true } });
     await tryClaim();
     toast.success("Willkommen zurück.");
     navigate(redirect, { replace: true });
@@ -126,11 +131,13 @@ const Auth = () => {
     });
     setLoading(false);
     if (error) {
+      void trackFormSubmit("signup", { metadata: { ok: false, reason: error.message } });
       if (error.message.toLowerCase().includes("already")) return toast.error("Diese E-Mail ist bereits registriert.");
       if (error.message.toLowerCase().includes("pwned") || error.message.toLowerCase().includes("compromised"))
         return toast.error("Dieses Passwort wurde in Datenlecks gefunden. Bitte ein neues wählen.");
       return toast.error(error.message);
     }
+    void trackFormSubmit("signup", { metadata: { ok: true } });
     // Fire-and-forget Welcome-Mail (idempotent über E-Mail-Adresse)
     supabase.functions.invoke("send-transactional-email", {
       body: {

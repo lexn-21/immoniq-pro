@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { usePageSeo } from "@/hooks/usePageSeo";
 import { supabase } from "@/integrations/supabase/client";
+import { trackDownload, trackCta } from "@/lib/analytics";
 import {
   CheckCircle2,
   Download,
@@ -52,13 +53,19 @@ export default function NebenkostenVorlageDownload() {
     if (logged.current) return;
     logged.current = true;
 
-    // Fire-and-forget Tracking.
+    // Legacy first-party log (bleibt bestehen für Backwards-Compat).
     void supabase.from("download_events").insert({
       file_path: DOWNLOAD_PATH,
       slug: SLUG,
       source,
       referrer: typeof document !== "undefined" ? document.referrer || null : null,
       user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
+    });
+
+    // Neues, einheitliches Event ins Analytics-Setup.
+    void trackDownload(FILE_NAME, {
+      source,
+      metadata: { slug: SLUG, file_path: DOWNLOAD_PATH, trigger: "auto" },
     });
 
     // Download nach ~400 ms auslösen, damit UI erst rendert.
@@ -130,7 +137,16 @@ export default function NebenkostenVorlageDownload() {
               </div>
             </div>
           </div>
-          <a href={DOWNLOAD_PATH} download={FILE_NAME}>
+          <a
+            href={DOWNLOAD_PATH}
+            download={FILE_NAME}
+            onClick={() =>
+              trackDownload(FILE_NAME, {
+                source,
+                metadata: { slug: SLUG, trigger: "manual_retry" },
+              })
+            }
+          >
             <Button size="sm" className="gap-2">
               <Download className="w-4 h-4" />
               Erneut laden
@@ -183,13 +199,23 @@ export default function NebenkostenVorlageDownload() {
                 DSGVO-konform per E-Mail an den Mieter. 30 Tage kostenlos.
               </p>
               <div className="flex flex-wrap gap-2">
-                <Link to="/auth">
+                <Link
+                  to="/auth"
+                  onClick={() =>
+                    trackCta("signup_from_download", { source, metadata: { slug: SLUG } })
+                  }
+                >
                   <Button size="sm" className="gap-2">
                     Jetzt kostenlos testen
                     <ArrowRight className="w-4 h-4" />
                   </Button>
                 </Link>
-                <Link to="/preise">
+                <Link
+                  to="/preise"
+                  onClick={() =>
+                    trackCta("pricing_from_download", { source, metadata: { slug: SLUG } })
+                  }
+                >
                   <Button size="sm" variant="outline">
                     Preise ansehen
                   </Button>

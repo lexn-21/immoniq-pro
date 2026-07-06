@@ -4,6 +4,7 @@ import { Logo } from "@/components/Logo";
 import { ArrowRight, Shield, Lock, MapPin } from "lucide-react";
 import { usePageSeo } from "@/hooks/usePageSeo";
 import PropertyGlobeLazy from "@/components/PropertyGlobeLazy";
+import { trackCta } from "@/lib/analytics";
 
 const PLANS = [
   { name: "Privat", price: "0", unit: "€", note: "für immer", cta: "Kostenlos starten", to: "/auth", highlight: false },
@@ -82,9 +83,18 @@ export default function Index() {
               </p>
               <div className="mt-10 flex items-center gap-4">
                 <Button asChild size="lg" className="rounded-full bg-foreground text-background hover:bg-foreground/90 px-7 h-12 text-[15px] font-medium">
-                  <Link to="/auth">Kostenlos starten <ArrowRight className="ml-2 h-4 w-4" /></Link>
+                  <Link
+                    to="/auth"
+                    onClick={() => trackCta("hero_signup", { source: "index_hero" })}
+                  >
+                    Kostenlos starten <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
                 </Button>
-                <Link to="/markt" className="text-[15px] text-foreground/80 hover:text-foreground story-link">
+                <Link
+                  to="/markt"
+                  onClick={() => trackCta("hero_market", { source: "index_hero" })}
+                  className="text-[15px] text-foreground/80 hover:text-foreground story-link"
+                >
                   Markt ansehen
                 </Link>
               </div>
