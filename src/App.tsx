@@ -135,6 +135,7 @@ const App = () => (
               <Route path="/pass/:code" element={<PassPublic />} />
               <Route path="/connect" element={<Connect />} />
               <Route path="/verbinden-ai" element={<Connect />} />
+              <Route path="/nebenkostenabrechnung-vorlage" element={<NebenkostenVorlage />} />
               <Route path="/markt" element={<Markt />} />
               <Route path="/markt/vergleich" element={<MarktVergleich />} />
               <Route path="/markt/:id" element={<MarktDetail />} />
