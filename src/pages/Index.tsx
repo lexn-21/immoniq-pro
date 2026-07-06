@@ -188,6 +188,10 @@ export default function Index() {
         </div>
       </section>
 
+      {/* SCARCITY — Founders Access */}
+      <ScarcityBand />
+
+
       {/* PREISE — bewusst klein, ehrlich, ohne Lautstärke */}
       <section id="preise" className="border-t border-border/40">
         <div className="container py-16 md:py-24 max-w-3xl">
