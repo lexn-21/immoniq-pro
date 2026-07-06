@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { IdCard, ShieldCheck, Home as HomeIcon, Star, CheckCircle2, ArrowRight } from "lucide-react";
+import { IdCard, ShieldCheck, Home as HomeIcon, Star, CheckCircle2, ArrowRight, Sparkles } from "lucide-react";
 
 type Pass = {
   pass_code: string;
@@ -16,6 +16,8 @@ type Pass = {
   rental_history: any[];
   landlord_ratings: any[];
   is_public: boolean;
+  score: number | null;
+  score_computed_at: string | null;
 };
 
 export default function PassPublic() {
@@ -28,7 +30,7 @@ export default function PassPublic() {
       if (!code) return setState("missing");
       const { data, error } = await supabase
         .from("tenant_pass" as any)
-        .select("pass_code,display_name,headline,verified_income,verified_schufa,verified_mietschuldenfrei,rental_history,landlord_ratings,is_public")
+        .select("pass_code,display_name,headline,verified_income,verified_schufa,verified_mietschuldenfrei,rental_history,landlord_ratings,is_public,score,score_computed_at")
         .eq("pass_code", code)
         .maybeSingle();
       if (error || !data) return setState("missing");
@@ -86,6 +88,23 @@ export default function PassPublic() {
           {p.headline && <p className="text-muted-foreground mt-1">{p.headline}</p>}
           <div className="mt-3 font-mono text-xs text-muted-foreground">#{p.pass_code}</div>
         </Card>
+
+        {p.score != null && (
+          <Card className="p-6 bg-gradient-to-br from-emerald-500/10 to-blue-500/5 border-emerald-500/30">
+            <div className="flex items-center justify-between gap-4 flex-wrap">
+              <div className="flex items-center gap-3">
+                <Sparkles className="h-8 w-8 text-emerald-600" />
+                <div>
+                  <div className="text-xs uppercase tracking-wider text-muted-foreground">ImmonIQ Score</div>
+                  <div className="text-4xl font-bold text-emerald-600 leading-none">{p.score} <span className="text-lg text-muted-foreground font-normal">/ 1000</span></div>
+                </div>
+              </div>
+              <div className="text-right text-xs text-muted-foreground max-w-[220px]">
+                Transparent berechnet aus verifizierten Angaben — mit Einwilligung des Mieters (Art. 22 DSGVO).
+              </div>
+            </div>
+          </Card>
+        )}
 
         <Card className="p-5">
           <h2 className="font-semibold mb-3 flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary" />Bonität & Verifizierungen</h2>

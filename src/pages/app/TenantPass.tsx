@@ -6,8 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { IdCard, Copy, ShieldCheck, Home as HomeIcon, Star } from "lucide-react";
+import { IdCard, Copy, ShieldCheck, Home as HomeIcon, Star, Sparkles, Info } from "lucide-react";
 import { toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 
 type Pass = {
   id: string;
@@ -20,12 +21,20 @@ type Pass = {
   rental_history: any[];
   landlord_ratings: any[];
   is_public: boolean;
+  score: number | null;
+  score_computed_at: string | null;
+  score_breakdown: any;
+  dsgvo_consent_at: string | null;
+  dsgvo_consent_withdrawn_at: string | null;
 };
 
 const TenantPass = () => {
   const [pass, setPass] = useState<Pass | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [consentOpen, setConsentOpen] = useState(false);
+  const [consentChecked, setConsentChecked] = useState(false);
+  const [computing, setComputing] = useState(false);
 
   const ensurePass = async () => {
     setLoading(true);
@@ -52,6 +61,39 @@ const TenantPass = () => {
     setSaving(false);
     if (error) return toast.error(error.message);
     setPass(data as any);
+  };
+
+  const grantConsent = async () => {
+    if (!pass || !consentChecked) return;
+    setComputing(true);
+    const { error: gErr } = await supabase.rpc("grant_score_consent" as any, {
+      _pass_id: pass.id, _ip: null, _ua: navigator.userAgent,
+    });
+    if (gErr) { setComputing(false); return toast.error(gErr.message); }
+    const { error: cErr } = await supabase.rpc("compute_immoniq_score" as any, { _pass_id: pass.id });
+    if (cErr) { setComputing(false); return toast.error(cErr.message); }
+    setConsentOpen(false); setConsentChecked(false); setComputing(false);
+    toast.success("ImmonIQ Score berechnet");
+    await ensurePass();
+  };
+
+  const withdrawConsent = async () => {
+    if (!pass) return;
+    if (!confirm("Score-Berechnung widerrufen? Dein Score wird gelöscht.")) return;
+    const { error } = await supabase.rpc("withdraw_score_consent" as any, { _pass_id: pass.id });
+    if (error) return toast.error(error.message);
+    toast.success("Einwilligung widerrufen, Score gelöscht");
+    await ensurePass();
+  };
+
+  const recomputeScore = async () => {
+    if (!pass) return;
+    setComputing(true);
+    const { error } = await supabase.rpc("compute_immoniq_score" as any, { _pass_id: pass.id });
+    setComputing(false);
+    if (error) return toast.error(error.message);
+    toast.success("Score neu berechnet");
+    await ensurePass();
   };
 
   const publicUrl = pass ? `${window.location.origin}/pass/${pass.pass_code}` : "";
@@ -100,6 +142,102 @@ const TenantPass = () => {
           </div>
         </div>
       </Card>
+
+      {/* ImmonIQ Score – DSGVO Art. 22 konform */}
+      <Card className="p-5 bg-gradient-to-br from-emerald-500/5 to-blue-500/5 border-emerald-500/20">
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div className="flex items-start gap-3">
+            <Sparkles className="h-6 w-6 text-emerald-600 mt-1" />
+            <div>
+              <h2 className="font-semibold text-lg">ImmonIQ Score</h2>
+              <p className="text-xs text-muted-foreground max-w-md mt-0.5">
+                Transparenter Bonitäts-Score (0–1000) aus deinen verifizierten Angaben.
+                Wird nur mit deiner ausdrücklichen Zustimmung berechnet (Art. 22 DSGVO).
+              </p>
+            </div>
+          </div>
+          {pass.score != null && pass.dsgvo_consent_at && !pass.dsgvo_consent_withdrawn_at ? (
+            <div className="text-right">
+              <div className="text-3xl font-bold text-emerald-600">{pass.score}</div>
+              <div className="text-[10px] text-muted-foreground">/ 1000</div>
+            </div>
+          ) : null}
+        </div>
+
+        {pass.dsgvo_consent_at && !pass.dsgvo_consent_withdrawn_at ? (
+          <div className="mt-4 space-y-3">
+            {pass.score_breakdown && (
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-2 text-xs">
+                {[
+                  ["Basis", pass.score_breakdown.baseline],
+                  ["Einkommen", pass.score_breakdown.income_pts],
+                  ["SCHUFA", pass.score_breakdown.schufa_pts],
+                  ["Mietschuldenfrei", pass.score_breakdown.mietschuldenfrei_pts],
+                  ["Bewertungen", pass.score_breakdown.ratings_pts + pass.score_breakdown.history_pts],
+                ].map(([l, v]) => (
+                  <div key={l as string} className="bg-background/60 rounded p-2 text-center border">
+                    <div className="text-muted-foreground">{l}</div>
+                    <div className="font-semibold">{v as number}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div className="flex gap-2 flex-wrap">
+              <Button size="sm" variant="outline" onClick={recomputeScore} disabled={computing}>
+                Score neu berechnen
+              </Button>
+              <Button size="sm" variant="ghost" className="text-destructive" onClick={withdrawConsent}>
+                Einwilligung widerrufen
+              </Button>
+            </div>
+            <p className="text-[11px] text-muted-foreground flex items-start gap-1.5">
+              <Info className="h-3 w-3 mt-0.5 shrink-0" />
+              Der Score ist deterministisch, transparent und keine vollautomatisierte Entscheidung.
+              Vermieter sehen den Score nur, wenn du deinen Pass teilst. Du kannst jederzeit widerrufen.
+            </p>
+          </div>
+        ) : (
+          <div className="mt-4">
+            <Button onClick={() => setConsentOpen(true)} className="gap-2">
+              <Sparkles className="h-4 w-4" /> Score jetzt berechnen
+            </Button>
+          </div>
+        )}
+      </Card>
+
+      <Dialog open={consentOpen} onOpenChange={setConsentOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Einwilligung: ImmonIQ Score</DialogTitle>
+            <DialogDescription>Nach Art. 6 Abs. 1 lit. a und Art. 22 DSGVO</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 text-sm">
+            <p>
+              ImmonIQ berechnet aus deinen verifizierten Angaben (Einkommen, SCHUFA, Mietschuldenfreiheit,
+              Wohnhistorie, Vermieter-Bewertungen) einen Bonitäts-Score von 0–1000.
+            </p>
+            <div className="bg-muted p-3 rounded text-xs space-y-2">
+              <p><strong>So funktioniert der Score:</strong> Deterministische Formel — keine „Black-Box-KI". Jeder Punkt ist einer Kategorie zugeordnet und für dich einsehbar.</p>
+              <p><strong>Deine Rechte:</strong> Widerruf jederzeit (Score wird gelöscht). Recht auf menschliche Überprüfung. Auskunft über gespeicherte Daten (Art. 15 DSGVO).</p>
+              <p><strong>Wer sieht ihn:</strong> Nur wenn du deinen Pass explizit teilst (öffentlicher Link mit Pass-Code).</p>
+            </div>
+            <label className="flex items-start gap-2 cursor-pointer">
+              <input type="checkbox" checked={consentChecked} onChange={(e) => setConsentChecked(e.target.checked)} className="mt-1" />
+              <span className="text-sm">
+                Ich willige ausdrücklich in die Berechnung meines ImmonIQ Scores nach Art. 22 DSGVO ein und
+                bestätige, dass ich die <a href="/legal" target="_blank" className="underline">Datenschutzerklärung</a> gelesen habe.
+              </span>
+            </label>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setConsentOpen(false)}>Abbrechen</Button>
+            <Button onClick={grantConsent} disabled={!consentChecked || computing}>
+              {computing ? "Berechne…" : "Einwilligen & berechnen"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
 
       <Card className="p-5 space-y-4">
         <h2 className="font-semibold">Basis</h2>

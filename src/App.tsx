@@ -80,6 +80,7 @@ const PassPublic = lazy(() => import("./pages/PassPublic"));
 const Messenger = lazy(() => import("./pages/app/Messenger"));
 const Chat = lazy(() => import("./pages/app/Chat"));
 const Profile = lazy(() => import("./pages/app/Profile"));
+const TenantPass = lazy(() => import("./pages/app/TenantPass"));
 
 const TenantLayout = lazy(() => import("./pages/tenant/TenantLayout"));
 const TenantHome = lazy(() => import("./pages/tenant/TenantHome"));
@@ -181,7 +182,9 @@ const App = () => (
                 <Route path="profile-seeker" element={<Profile />} />
                 <Route path="pass" element={<Profile />} />
                 <Route path="seeker" element={<Profile />} />
-                <Route path="tenant-pass" element={<Profile />} />
+                <Route path="tenant-pass" element={<TenantPass />} />
+                <Route path="mieter-pass" element={<TenantPass />} />
+                <Route path="score" element={<TenantPass />} />
                 <Route path="applications" element={<Messenger />} />
                 <Route path="my-applications" element={<Messenger />} />
                 <Route path="marketplace" element={<Marketplace />} />
