@@ -50,128 +50,167 @@ export default function Index() {
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
-      {/* NAV — whisper thin */}
-      <header className="sticky top-0 z-50 backdrop-blur-xl bg-background/60 border-b border-border/40">
-        <div className="container flex h-14 items-center justify-between">
-          <Logo />
-          <nav className="hidden md:flex items-center gap-10 text-[13px] text-muted-foreground">
-            <a href="#produkt" className="hover:text-foreground transition">Produkt</a>
-            <a href="#preise" className="hover:text-foreground transition">Preise</a>
-            <Link to="/markt" className="hover:text-foreground transition">Markt</Link>
-          </nav>
-          <div className="flex items-center gap-2">
-            <Button asChild variant="ghost" size="sm" className="text-[13px]"><Link to="/auth">Anmelden</Link></Button>
-            <Button asChild size="sm" className="bg-foreground text-background hover:bg-foreground/90 rounded-full px-4 text-[13px] font-medium">
-              <Link to="/auth">Starten</Link>
-            </Button>
-          </div>
-        </div>
-      </header>
+      {/* NOIR SHELL — Nav + Hero als eine cinematische Bühne (LVMH / Apple) */}
+      <div className="relative bg-[#0d0d0d] text-[#f5f2ea]">
+        {/* subtile Vignette + Gold-Glow */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.55]"
+          style={{
+            background:
+              "radial-gradient(60% 45% at 78% 45%, rgba(201,168,76,0.18), transparent 60%), radial-gradient(90% 60% at 50% 100%, rgba(0,0,0,0.6), transparent 60%)",
+          }}
+        />
+        {/* feine Gold-Hairline unten */}
+        <div aria-hidden className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[#c9a84c]/40 to-transparent" />
 
-      {/* HERO — one screen, one message, one wow */}
-      <section className="relative">
-        <div className="container relative pt-12 md:pt-24 pb-14 md:pb-28">
-          <div className="grid lg:grid-cols-[1fr_1.05fr] gap-10 lg:gap-16 items-center">
-            {/* Left: type only */}
-            <div className="max-w-xl">
-              <div className="inline-flex items-center gap-2 text-[10px] md:text-[11px] tracking-[0.22em] uppercase text-muted-foreground mb-6 md:mb-8">
-                <span className="h-1 w-1 rounded-full bg-primary" />
-                All in One · Made in Germany
-              </div>
-              <h1 className="font-display font-medium tracking-[-0.035em] leading-[0.95] md:leading-[0.92] text-[clamp(2.5rem,11vw,6rem)]">
-                Jeder m².
-                <br />
-                <span className="text-gradient-gold">Ein Ort.</span>
-                <br />
-                Ein Blick.
-              </h1>
-              <p className="mt-6 md:mt-8 text-base md:text-xl text-muted-foreground max-w-md leading-relaxed">
-                Grundstück, Wohnung, Mieter, Vermieter, Bürokratie, Steuer —
-                komplett in einer App. Verschlüsselt in Deutschland.
-              </p>
-              <div className="mt-8 md:mt-10 flex flex-wrap items-center gap-x-5 gap-y-3">
-                <Button asChild size="lg" className="rounded-full bg-foreground text-background hover:bg-foreground/90 px-6 md:px-7 h-12 text-[15px] font-medium">
+        {/* NAV */}
+        <header className="relative z-50">
+          <div className="container flex h-16 items-center justify-between">
+            <Link to="/" className="font-display text-[15px] tracking-[-0.01em] font-medium text-[#f5f2ea]">
+              Immon<span className="text-[#c9a84c]">IQ</span>
+            </Link>
+            <nav className="hidden md:flex items-center gap-10 text-[12px] tracking-[0.14em] uppercase text-[#f5f2ea]/60">
+              <a href="#produkt" className="hover:text-[#f5f2ea] transition">Produkt</a>
+              <a href="#preise" className="hover:text-[#f5f2ea] transition">Preise</a>
+              <Link to="/markt" className="hover:text-[#f5f2ea] transition">Markt</Link>
+            </nav>
+            <div className="flex items-center gap-3">
+              <Link to="/auth" className="text-[12px] tracking-[0.14em] uppercase text-[#f5f2ea]/70 hover:text-[#f5f2ea] transition">
+                Anmelden
+              </Link>
+              <Link
+                to="/auth"
+                className="group inline-flex items-center gap-2 rounded-full border border-[#c9a84c]/60 bg-transparent px-5 h-9 text-[12px] tracking-[0.14em] uppercase text-[#f0d78c] hover:bg-[#c9a84c] hover:text-[#0d0d0d] transition-all duration-500"
+              >
+                Starten
+              </Link>
+            </div>
+          </div>
+        </header>
+
+        {/* HERO — Maison Split: klare Content-Säule links, Globe schwebt frei rechts */}
+        <section className="relative">
+          <div className="container relative pt-10 md:pt-20 pb-16 md:pb-28 min-h-[calc(100vh-4rem)] flex items-center">
+            <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] gap-12 lg:gap-20 items-center w-full">
+              {/* Left: reine Typografie */}
+              <motion.div
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+                className="max-w-xl"
+              >
+                <div className="inline-flex items-center gap-3 mb-8 md:mb-10">
+                  <span className="h-px w-8 bg-[#c9a84c]" />
+                  <span className="text-[10px] md:text-[11px] tracking-[0.32em] uppercase text-[#c9a84c]/90 font-medium">
+                    All in One · Made in Germany
+                  </span>
+                </div>
+
+                <h1 className="font-display font-light tracking-[-0.045em] leading-[0.92] text-[clamp(3rem,8.5vw,7rem)] text-[#f5f2ea]">
+                  <motion.span
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 1, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+                    className="block"
+                  >
+                    Jeder m².
+                  </motion.span>
+                  <motion.span
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 1, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                    className="block italic font-extralight"
+                    style={{
+                      background: "linear-gradient(135deg, #f0d78c 0%, #c9a84c 55%, #8a6d2b 100%)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      backgroundClip: "text",
+                    }}
+                  >
+                    Ein Ort.
+                  </motion.span>
+                  <motion.span
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 1, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                    className="block"
+                  >
+                    Ein Blick.
+                  </motion.span>
+                </h1>
+
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 1, delay: 0.7 }}
+                  className="mt-8 md:mt-10 text-[15px] md:text-[17px] leading-relaxed text-[#f5f2ea]/60 max-w-md font-light"
+                >
+                  Grundstück, Wohnung, Mieter, Vermieter, Bürokratie, Steuer —
+                  komplett in einer App. Verschlüsselt in Deutschland.
+                </motion.p>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.9, delay: 0.85, ease: [0.22, 1, 0.36, 1] }}
+                  className="mt-10 md:mt-12 flex flex-wrap items-center gap-x-8 gap-y-4"
+                >
                   <Link
                     to="/auth"
                     onClick={() => trackCta("hero_signup", { source: "index_hero" })}
+                    className="group relative inline-flex items-center gap-3 rounded-full bg-[#f5f2ea] text-[#0d0d0d] pl-7 pr-2 h-14 text-[14px] tracking-[0.06em] font-medium hover:bg-[#c9a84c] transition-all duration-500 hover:-translate-y-0.5 hover:shadow-[0_20px_60px_-15px_rgba(201,168,76,0.55)]"
                   >
-                    Kostenlos starten <ArrowRight className="ml-2 h-4 w-4" />
+                    Kostenlos starten
+                    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#0d0d0d] text-[#f5f2ea] transition-transform duration-500 group-hover:translate-x-1">
+                      <ArrowRight className="h-4 w-4" />
+                    </span>
                   </Link>
-                </Button>
-                <Link
-                  to="/markt"
-                  onClick={() => trackCta("hero_market", { source: "index_hero" })}
-                  className="text-[15px] text-foreground/80 hover:text-foreground story-link"
-                >
-                  Markt ansehen
-                </Link>
-              </div>
-              <p className="mt-5 md:mt-6 text-[11px] md:text-xs text-muted-foreground">
-                Privat 0 € · Keine Kreditkarte · 60 Sekunden
-              </p>
-            </div>
-
-            {/* Right: WOW — 3D globe + floating house + CTA-Box */}
-            <div className="relative">
-              <HeroWorld />
-
-              {/* CTA-Box — sibling of the Canvas, not inside it → keine 3D-Kosten.
-                  Desktop: schwebt unten rechts über dem Globus.
-                  Tablet/Mobile: rückt darunter in den Textfluss. */}
-              <aside
-                aria-label="Schnellstart"
-                className="
-                  mt-6 lg:mt-0
-                  lg:absolute lg:right-0 lg:bottom-2 xl:bottom-6
-                  lg:w-[280px] xl:w-[300px]
-                  rounded-2xl border border-border/50
-                  bg-background/70 backdrop-blur-xl
-                  shadow-[0_20px_60px_-20px_hsl(0_0%_0%/0.6)]
-                  p-5 xl:p-6
-                  z-10
-                "
-              >
-                <div className="flex items-center gap-2 text-[10px] tracking-[0.22em] uppercase text-muted-foreground mb-3">
-                  <Sparkles className="h-3 w-3 text-primary" aria-hidden="true" />
-                  Sofort loslegen
-                </div>
-                <div className="flex items-baseline gap-1.5 mb-3">
-                  <span className="font-display text-3xl xl:text-4xl tracking-[-0.03em] leading-none">0 €</span>
-                  <span className="text-xs text-muted-foreground">/ für immer</span>
-                </div>
-                <ul className="space-y-2 mb-5 text-[13px] text-foreground/85">
-                  <li className="flex items-start gap-2">
-                    <Check className="h-4 w-4 mt-0.5 shrink-0 text-primary" aria-hidden="true" />
-                    Objekte, Mieter & Belege in einer App
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-4 w-4 mt-0.5 shrink-0 text-primary" aria-hidden="true" />
-                    DSGVO · verschlüsselt in Deutschland
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-4 w-4 mt-0.5 shrink-0 text-primary" aria-hidden="true" />
-                    In 60 Sekunden startklar
-                  </li>
-                </ul>
-                <Button
-                  asChild
-                  className="w-full rounded-full bg-foreground text-background hover:bg-foreground/90 h-11 text-[14px] font-medium"
-                >
                   <Link
-                    to="/auth"
-                    onClick={() => trackCta("hero_cta_box", { source: "index_hero_box" })}
+                    to="/markt"
+                    onClick={() => trackCta("hero_market", { source: "index_hero" })}
+                    className="group inline-flex items-center gap-2 text-[13px] tracking-[0.14em] uppercase text-[#f5f2ea]/70 hover:text-[#c9a84c] transition-colors"
                   >
-                    Kostenlos starten <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
+                    Markt ansehen
+                    <ArrowRight className="h-3.5 w-3.5 transition-transform duration-500 group-hover:translate-x-1" />
                   </Link>
-                </Button>
-                <p className="mt-3 text-[11px] text-muted-foreground text-center">
-                  Keine Kreditkarte erforderlich
-                </p>
-              </aside>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 1, delay: 1.1 }}
+                  className="mt-10 md:mt-14 flex items-center gap-6 text-[10px] tracking-[0.24em] uppercase text-[#f5f2ea]/40"
+                >
+                  <span>Privat 0 €</span>
+                  <span className="h-px w-4 bg-[#f5f2ea]/20" />
+                  <span>Keine Kreditkarte</span>
+                  <span className="h-px w-4 bg-[#f5f2ea]/20" />
+                  <span>60 Sekunden</span>
+                </motion.div>
+              </motion.div>
+
+              {/* Right: 3D-Globe in dünnem Gold-Rahmen (Vitrine) */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 1.4, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                className="relative"
+              >
+                {/* Vitrine-Rahmen: 4 feine Ecken statt Vollrahmen */}
+                <div aria-hidden className="pointer-events-none absolute -inset-4 md:-inset-8">
+                  <span className="absolute top-0 left-0 h-6 w-6 border-l border-t border-[#c9a84c]/50" />
+                  <span className="absolute top-0 right-0 h-6 w-6 border-r border-t border-[#c9a84c]/50" />
+                  <span className="absolute bottom-0 left-0 h-6 w-6 border-l border-b border-[#c9a84c]/50" />
+                  <span className="absolute bottom-0 right-0 h-6 w-6 border-r border-b border-[#c9a84c]/50" />
+                </div>
+                <HeroWorld />
+              </motion.div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
+
 
       {/* FOMO Live-Ticker */}
       <LiveActivityTicker />
