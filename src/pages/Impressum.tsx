@@ -14,6 +14,7 @@ export default function Impressum() {
       "@type": "LocalBusiness",
       name: "ENTERVENTUS — ImmonIQ",
       founder: { "@type": "Person", name: "Leon Boomgaarden" },
+      vatID: "DE365353142",
       email: "leonboomgaarden@gmail.com",
       telephone: "+49 152 28943502",
       address: {
@@ -49,11 +50,14 @@ export default function Impressum() {
         </div>
 
         <div className="space-y-2 text-sm">
-          <p><strong>Umsatzsteuer</strong></p>
-          <p>
-            Kleinunternehmer gem. § 19 UStG — es wird keine Umsatzsteuer ausgewiesen.
-            Eine USt-ID wird gem. § 19 UStG nicht geführt.
-          </p>
+          <p><strong>Umsatzsteuer-Identifikationsnummer</strong></p>
+          <p>gemäß § 27 a Umsatzsteuergesetz:</p>
+          <p className="font-mono">DE365353142</p>
+        </div>
+
+        <div className="space-y-2 text-sm">
+          <p><strong>Redaktionell verantwortlich</strong> (§ 18 Abs. 2 MStV)</p>
+          <p>Leon Boomgaarden, Anschrift wie oben.</p>
         </div>
 
         <div className="space-y-2 text-sm">
@@ -68,15 +72,66 @@ export default function Impressum() {
             >
               https://ec.europa.eu/consumers/odr/
             </a>
-            . Unsere E-Mail finden Sie oben. Wir sind nicht bereit oder verpflichtet, an
-            Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen
-            (§ 36 VSBG).
+            . Unsere E-Mail-Adresse findest du oben im Impressum.
+          </p>
+        </div>
+
+        <div className="space-y-2 text-sm">
+          <p><strong>Verbraucherstreitbeilegung / Universalschlichtungsstelle</strong></p>
+          <p>
+            Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer
+            Verbraucherschlichtungsstelle teilzunehmen (§ 36 VSBG).
+          </p>
+        </div>
+
+        <div className="space-y-2 text-sm">
+          <p><strong>Haftung für Inhalte</strong></p>
+          <p>
+            Als Diensteanbieter sind wir gemäß § 7 Abs. 1 DDG für eigene Inhalte auf diesen Seiten
+            nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 DDG sind wir als
+            Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde
+            Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige
+            Tätigkeit hinweisen. Verpflichtungen zur Entfernung oder Sperrung der Nutzung von
+            Informationen nach den allgemeinen Gesetzen bleiben hiervon unberührt. Eine
+            diesbezügliche Haftung ist jedoch erst ab dem Zeitpunkt der Kenntnis einer konkreten
+            Rechtsverletzung möglich. Bei Bekanntwerden entsprechender Rechtsverletzungen werden
+            wir diese Inhalte umgehend entfernen.
+          </p>
+        </div>
+
+        <div className="space-y-2 text-sm">
+          <p><strong>Haftung für Links</strong></p>
+          <p>
+            Unser Angebot enthält Links zu externen Websites Dritter, auf deren Inhalte wir keinen
+            Einfluss haben. Deshalb können wir für diese fremden Inhalte auch keine Gewähr
+            übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder
+            Betreiber der Seiten verantwortlich. Die verlinkten Seiten wurden zum Zeitpunkt der
+            Verlinkung auf mögliche Rechtsverstöße überprüft. Rechtswidrige Inhalte waren zum
+            Zeitpunkt der Verlinkung nicht erkennbar. Eine permanente inhaltliche Kontrolle der
+            verlinkten Seiten ist jedoch ohne konkrete Anhaltspunkte einer Rechtsverletzung nicht
+            zumutbar. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Links umgehend
+            entfernen.
+          </p>
+        </div>
+
+        <div className="space-y-2 text-sm">
+          <p><strong>Urheberrecht</strong></p>
+          <p>
+            Die durch den Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten
+            unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung
+            und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der
+            schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers. Downloads und Kopien
+            dieser Seite sind nur für den privaten, nicht kommerziellen Gebrauch gestattet. Soweit
+            die Inhalte auf dieser Seite nicht vom Betreiber erstellt wurden, werden die
+            Urheberrechte Dritter beachtet. Insbesondere werden Inhalte Dritter als solche
+            gekennzeichnet. Sollten Sie trotzdem auf eine Urheberrechtsverletzung aufmerksam
+            werden, bitten wir um einen entsprechenden Hinweis. Bei Bekanntwerden von
+            Rechtsverletzungen werden wir derartige Inhalte umgehend entfernen.
           </p>
         </div>
 
         <p className="text-xs text-muted-foreground pt-4">
-          Verantwortlich für journalistisch-redaktionelle Inhalte gem. § 18 Abs. 2 MStV:
-          Leon Boomgaarden, Anschrift wie oben.
+          Stand: {new Date().toLocaleDateString("de-DE", { month: "long", year: "numeric" })}
         </p>
       </div>
       <LegalFooter />
