@@ -195,22 +195,6 @@ export default function Datenschutz() {
           </p>
         </section>
 
-        <section className="space-y-2 text-sm">
-          <h2 className="text-lg font-semibold">9. Speicherdauer</h2>
-          <p>
-            Daten bleiben bis zur Kündigung gespeichert. Danach 30 Tage Export-Möglichkeit, anschließend
-            Löschung. Steuerlich relevante Daten bis zu 10 Jahre (§ 147 AO). Bank-Einwilligungen max.
-            180 Tage (PSD2).
-          </p>
-        </section>
-
-        <section className="space-y-2 text-sm">
-          <h2 className="text-lg font-semibold">10. Drittland-Übermittlung</h2>
-          <p>
-            Soweit Auftragsverarbeiter Server in Drittländern (USA) nutzen, erfolgt die Übermittlung
-            auf Basis EU-Standardvertragsklauseln (SCCs) und ggf. Data Privacy Framework (DPF).
-          </p>
-        </section>
       </div>
       <LegalFooter />
       </div>
