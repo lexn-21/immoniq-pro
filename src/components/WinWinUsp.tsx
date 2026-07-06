@@ -87,6 +87,27 @@ const FOMO = [
   { icon: Zap,        k: "Zinsvorteil",  d: "Banken fragen Cashflow-Historien. Ohne Track-Record: schlechtere Konditionen." },
 ];
 
+const FAQS = [
+  {
+    value: "rechtssicher",
+    icon: Shield,
+    q: "Ist ImmonIQ rechtssicher?",
+    a: "ImmonIQ ist nach geltendem Mietrecht (BGB) und der DSGVO aufgebaut: Vertragsvorlagen und Kündigungsformulare enthalten Pflichtfelder, damit rechtliche Mindestanforderungen nicht vergessen werden. Alle Daten werden in Deutschland gehostet, verschlüsselt übertragen und regelmäßig gesichert. Bei komplexen Einzelfällen ersetzt die Software keine anwaltliche Beratung, schafft aber eine deutlich bessere Ausgangslage.",
+  },
+  {
+    value: "revisionssicher",
+    icon: FileText,
+    q: "Was bedeutet revisionssichere Dokumentation?",
+    a: "Jede Nachricht, jede Zahlung und jedes Dokument wird mit Zeitstempel und Beteiligten abgelegt, sodass eine lückenlose Nachweiskette entsteht. Das hilft dir bei Mieterwechseln, Instandhaltungsstreitigkeiten oder Prüfungen durch das Finanzamt. Statt lose E-Mails und Notizen liegen alle Belege zentral, sortiert und jederzeit abrufbar vor.",
+  },
+  {
+    value: "datev",
+    icon: Download,
+    q: "Wie funktioniert der DATEV-Export?",
+    a: "Du exportierst deine Buchungsdaten mit einem Klick als DATEV-kompatible CSV-Datei. Dein Steuerberater kann die Datei direkt in seine Kanzleisoftware importieren, ohne sie manuell umzutippen. Das spart Stunden, reduziert Tippfehler und sorgt dafür, dass Umsatzsteuer, Mieteinnahmen und Werbungskosten sauber gebucht werden.",
+  },
+];
+
 export default function WinWinUsp() {
   return (
     <section className="relative border-t border-border/40 overflow-hidden">
