@@ -471,10 +471,12 @@ const Markt = () => {
                   <div key={l.id} className="relative group">
                     <Link to={`/markt/${l.id}`}>
                       <Card className="overflow-hidden glass hover:shadow-gold transition h-full flex flex-col">
-                        <div className="aspect-video bg-muted relative">
+                        <div className="aspect-video bg-muted relative overflow-hidden">
+                          {/* subtle top gradient for badge contrast safety */}
+                          <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/30 to-transparent z-10" aria-hidden="true" />
                           <img
                             src={cover || "/markt-fallback.jpg"}
-                            alt={l.title}
+                            alt={cover ? `${l.title} — ${l.rooms ? `${l.rooms} Zimmer, ` : ""}${l.space ? `${l.space} m²` : ""} in ${[l.zip, l.city].filter(Boolean).join(" ") || "Deutschland"}` : "Wohnungsvorschau im ImmonIQ Markt"}
                             loading="lazy"
                             decoding="async"
                             // @ts-expect-error — fetchpriority is valid HTML, TS types lagging
