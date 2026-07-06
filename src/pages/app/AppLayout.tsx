@@ -470,6 +470,7 @@ const AppLayout = () => {
               </motion.div>
             </AnimatePresence>
           </div>
+          <LegalFooter compact />
         </main>
 
         {/* Mobile bottom nav with center FAB */}
