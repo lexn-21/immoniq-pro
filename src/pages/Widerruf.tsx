@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { usePageSeo } from "@/hooks/usePageSeo";
+import { LegalFooter } from "@/components/LegalFooter";
 
 export default function Widerruf() {
   usePageSeo({
@@ -60,6 +61,7 @@ export default function Widerruf() {
           </p>
         </section>
       </div>
-    </div>
+      <LegalFooter />
+      </div>
   );
 }

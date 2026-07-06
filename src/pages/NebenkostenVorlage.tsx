@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { usePageSeo } from "@/hooks/usePageSeo";
 import { Download, CheckCircle2, FileSpreadsheet, Scale, Sparkles, ArrowRight } from "lucide-react";
+import { LegalFooter } from "@/components/LegalFooter";
 
 const DOWNLOAD_PATH = "/downloads/nebenkostenabrechnung-vorlage-immoniq.xlsx";
 const CANONICAL = "/nebenkostenabrechnung-vorlage";
@@ -316,6 +317,7 @@ export default function NebenkostenVorlage() {
           </div>
         </div>
       </footer>
-    </div>
+      <LegalFooter />
+      </div>
   );
 }

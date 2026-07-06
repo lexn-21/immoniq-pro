@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { eur } from "@/lib/format";
 import { toast } from "sonner";
 import { ThumbsUp, ThumbsDown, HelpCircle, Sparkles, Home, Users } from "lucide-react";
+import { LegalFooter } from "@/components/LegalFooter";
 
 const WgCasting = () => {
   const { token } = useParams();
@@ -160,7 +161,8 @@ const WgCasting = () => {
       <p className="text-[10px] text-muted-foreground text-center pt-4">
         Die finale Entscheidung trifft der Vermieter. Stimmen sind für Diskriminierung gemäß AGG nicht zulässig — bewerte nur faire Kriterien.
       </p>
-    </div>
+      <LegalFooter />
+      </div>
   );
 };
 

@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { usePageSeo } from "@/hooks/usePageSeo";
+import { LegalFooter } from "@/components/LegalFooter";
 
 export default function Impressum() {
   usePageSeo({
@@ -78,6 +79,7 @@ export default function Impressum() {
           Leon Boomgaarden, Anschrift wie oben.
         </p>
       </div>
-    </div>
+      <LegalFooter />
+      </div>
   );
 }

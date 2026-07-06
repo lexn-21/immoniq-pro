@@ -19,6 +19,7 @@ import { SponsoredSlot } from "@/components/market/SponsoredSlot";
 import { approxLatLngFromZip } from "@/lib/geo";
 import { toast } from "sonner";
 import { usePageSeo } from "@/hooks/usePageSeo";
+import { LegalFooter } from "@/components/LegalFooter";
 
 type SortKey = "newest" | "price_asc" | "price_desc" | "size_desc" | "ppm2_asc";
 
@@ -607,7 +608,8 @@ const Markt = () => {
           </Button>
         </div>
       )}
-    </div>
+      <LegalFooter />
+      </div>
   );
 };
 

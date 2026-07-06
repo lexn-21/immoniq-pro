@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { toast } from "sonner";
+import { LegalFooter } from "@/components/LegalFooter";
 
 export type TenantCtx = {
   tenant: {
@@ -154,6 +155,9 @@ export default function TenantLayout() {
           <Outlet context={ctx} />
         </main>
       </div>
+      <LegalFooter compact />
+
+
 
       <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-card/95 backdrop-blur border-t border-border/60">
         <div className="grid" style={{ gridTemplateColumns: `repeat(${bottom.length}, minmax(0, 1fr))` }}>

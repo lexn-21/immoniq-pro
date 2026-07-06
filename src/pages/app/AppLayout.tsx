@@ -26,6 +26,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
 import { useTicketCounts } from "@/hooks/useTicketCounts";
+import { LegalFooter } from "@/components/LegalFooter";
 
 type Persona = "privat" | "vermieter" | "suchender" | "pro";
 
@@ -470,6 +471,7 @@ const AppLayout = () => {
               </motion.div>
             </AnimatePresence>
           </div>
+          <LegalFooter compact />
         </main>
 
         {/* Mobile bottom nav with center FAB */}

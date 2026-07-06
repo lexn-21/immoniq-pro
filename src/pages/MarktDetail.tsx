@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { SponsoredSlot } from "@/components/market/SponsoredSlot";
 import LegalSnippet from "@/components/LegalSnippet";
 import { usePageSeo } from "@/hooks/usePageSeo";
+import { LegalFooter } from "@/components/LegalFooter";
 
 const MarktDetail = () => {
   const { id } = useParams();
@@ -319,7 +320,8 @@ const MarktDetail = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+      <LegalFooter />
+      </div>
   );
 };
 

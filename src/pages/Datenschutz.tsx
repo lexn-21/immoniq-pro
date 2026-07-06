@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { usePageSeo } from "@/hooks/usePageSeo";
+import { LegalFooter } from "@/components/LegalFooter";
 
 export default function Datenschutz() {
   usePageSeo({
@@ -129,6 +130,7 @@ export default function Datenschutz() {
           </p>
         </section>
       </div>
-    </div>
+      <LegalFooter />
+      </div>
   );
 }

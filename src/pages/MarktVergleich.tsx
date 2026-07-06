@@ -8,6 +8,7 @@ import { Logo } from "@/components/Logo";
 import { eur } from "@/lib/format";
 import { ArrowLeft, MapPin, Check, X as XIcon } from "lucide-react";
 import { usePageSeo } from "@/hooks/usePageSeo";
+import { LegalFooter } from "@/components/LegalFooter";
 
 const KEYS: { key: string; label: string; format?: (v: any) => string }[] = [
   { key: "price", label: "Preis", format: (v) => eur(v) },
@@ -148,6 +149,7 @@ export default function MarktVergleich() {
           </div>
         )}
       </main>
-    </div>
+      <LegalFooter />
+      </div>
   );
 }

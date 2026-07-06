@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Smartphone, Monitor, Apple, Chrome, Share, Plus, Download, CheckCircle2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { usePageSeo } from "@/hooks/usePageSeo";
+import { LegalFooter } from "@/components/LegalFooter";
 
 declare global {
   interface WindowEventMap {
@@ -130,6 +131,7 @@ const Install = () => {
           Code dafür ist im Repo unter <code className="px-1.5 py-0.5 bg-muted rounded text-[11px]">electron/</code> vorbereitet. Kontaktiere uns für die fertige Distribution.
         </p>
       </div>
+      <LegalFooter />
     </main>
   );
 };

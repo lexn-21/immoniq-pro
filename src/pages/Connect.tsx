@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Copy, Check, ExternalLink, Sparkles, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
+import { LegalFooter } from "@/components/LegalFooter";
 
 const MCP_URL = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/mcp`;
 
@@ -145,6 +146,7 @@ export default function Connect() {
         <p className="text-xs text-muted-foreground text-center">
           Probleme mit der Verbindung? Schreib uns über den Support-Chat im Cockpit.
         </p>
+        <LegalFooter />
       </main>
     </div>
   );
