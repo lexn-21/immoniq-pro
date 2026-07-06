@@ -77,6 +77,7 @@ const Banking = lazy(() => import("./pages/app/Banking"));
 const SmartInbox = lazy(() => import("./pages/app/SmartInbox"));
 const Tickets = lazy(() => import("./pages/app/Tickets"));
 const PassPublic = lazy(() => import("./pages/PassPublic"));
+const Connect = lazy(() => import("./pages/Connect"));
 const Messenger = lazy(() => import("./pages/app/Messenger"));
 const Chat = lazy(() => import("./pages/app/Chat"));
 const Profile = lazy(() => import("./pages/app/Profile"));
