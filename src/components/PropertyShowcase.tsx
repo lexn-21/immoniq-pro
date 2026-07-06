@@ -68,6 +68,8 @@ function Building() {
 
 export default function PropertyShowcase() {
   const ref = useRef<HTMLDivElement>(null);
+  const [canvasRef, canvasInView] = useInView<HTMLDivElement>("300px");
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const y = useTransform(scrollYProgress, [0, 1], [80, -80]);
   const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
