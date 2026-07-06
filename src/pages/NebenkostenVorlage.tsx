@@ -86,12 +86,12 @@ export default function NebenkostenVorlage() {
         </p>
 
         <div className="flex flex-wrap gap-3">
-          <a href={DOWNLOAD_PATH} download>
+          <Link to="/nebenkostenabrechnung-vorlage/download?src=hero">
             <Button size="lg" className="gap-2">
               <Download className="w-5 h-5" />
               Vorlage kostenlos herunterladen (Excel)
             </Button>
-          </a>
+          </Link>
           <Link to="/preise">
             <Button size="lg" variant="outline" className="gap-2">
               <Sparkles className="w-5 h-5" />
@@ -201,12 +201,12 @@ export default function NebenkostenVorlage() {
                 30 Tage kostenlos testen <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>
-            <a href={DOWNLOAD_PATH} download>
+            <Link to="/nebenkostenabrechnung-vorlage/download?src=cta">
               <Button size="lg" variant="outline" className="gap-2">
                 <Download className="w-5 h-5" />
                 Erst mal die Vorlage
               </Button>
-            </a>
+            </Link>
           </div>
         </Card>
       </section>
