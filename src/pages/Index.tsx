@@ -131,33 +131,32 @@ export default function Index() {
         <section className="relative">
           <div className="container relative pt-10 md:pt-20 pb-16 md:pb-28 min-h-[calc(100vh-4rem)] flex items-center">
             <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] gap-12 lg:gap-20 items-center w-full">
-              {/* Left: reine Typografie */}
+              {/* Left: reine Typografie — orchestriert per Variants (Silk-Ease) */}
               <motion.div
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+                variants={heroContainer}
+                initial="hidden"
+                animate="show"
                 className="max-w-xl"
               >
-                <div className="inline-flex items-center gap-3 mb-8 md:mb-10">
-                  <span className="h-px w-8 bg-[#c9a84c]" />
+                <motion.div variants={heroItemSoft} className="inline-flex items-center gap-3 mb-8 md:mb-10">
+                  <motion.span
+                    className="h-px bg-[#c9a84c] origin-left block"
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{ duration: prefersReduced ? 0.3 : 1.1, ease: SILK, delay: prefersReduced ? 0 : 0.35 }}
+                    style={{ width: "2rem" }}
+                  />
                   <span className="text-[10px] md:text-[11px] tracking-[0.32em] uppercase text-[#c9a84c]/90 font-medium">
                     All in One · Made in Germany
                   </span>
-                </div>
+                </motion.div>
 
                 <h1 className="font-display font-light tracking-[-0.045em] leading-[0.92] text-[clamp(3rem,8.5vw,7rem)] text-[#f5f2ea]">
-                  <motion.span
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 1, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-                    className="block"
-                  >
+                  <motion.span variants={heroItem} className="block">
                     Jeder m².
                   </motion.span>
                   <motion.span
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 1, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                    variants={heroItem}
                     className="block italic font-extralight"
                     style={{
                       background: "linear-gradient(135deg, #f0d78c 0%, #c9a84c 55%, #8a6d2b 100%)",
@@ -168,20 +167,13 @@ export default function Index() {
                   >
                     Ein Ort.
                   </motion.span>
-                  <motion.span
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 1, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                    className="block"
-                  >
+                  <motion.span variants={heroItem} className="block">
                     Ein Blick.
                   </motion.span>
                 </h1>
 
                 <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 1, delay: 0.7 }}
+                  variants={heroItemSoft}
                   className="mt-8 md:mt-10 text-[15px] md:text-[17px] leading-relaxed text-[#f5f2ea]/60 max-w-md font-light"
                 >
                   Grundstück, Wohnung, Mieter, Vermieter, Bürokratie, Steuer —
@@ -189,35 +181,31 @@ export default function Index() {
                 </motion.p>
 
                 <motion.div
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.9, delay: 0.85, ease: [0.22, 1, 0.36, 1] }}
+                  variants={heroItemSoft}
                   className="mt-10 md:mt-12 flex flex-wrap items-center gap-x-8 gap-y-4"
                 >
                   <Link
                     to="/auth"
                     onClick={() => trackCta("hero_signup", { source: "index_hero" })}
-                    className="group relative inline-flex items-center gap-3 rounded-full bg-[#f5f2ea] text-[#0d0d0d] pl-7 pr-2 h-14 text-[14px] tracking-[0.06em] font-medium hover:bg-[#c9a84c] transition-all duration-500 hover:-translate-y-0.5 hover:shadow-[0_20px_60px_-15px_rgba(201,168,76,0.55)]"
+                    className="group relative inline-flex items-center gap-3 rounded-full bg-[#f5f2ea] text-[#0d0d0d] pl-7 pr-2 h-14 text-[14px] tracking-[0.06em] font-medium hover:bg-[#c9a84c] transition-[background-color,transform,box-shadow] duration-[700ms] ease-[cubic-bezier(0.19,1,0.22,1)] hover:-translate-y-0.5 hover:shadow-[0_20px_60px_-15px_rgba(201,168,76,0.55)] motion-reduce:transition-none motion-reduce:hover:translate-y-0"
                   >
                     Kostenlos starten
-                    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#0d0d0d] text-[#f5f2ea] transition-transform duration-500 group-hover:translate-x-1">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#0d0d0d] text-[#f5f2ea] transition-transform duration-[700ms] ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:translate-x-1 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0">
                       <ArrowRight className="h-4 w-4" />
                     </span>
                   </Link>
                   <Link
                     to="/markt"
                     onClick={() => trackCta("hero_market", { source: "index_hero" })}
-                    className="group inline-flex items-center gap-2 text-[13px] tracking-[0.14em] uppercase text-[#f5f2ea]/70 hover:text-[#c9a84c] transition-colors"
+                    className="group inline-flex items-center gap-2 text-[13px] tracking-[0.14em] uppercase text-[#f5f2ea]/70 hover:text-[#c9a84c] transition-colors duration-500"
                   >
                     Markt ansehen
-                    <ArrowRight className="h-3.5 w-3.5 transition-transform duration-500 group-hover:translate-x-1" />
+                    <ArrowRight className="h-3.5 w-3.5 transition-transform duration-[700ms] ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:translate-x-1 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0" />
                   </Link>
                 </motion.div>
 
                 <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 1, delay: 1.1 }}
+                  variants={heroItemSoft}
                   className="mt-10 md:mt-14 flex items-center gap-6 text-[10px] tracking-[0.24em] uppercase text-[#f5f2ea]/40"
                 >
                   <span>Privat 0 €</span>
@@ -230,20 +218,27 @@ export default function Index() {
 
               {/* Right: 3D-Globe in dünnem Gold-Rahmen (Vitrine) */}
               <motion.div
-                initial={{ opacity: 0, scale: 0.96 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 1.4, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                initial={{ opacity: 0, scale: prefersReduced ? 1 : 0.94, filter: prefersReduced ? "none" : "blur(10px)" }}
+                animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                transition={{ duration: prefersReduced ? 0.5 : 1.6, delay: prefersReduced ? 0 : 0.25, ease: SILK }}
                 className="relative"
               >
-                {/* Vitrine-Rahmen: 4 feine Ecken statt Vollrahmen */}
-                <div aria-hidden className="pointer-events-none absolute -inset-4 md:-inset-8">
+                {/* Vitrine-Rahmen: 4 feine Ecken statt Vollrahmen — sanft eingeblendet */}
+                <motion.div
+                  aria-hidden
+                  className="pointer-events-none absolute -inset-4 md:-inset-8"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 1.2, delay: prefersReduced ? 0 : 0.9, ease: SILK }}
+                >
                   <span className="absolute top-0 left-0 h-6 w-6 border-l border-t border-[#c9a84c]/50" />
                   <span className="absolute top-0 right-0 h-6 w-6 border-r border-t border-[#c9a84c]/50" />
                   <span className="absolute bottom-0 left-0 h-6 w-6 border-l border-b border-[#c9a84c]/50" />
                   <span className="absolute bottom-0 right-0 h-6 w-6 border-r border-b border-[#c9a84c]/50" />
-                </div>
+                </motion.div>
                 <HeroWorld />
               </motion.div>
+
             </div>
           </div>
         </section>
