@@ -88,8 +88,16 @@ export default function Index() {
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+      {/* Skip-Link — sichtbar bei Tab-Fokus, springt direkt zur Haupt-CTA */}
+      <a
+        href="#hero-cta"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:rounded-full focus:bg-[#c9a84c] focus:text-[#0d0d0d] focus:px-5 focus:py-2.5 focus:text-[12px] focus:tracking-[0.14em] focus:uppercase focus:font-medium focus:shadow-[0_10px_40px_-10px_rgba(201,168,76,0.6)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#f5f2ea] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0d0d0d]"
+      >
+        Zum CTA springen
+      </a>
       {/* NOIR SHELL — Nav + Hero als eine cinematische Bühne (LVMH / Apple) */}
       <div className="relative bg-[#0d0d0d] text-[#f5f2ea]">
+
         {/* subtile Vignette + Gold-Glow */}
         <div
           aria-hidden
@@ -108,22 +116,23 @@ export default function Index() {
             <Link to="/" className="font-display text-[15px] tracking-[-0.01em] font-medium text-[#f5f2ea]">
               Immon<span className="text-[#c9a84c]">IQ</span>
             </Link>
-            <nav className="hidden md:flex items-center gap-10 text-[12px] tracking-[0.14em] uppercase text-[#f5f2ea]/60">
-              <a href="#produkt" className="hover:text-[#f5f2ea] transition">Produkt</a>
-              <a href="#preise" className="hover:text-[#f5f2ea] transition">Preise</a>
-              <Link to="/markt" className="hover:text-[#f5f2ea] transition">Markt</Link>
+            <nav aria-label="Hauptnavigation" className="hidden md:flex items-center gap-10 text-[12px] tracking-[0.14em] uppercase text-[#f5f2ea]/60">
+              <a href="#produkt" className="rounded-sm hover:text-[#f5f2ea] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] focus-visible:ring-offset-4 focus-visible:ring-offset-[#0d0d0d]">Produkt</a>
+              <a href="#preise" className="rounded-sm hover:text-[#f5f2ea] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] focus-visible:ring-offset-4 focus-visible:ring-offset-[#0d0d0d]">Preise</a>
+              <Link to="/markt" className="rounded-sm hover:text-[#f5f2ea] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] focus-visible:ring-offset-4 focus-visible:ring-offset-[#0d0d0d]">Markt</Link>
             </nav>
             <div className="flex items-center gap-3">
-              <Link to="/auth" className="text-[12px] tracking-[0.14em] uppercase text-[#f5f2ea]/70 hover:text-[#f5f2ea] transition">
+              <Link to="/auth" className="rounded-sm text-[12px] tracking-[0.14em] uppercase text-[#f5f2ea]/70 hover:text-[#f5f2ea] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] focus-visible:ring-offset-4 focus-visible:ring-offset-[#0d0d0d]">
                 Anmelden
               </Link>
               <Link
                 to="/auth"
-                className="group inline-flex items-center gap-2 rounded-full border border-[#c9a84c]/60 bg-transparent px-5 h-9 text-[12px] tracking-[0.14em] uppercase text-[#f0d78c] hover:bg-[#c9a84c] hover:text-[#0d0d0d] transition-all duration-500"
+                className="group inline-flex items-center gap-2 rounded-full border border-[#c9a84c]/60 bg-transparent px-5 h-9 text-[12px] tracking-[0.14em] uppercase text-[#f0d78c] hover:bg-[#c9a84c] hover:text-[#0d0d0d] transition-all duration-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] focus-visible:ring-offset-4 focus-visible:ring-offset-[#0d0d0d]"
               >
                 Starten
               </Link>
             </div>
+
           </div>
         </header>
 
@@ -182,27 +191,32 @@ export default function Index() {
 
                 <motion.div
                   variants={heroItemSoft}
+                  role="group"
+                  aria-label="Primäre Aktionen"
                   className="mt-10 md:mt-12 flex flex-wrap items-center gap-x-8 gap-y-4"
                 >
                   <Link
+                    id="hero-cta"
                     to="/auth"
                     onClick={() => trackCta("hero_signup", { source: "index_hero" })}
-                    className="group relative inline-flex items-center gap-3 rounded-full bg-[#f5f2ea] text-[#0d0d0d] pl-7 pr-2 h-14 text-[14px] tracking-[0.06em] font-medium hover:bg-[#c9a84c] transition-[background-color,transform,box-shadow] duration-[700ms] ease-[cubic-bezier(0.19,1,0.22,1)] hover:-translate-y-0.5 hover:shadow-[0_20px_60px_-15px_rgba(201,168,76,0.55)] motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+                    aria-label="Kostenlos starten — Konto anlegen"
+                    className="group relative inline-flex items-center gap-3 rounded-full bg-[#f5f2ea] text-[#0d0d0d] pl-7 pr-2 h-14 text-[14px] tracking-[0.06em] font-medium hover:bg-[#c9a84c] transition-[background-color,transform,box-shadow] duration-[700ms] ease-[cubic-bezier(0.19,1,0.22,1)] hover:-translate-y-0.5 hover:shadow-[0_20px_60px_-15px_rgba(201,168,76,0.55)] motion-reduce:transition-none motion-reduce:hover:translate-y-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] focus-visible:ring-offset-4 focus-visible:ring-offset-[#0d0d0d]"
                   >
                     Kostenlos starten
-                    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#0d0d0d] text-[#f5f2ea] transition-transform duration-[700ms] ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:translate-x-1 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0">
+                    <span aria-hidden="true" className="flex h-10 w-10 items-center justify-center rounded-full bg-[#0d0d0d] text-[#f5f2ea] transition-transform duration-[700ms] ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:translate-x-1 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0">
                       <ArrowRight className="h-4 w-4" />
                     </span>
                   </Link>
                   <Link
                     to="/markt"
                     onClick={() => trackCta("hero_market", { source: "index_hero" })}
-                    className="group inline-flex items-center gap-2 text-[13px] tracking-[0.14em] uppercase text-[#f5f2ea]/70 hover:text-[#c9a84c] transition-colors duration-500"
+                    className="group inline-flex items-center gap-2 rounded-full px-1 py-1 text-[13px] tracking-[0.14em] uppercase text-[#f5f2ea]/70 hover:text-[#c9a84c] transition-colors duration-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] focus-visible:ring-offset-4 focus-visible:ring-offset-[#0d0d0d]"
                   >
                     Markt ansehen
-                    <ArrowRight className="h-3.5 w-3.5 transition-transform duration-[700ms] ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:translate-x-1 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0" />
+                    <ArrowRight aria-hidden="true" className="h-3.5 w-3.5 transition-transform duration-[700ms] ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:translate-x-1 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0" />
                   </Link>
                 </motion.div>
+
 
                 <motion.div
                   variants={heroItemSoft}
