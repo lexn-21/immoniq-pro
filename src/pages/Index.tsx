@@ -19,7 +19,45 @@ const PLANS = [
   { name: "Pro",         price: "19,90 €/Mo", note: "jährlich 16,58 €/Mo" },
 ];
 
+// Silky premium easing (expo-out): langsame Bewegung mit langem Ausklang.
+// Konsistent über alle Hero-Elemente → wirkt orchestriert, nicht zufällig.
+const SILK = [0.19, 1, 0.22, 1] as const;
+
 export default function Index() {
+  const prefersReduced = useReducedMotion();
+
+  // Bewegungsdistanz respektiert prefers-reduced-motion: nur Opacity, kein Transform.
+  const rise = prefersReduced ? 0 : 28;
+  const riseSm = prefersReduced ? 0 : 14;
+  const dur = prefersReduced ? 0.5 : 1.15;
+  const durSm = prefersReduced ? 0.4 : 0.9;
+
+  const heroContainer: Variants = {
+    hidden: {},
+    show: {
+      transition: {
+        // Ein sanft gestaffelter Vorhang — kein "billiger" Kaskadeneffekt.
+        staggerChildren: prefersReduced ? 0 : 0.09,
+        delayChildren: prefersReduced ? 0 : 0.15,
+      },
+    },
+  };
+
+  const heroItem: Variants = {
+    hidden: { opacity: 0, y: rise, filter: prefersReduced ? "none" : "blur(6px)" },
+    show: {
+      opacity: 1,
+      y: 0,
+      filter: "blur(0px)",
+      transition: { duration: dur, ease: SILK },
+    },
+  };
+
+  const heroItemSoft: Variants = {
+    hidden: { opacity: 0, y: riseSm },
+    show: { opacity: 1, y: 0, transition: { duration: durSm, ease: SILK, delay: prefersReduced ? 0 : 0.1 } },
+  };
+
   usePageSeo({
     title: "ImmonIQ — Jeder m² Deutschlands. In einer App.",
     description: "All-in-One für Grundstück, Gebäude, Mieter, Vermieter, Bürokratie und Steuer. Live-Marktdaten für 8.187 PLZ. Privat kostenlos, verschlüsselt, made in Germany.",
