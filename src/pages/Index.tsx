@@ -8,7 +8,7 @@ import LiveActivityTicker from "@/components/LiveActivityTicker";
 import PropertyShowcase from "@/components/PropertyShowcase";
 import ScarcityBand from "@/components/ScarcityBand";
 import { trackCta } from "@/lib/analytics";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion, type Variants } from "framer-motion";
 import QuickStartFlow from "@/components/QuickStartFlow";
 import WinWinUsp from "@/components/WinWinUsp";
 
