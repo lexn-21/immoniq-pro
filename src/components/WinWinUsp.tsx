@@ -80,6 +80,45 @@ const LandlordMath = () => (
   </div>
 );
 
+const TaxAdvisorMath = () => {
+  const examples = [
+    { clients: 10, hoursMonth: 1.7, eurosMonth: 200 },
+    { clients: 25, hoursMonth: 4.2, eurosMonth: 500 },
+    { clients: 50, hoursMonth: 8.3, eurosMonth: 1000 },
+  ];
+
+  return (
+    <div className="mt-6 pt-5 border-t border-border/40">
+      <p className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground mb-3">
+        Konkrete Steuerberater-Ersparnis
+      </p>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 md:gap-3 mb-3">
+        {examples.map((ex) => (
+          <div
+            key={ex.clients}
+            className="rounded-xl bg-background/80 border border-border/40 p-2.5 md:p-3 text-center"
+          >
+            <div className="font-display text-base md:text-lg font-medium tracking-tight">
+              {ex.clients} Mandanten
+            </div>
+            <div className="text-[11px] text-muted-foreground mt-1">
+              {ex.hoursMonth.toLocaleString("de-DE", { minimumFractionDigits: 1 })} h/Monat
+            </div>
+            <div className="text-[12px] md:text-[13px] text-primary font-medium mt-0.5">
+              ≈ {ex.eurosMonth.toLocaleString("de-DE")} €/Monat
+            </div>
+            <div className="text-[10px] text-muted-foreground/80 mt-0.5">
+              ≈ {(ex.eurosMonth * 12).toLocaleString("de-DE")} €/Jahr
+            </div>
+          </div>
+        ))}
+      </div>
+      <p className="text-[10px] text-muted-foreground leading-relaxed">
+        Annahmen: 20 min/Mandant/Monat manueller Abstimmungsaufwand (Belege, DATEV-Vorbereitung, Rückfragen); 50 % Zeitersparnis durch strukturierte Daten und DATEV-Export; bewertet mit 120 €/h Fachstundensatz. Ergebnis ohne Gewähr.
+      </p>
+    </div>
+  );
+};
 
 const FOMO = [
   {
