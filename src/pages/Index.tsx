@@ -88,8 +88,16 @@ export default function Index() {
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+      {/* Skip-Link — sichtbar bei Tab-Fokus, springt direkt zur Haupt-CTA */}
+      <a
+        href="#hero-cta"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:rounded-full focus:bg-[#c9a84c] focus:text-[#0d0d0d] focus:px-5 focus:py-2.5 focus:text-[12px] focus:tracking-[0.14em] focus:uppercase focus:font-medium focus:shadow-[0_10px_40px_-10px_rgba(201,168,76,0.6)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#f5f2ea] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0d0d0d]"
+      >
+        Zum CTA springen
+      </a>
       {/* NOIR SHELL — Nav + Hero als eine cinematische Bühne (LVMH / Apple) */}
       <div className="relative bg-[#0d0d0d] text-[#f5f2ea]">
+
         {/* subtile Vignette + Gold-Glow */}
         <div
           aria-hidden
