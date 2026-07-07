@@ -116,22 +116,23 @@ export default function Index() {
             <Link to="/" className="font-display text-[15px] tracking-[-0.01em] font-medium text-[#f5f2ea]">
               Immon<span className="text-[#c9a84c]">IQ</span>
             </Link>
-            <nav className="hidden md:flex items-center gap-10 text-[12px] tracking-[0.14em] uppercase text-[#f5f2ea]/60">
-              <a href="#produkt" className="hover:text-[#f5f2ea] transition">Produkt</a>
-              <a href="#preise" className="hover:text-[#f5f2ea] transition">Preise</a>
-              <Link to="/markt" className="hover:text-[#f5f2ea] transition">Markt</Link>
+            <nav aria-label="Hauptnavigation" className="hidden md:flex items-center gap-10 text-[12px] tracking-[0.14em] uppercase text-[#f5f2ea]/60">
+              <a href="#produkt" className="rounded-sm hover:text-[#f5f2ea] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] focus-visible:ring-offset-4 focus-visible:ring-offset-[#0d0d0d]">Produkt</a>
+              <a href="#preise" className="rounded-sm hover:text-[#f5f2ea] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] focus-visible:ring-offset-4 focus-visible:ring-offset-[#0d0d0d]">Preise</a>
+              <Link to="/markt" className="rounded-sm hover:text-[#f5f2ea] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] focus-visible:ring-offset-4 focus-visible:ring-offset-[#0d0d0d]">Markt</Link>
             </nav>
             <div className="flex items-center gap-3">
-              <Link to="/auth" className="text-[12px] tracking-[0.14em] uppercase text-[#f5f2ea]/70 hover:text-[#f5f2ea] transition">
+              <Link to="/auth" className="rounded-sm text-[12px] tracking-[0.14em] uppercase text-[#f5f2ea]/70 hover:text-[#f5f2ea] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] focus-visible:ring-offset-4 focus-visible:ring-offset-[#0d0d0d]">
                 Anmelden
               </Link>
               <Link
                 to="/auth"
-                className="group inline-flex items-center gap-2 rounded-full border border-[#c9a84c]/60 bg-transparent px-5 h-9 text-[12px] tracking-[0.14em] uppercase text-[#f0d78c] hover:bg-[#c9a84c] hover:text-[#0d0d0d] transition-all duration-500"
+                className="group inline-flex items-center gap-2 rounded-full border border-[#c9a84c]/60 bg-transparent px-5 h-9 text-[12px] tracking-[0.14em] uppercase text-[#f0d78c] hover:bg-[#c9a84c] hover:text-[#0d0d0d] transition-all duration-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] focus-visible:ring-offset-4 focus-visible:ring-offset-[#0d0d0d]"
               >
                 Starten
               </Link>
             </div>
+
           </div>
         </header>
 
