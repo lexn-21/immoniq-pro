@@ -242,6 +242,25 @@ export default function WinWinUsp() {
           ))}
         </div>
 
+        {/* Steuerberater-Mathe */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-10% 0px" }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="max-w-3xl mx-auto mb-20 md:mb-28 rounded-3xl border border-border/50 bg-background/60 backdrop-blur-xl p-6 md:p-8"
+        >
+          <div className="text-center mb-5">
+            <p className="text-[10px] tracking-[0.28em] uppercase text-muted-foreground mb-2">
+              Auch für Kanzleien
+            </p>
+            <h3 className="font-display text-2xl md:text-3xl tracking-[-0.02em] font-medium">
+              Steuerberater sparen <span className="text-gradient-gold">Stunden pro Mandant.</span>
+            </h3>
+          </div>
+          <TaxAdvisorMath />
+        </motion.div>
+
         {/* FOMO — was verlierst du wenn du wartest */}
         <div className="max-w-3xl mx-auto text-center mb-12 md:mb-16">
           <p className="text-[10px] md:text-[11px] tracking-[0.28em] uppercase text-muted-foreground mb-4">
