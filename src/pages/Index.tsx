@@ -190,27 +190,32 @@ export default function Index() {
 
                 <motion.div
                   variants={heroItemSoft}
+                  role="group"
+                  aria-label="Primäre Aktionen"
                   className="mt-10 md:mt-12 flex flex-wrap items-center gap-x-8 gap-y-4"
                 >
                   <Link
+                    id="hero-cta"
                     to="/auth"
                     onClick={() => trackCta("hero_signup", { source: "index_hero" })}
-                    className="group relative inline-flex items-center gap-3 rounded-full bg-[#f5f2ea] text-[#0d0d0d] pl-7 pr-2 h-14 text-[14px] tracking-[0.06em] font-medium hover:bg-[#c9a84c] transition-[background-color,transform,box-shadow] duration-[700ms] ease-[cubic-bezier(0.19,1,0.22,1)] hover:-translate-y-0.5 hover:shadow-[0_20px_60px_-15px_rgba(201,168,76,0.55)] motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+                    aria-label="Kostenlos starten — Konto anlegen"
+                    className="group relative inline-flex items-center gap-3 rounded-full bg-[#f5f2ea] text-[#0d0d0d] pl-7 pr-2 h-14 text-[14px] tracking-[0.06em] font-medium hover:bg-[#c9a84c] transition-[background-color,transform,box-shadow] duration-[700ms] ease-[cubic-bezier(0.19,1,0.22,1)] hover:-translate-y-0.5 hover:shadow-[0_20px_60px_-15px_rgba(201,168,76,0.55)] motion-reduce:transition-none motion-reduce:hover:translate-y-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] focus-visible:ring-offset-4 focus-visible:ring-offset-[#0d0d0d]"
                   >
                     Kostenlos starten
-                    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#0d0d0d] text-[#f5f2ea] transition-transform duration-[700ms] ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:translate-x-1 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0">
+                    <span aria-hidden="true" className="flex h-10 w-10 items-center justify-center rounded-full bg-[#0d0d0d] text-[#f5f2ea] transition-transform duration-[700ms] ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:translate-x-1 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0">
                       <ArrowRight className="h-4 w-4" />
                     </span>
                   </Link>
                   <Link
                     to="/markt"
                     onClick={() => trackCta("hero_market", { source: "index_hero" })}
-                    className="group inline-flex items-center gap-2 text-[13px] tracking-[0.14em] uppercase text-[#f5f2ea]/70 hover:text-[#c9a84c] transition-colors duration-500"
+                    className="group inline-flex items-center gap-2 rounded-full px-1 py-1 text-[13px] tracking-[0.14em] uppercase text-[#f5f2ea]/70 hover:text-[#c9a84c] transition-colors duration-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c9a84c] focus-visible:ring-offset-4 focus-visible:ring-offset-[#0d0d0d]"
                   >
                     Markt ansehen
-                    <ArrowRight className="h-3.5 w-3.5 transition-transform duration-[700ms] ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:translate-x-1 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0" />
+                    <ArrowRight aria-hidden="true" className="h-3.5 w-3.5 transition-transform duration-[700ms] ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:translate-x-1 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0" />
                   </Link>
                 </motion.div>
+
 
                 <motion.div
                   variants={heroItemSoft}
