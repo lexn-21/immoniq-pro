@@ -693,9 +693,9 @@ export function DocScanner({ open, onClose, onComplete, suggestedName }: Props) 
           )}
 
           {!cropMode && (
-
-
+            <>
           {/* Edit toolbar */}
+
           {active && (
             <div className="border-t border-border bg-background">
               {/* Filter */}
