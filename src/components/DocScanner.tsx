@@ -788,10 +788,11 @@ export function DocScanner({ open, onClose, onComplete, suggestedName }: Props) 
               </div>
             </div>
           )}
+            </>
           )}
         </div>
-
       )}
     </div>
+
   );
 }
