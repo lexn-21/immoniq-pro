@@ -738,13 +738,14 @@ export function DocScanner({ open, onClose, onComplete, suggestedName }: Props) 
                 </button>
                 <button
                   disabled={busy}
-                  onClick={() => updatePage({ crop: { x: 0.04, y: 0.04, w: 0.92, h: 0.92 } })}
+                  onClick={() => setCropMode(true)}
                   className="flex flex-col items-center gap-1 px-4 py-2 text-xs text-muted-foreground hover:text-foreground"
-                  title="Auto-Crop (Ränder beschneiden)"
+                  title="Zuschneiden (interaktiv)"
                 >
                   <Crop className="h-5 w-5" />
                   Zuschneiden
                 </button>
+
                 <button
                   disabled={busy || pages.length === 0}
                   onClick={() => removePage(activeIdx)}
