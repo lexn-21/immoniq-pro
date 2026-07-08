@@ -168,6 +168,8 @@ export function DocScanner({ open, onClose, onComplete, suggestedName }: Props) 
   const [busy, setBusy] = useState(false);
   const [cameraReady, setCameraReady] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
+  const [cropMode, setCropMode] = useState(false);
+
 
   /* --- Kamera Lifecycle --- */
   const stopCamera = useCallback(() => {
