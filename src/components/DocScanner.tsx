@@ -146,7 +146,178 @@ async function buildPdf(pages: Page[]): Promise<Blob> {
   return pdf!.output("blob");
 }
 
+/* ------------------------------ Crop Editor ------------------------------ */
+
+type CropRect = { x: number; y: number; w: number; h: number };
+
+function CropEditor({
+  page,
+  onCancel,
+  onApply,
+}: {
+  page: Page;
+  onCancel: () => void;
+  onApply: (crop: CropRect) => void;
+}) {
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
+  const [rect, setRect] = useState<CropRect>(page.crop);
+  const [imgBox, setImgBox] = useState<{ w: number; h: number; left: number; top: number } | null>(null);
+
+  // Rotated source for display (so crop matches processing)
+  const [rotatedSrc, setRotatedSrc] = useState<string | null>(null);
+  useEffect(() => {
+    (async () => {
+      const img = await loadImage(page.src);
+      const c = document.createElement("canvas");
+      const rad = (page.rotation * Math.PI) / 180;
+      if (page.rotation % 180 === 0) { c.width = img.width; c.height = img.height; }
+      else { c.width = img.height; c.height = img.width; }
+      const ctx = c.getContext("2d")!;
+      ctx.translate(c.width / 2, c.height / 2);
+      ctx.rotate(rad);
+      ctx.drawImage(img, -img.width / 2, -img.height / 2);
+      setRotatedSrc(c.toDataURL("image/jpeg", 0.9));
+    })();
+  }, [page.src, page.rotation]);
+
+  const measure = useCallback(() => {
+    const img = imgRef.current;
+    const wrap = wrapRef.current;
+    if (!img || !wrap) return;
+    const wr = wrap.getBoundingClientRect();
+    const ir = img.getBoundingClientRect();
+    setImgBox({ w: ir.width, h: ir.height, left: ir.left - wr.left, top: ir.top - wr.top });
+  }, []);
+
+  useEffect(() => {
+    if (!rotatedSrc) return;
+    const t = setTimeout(measure, 30);
+    window.addEventListener("resize", measure);
+    return () => { clearTimeout(t); window.removeEventListener("resize", measure); };
+  }, [rotatedSrc, measure]);
+
+  const dragRef = useRef<{ mode: string; startX: number; startY: number; start: CropRect } | null>(null);
+
+  const onPointerDown = (mode: string) => (e: React.PointerEvent) => {
+    e.stopPropagation();
+    (e.target as Element).setPointerCapture?.(e.pointerId);
+    dragRef.current = { mode, startX: e.clientX, startY: e.clientY, start: { ...rect } };
+  };
+
+  const onPointerMove = (e: React.PointerEvent) => {
+    const d = dragRef.current;
+    if (!d || !imgBox) return;
+    const dx = (e.clientX - d.startX) / imgBox.w;
+    const dy = (e.clientY - d.startY) / imgBox.h;
+    let { x, y, w, h } = d.start;
+    const MIN = 0.06;
+    const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
+
+    if (d.mode === "move") {
+      x = clamp(d.start.x + dx, 0, 1 - w);
+      y = clamp(d.start.y + dy, 0, 1 - h);
+    } else {
+      if (d.mode.includes("w")) { const nx = clamp(d.start.x + dx, 0, d.start.x + d.start.w - MIN); w = d.start.w - (nx - d.start.x); x = nx; }
+      if (d.mode.includes("e")) { w = clamp(d.start.w + dx, MIN, 1 - d.start.x); }
+      if (d.mode.includes("n")) { const ny = clamp(d.start.y + dy, 0, d.start.y + d.start.h - MIN); h = d.start.h - (ny - d.start.y); y = ny; }
+      if (d.mode.includes("s")) { h = clamp(d.start.h + dy, MIN, 1 - d.start.y); }
+    }
+    setRect({ x, y, w, h });
+  };
+
+  const onPointerUp = () => { dragRef.current = null; };
+
+  const style = imgBox
+    ? {
+        left: imgBox.left + rect.x * imgBox.w,
+        top: imgBox.top + rect.y * imgBox.h,
+        width: rect.w * imgBox.w,
+        height: rect.h * imgBox.h,
+      }
+    : { display: "none" as const };
+
+  const handles = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
+  const handlePos: Record<string, string> = {
+    nw: "left-0 top-0 -translate-x-1/2 -translate-y-1/2 cursor-nwse-resize",
+    n:  "left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 cursor-ns-resize",
+    ne: "right-0 top-0 translate-x-1/2 -translate-y-1/2 cursor-nesw-resize",
+    e:  "right-0 top-1/2 translate-x-1/2 -translate-y-1/2 cursor-ew-resize",
+    se: "right-0 bottom-0 translate-x-1/2 translate-y-1/2 cursor-nwse-resize",
+    s:  "left-1/2 bottom-0 -translate-x-1/2 translate-y-1/2 cursor-ns-resize",
+    sw: "left-0 bottom-0 -translate-x-1/2 translate-y-1/2 cursor-nesw-resize",
+    w:  "left-0 top-1/2 -translate-x-1/2 -translate-y-1/2 cursor-ew-resize",
+  };
+
+  return (
+    <div className="flex-1 flex flex-col bg-neutral-900 overflow-hidden">
+      <div
+        ref={wrapRef}
+        className="flex-1 relative flex items-center justify-center p-4 select-none touch-none"
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+      >
+        {rotatedSrc ? (
+          <img
+            ref={imgRef}
+            src={rotatedSrc}
+            alt=""
+            draggable={false}
+            onLoad={measure}
+            className="max-h-full max-w-full object-contain"
+          />
+        ) : (
+          <div className="text-white/60 text-sm">Lade…</div>
+        )}
+
+        {imgBox && (
+          <>
+            {/* dark overlay outside crop */}
+            <div className="absolute pointer-events-none" style={{ left: imgBox.left, top: imgBox.top, width: imgBox.w, height: imgBox.h, boxShadow: `0 0 0 9999px rgba(0,0,0,0.55)`, clipPath: `polygon(0 0, 100% 0, 100% 100%, 0 100%, 0 ${rect.y * 100}%, ${rect.x * 100}% ${rect.y * 100}%, ${rect.x * 100}% ${(rect.y + rect.h) * 100}%, ${(rect.x + rect.w) * 100}% ${(rect.y + rect.h) * 100}%, ${(rect.x + rect.w) * 100}% ${rect.y * 100}%, 0 ${rect.y * 100}%)` }} />
+            {/* crop rect */}
+            <div
+              className="absolute border-2 border-[#c9a84c] cursor-move"
+              style={style}
+              onPointerDown={onPointerDown("move")}
+            >
+              {/* grid */}
+              <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute left-1/3 top-0 bottom-0 border-l border-white/30" />
+                <div className="absolute left-2/3 top-0 bottom-0 border-l border-white/30" />
+                <div className="absolute top-1/3 left-0 right-0 border-t border-white/30" />
+                <div className="absolute top-2/3 left-0 right-0 border-t border-white/30" />
+              </div>
+              {handles.map((h) => (
+                <div
+                  key={h}
+                  onPointerDown={onPointerDown(h)}
+                  className={`absolute h-4 w-4 bg-[#c9a84c] border-2 border-white rounded-sm ${handlePos[h]}`}
+                />
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+      <div className="border-t border-white/10 bg-black flex items-center justify-between px-4 py-3 gap-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+        <Button variant="ghost" className="text-white hover:bg-white/10" onClick={onCancel}>Abbrechen</Button>
+        <Button
+          variant="ghost"
+          className="text-white hover:bg-white/10"
+          onClick={() => setRect({ x: 0, y: 0, w: 1, h: 1 })}
+        >
+          Zurücksetzen
+        </Button>
+        <Button className="bg-gradient-gold text-primary-foreground hover:opacity-90 shadow-gold" onClick={() => onApply(rect)}>
+          <Check className="h-4 w-4 mr-2" /> Übernehmen
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 /* ------------------------------ Component ------------------------------ */
+
 
 type Props = {
   open: boolean;
