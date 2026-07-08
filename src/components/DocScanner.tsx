@@ -636,6 +636,16 @@ export function DocScanner({ open, onClose, onComplete, suggestedName }: Props) 
       ) : (
         /* REVIEW / EDIT */
         <div className="flex-1 flex flex-col overflow-hidden">
+          {cropMode && active ? (
+            <CropEditor
+              page={active}
+              onCancel={() => setCropMode(false)}
+              onApply={async (crop) => {
+                setCropMode(false);
+                await updatePage({ crop });
+              }}
+            />
+          ) : (
           <div className="flex-1 bg-muted/30 flex items-center justify-center p-4 overflow-hidden relative">
             {active ? (
               <AnimatePresence mode="wait">
@@ -680,6 +690,10 @@ export function DocScanner({ open, onClose, onComplete, suggestedName }: Props) 
               Seite {activeIdx + 1} / {pages.length}
             </Badge>
           </div>
+          )}
+
+          {!cropMode && (
+
 
           {/* Edit toolbar */}
           {active && (
