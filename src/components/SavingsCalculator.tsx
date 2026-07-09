@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
-import { Calculator } from "lucide-react";
+import { Calculator, ArrowRight, Building2, Rocket } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Slider } from "@/components/ui/slider";
+import { Button } from "@/components/ui/button";
 
 const fmt = new Intl.NumberFormat("de-DE", { maximumFractionDigits: 0 });
 const fmt1 = new Intl.NumberFormat("de-DE", { maximumFractionDigits: 1 });
@@ -182,6 +184,47 @@ export default function SavingsCalculator() {
               <p className="mt-3 text-[11px] md:text-xs text-muted-foreground leading-relaxed">
                 Annahme: 60% weniger Verwaltungszeit durch Automatisierung. Rechnung: (WE × h/Monat × 12 + WE × h/Quartal × 4) × Stundensatz. ImmonIQ Founders ist aktuell 0 €/Jahr.
               </p>
+
+              {/* Kontext-CTA — passt sich Portfolio-Größe an */}
+              {units < 10 ? (
+                <div className="mt-6 rounded-xl border border-primary/30 bg-primary/5 p-4">
+                  <div className="flex items-center gap-2 text-[10px] tracking-[0.22em] uppercase text-primary/90 mb-2">
+                    <Rocket className="h-3.5 w-3.5" />
+                    Privat-Portfolio · {units} {units === 1 ? "Einheit" : "Einheiten"}
+                  </div>
+                  <p className="text-[12px] md:text-[13px] text-muted-foreground leading-relaxed mb-3">
+                    Founders-Zugang ist für dein Portfolio dauerhaft 0 €. Starte in 60 Sekunden.
+                  </p>
+                  <Button
+                    asChild
+                    size="sm"
+                    className="w-full rounded-full bg-foreground text-background hover:bg-foreground/90 h-10 text-[13px] font-medium"
+                  >
+                    <Link to="/auth">
+                      Sofort loslegen <ArrowRight className="ml-2 h-3.5 w-3.5" />
+                    </Link>
+                  </Button>
+                </div>
+              ) : (
+                <div className="mt-6 rounded-xl border border-primary/30 bg-primary/5 p-4">
+                  <div className="flex items-center gap-2 text-[10px] tracking-[0.22em] uppercase text-primary/90 mb-2">
+                    <Building2 className="h-3.5 w-3.5" />
+                    Portfolio · {units} Einheiten
+                  </div>
+                  <p className="text-[12px] md:text-[13px] text-muted-foreground leading-relaxed mb-3">
+                    Ab 10 Einheiten prüfen wir Kontingent, Rollen und Steuerberater-Zugriff individuell.
+                  </p>
+                  <Button
+                    asChild
+                    size="sm"
+                    className="w-full rounded-full bg-foreground text-background hover:bg-foreground/90 h-10 text-[13px] font-medium"
+                  >
+                    <Link to="/pricing">
+                      Für mein Kontingent prüfen <ArrowRight className="ml-2 h-3.5 w-3.5" />
+                    </Link>
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </div>
