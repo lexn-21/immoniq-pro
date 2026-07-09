@@ -342,6 +342,63 @@ export default function WinWinUsp() {
           <SavingsCalculator />
         </motion.div>
 
+        {/* Annahmen & Disclaimer */}
+        <motion.aside
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-10% 0px" }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          aria-labelledby="assumptions-heading"
+          className="max-w-4xl mx-auto mt-8 md:mt-10 rounded-2xl border border-border/40 bg-background/40 backdrop-blur-sm p-6 md:p-8"
+        >
+          <div className="flex items-center gap-2 mb-4">
+            <HelpCircle className="h-4 w-4 text-primary" />
+            <h4
+              id="assumptions-heading"
+              className="text-[10px] md:text-[11px] tracking-[0.28em] uppercase text-muted-foreground"
+            >
+              Annahmen & Disclaimer
+            </h4>
+          </div>
+          <p className="text-[13px] md:text-sm text-muted-foreground leading-relaxed mb-5">
+            Alle Zahlen in den Beispielrechnungen und im Rechner sind{" "}
+            <span className="text-foreground font-medium">unverbindliche Beispielwerte</span>, um eine Größenordnung zu vermitteln. Deine tatsächliche Ersparnis hängt von Portfolio, Prozessen und deinem Steuerberater ab.
+          </p>
+          <ul className="space-y-2.5 text-[12px] md:text-[13px] text-muted-foreground leading-relaxed">
+            <li className="flex gap-3">
+              <span className="text-primary shrink-0">·</span>
+              <span>
+                <span className="text-foreground">Vermieter-Beispiele:</span> 30 min/Objekt/Monat Verwaltung + 1 h/Objekt/Quartal Nebenkosten, bewertet mit 45 €/h.
+              </span>
+            </li>
+            <li className="flex gap-3">
+              <span className="text-primary shrink-0">·</span>
+              <span>
+                <span className="text-foreground">Steuerberater-Beispiele:</span> 20 min/Mandant/Monat manueller Abstimmungsaufwand, 50 % Zeitersparnis, 120 €/h Fachstundensatz.
+              </span>
+            </li>
+            <li className="flex gap-3">
+              <span className="text-primary shrink-0">·</span>
+              <span>
+                <span className="text-foreground">Rechner:</span> 60 % weniger Verwaltungszeit durch Automatisierung; deine Slider-Werte werden linear hochgerechnet.
+              </span>
+            </li>
+            <li className="flex gap-3">
+              <span className="text-primary shrink-0">·</span>
+              <span>
+                Keine Garantie auf Rendite, Ersparnis oder Steuerwirkung. ImmonIQ ersetzt keine steuerliche oder rechtliche Beratung.
+              </span>
+            </li>
+            <li className="flex gap-3">
+              <span className="text-primary shrink-0">·</span>
+              <span>
+                Preise können sich nach der Founders-Phase ändern. Der 0-€-Zugang ist eine Early-Adopter-Prämie.
+              </span>
+            </li>
+          </ul>
+        </motion.aside>
+
+
         {/* CTA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
