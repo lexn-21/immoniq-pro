@@ -3,6 +3,7 @@ import { Calculator } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 
 const fmt = new Intl.NumberFormat("de-DE", { maximumFractionDigits: 0 });
+const fmt1 = new Intl.NumberFormat("de-DE", { maximumFractionDigits: 1 });
 
 interface InputSliderProps {
   label: string;
@@ -11,16 +12,17 @@ interface InputSliderProps {
   max: number;
   step: number;
   unit: string;
+  display?: string;
   onChange: (value: number) => void;
 }
 
-function InputSlider({ label, value, min, max, step, unit, onChange }: InputSliderProps) {
+function InputSlider({ label, value, min, max, step, unit, display, onChange }: InputSliderProps) {
   return (
     <div>
       <div className="flex justify-between items-center mb-2 text-[13px] md:text-sm">
         <span className="text-muted-foreground">{label}</span>
         <span className="font-medium tabular-nums">
-          {fmt.format(value)} {unit}
+          {display ?? fmt.format(value)} {unit}
         </span>
       </div>
       <Slider
@@ -66,32 +68,33 @@ function ResultRow({ label, before, after, unit }: ResultRowProps) {
 
 export default function SavingsCalculator() {
   const [units, setUnits] = useState(5);
-  const [adminMinutes, setAdminMinutes] = useState(30);
+  // Stunden pro Objekt pro Monat (in Zehntel-Stunden über den Slider)
+  const [hoursPerUnitMonthTenths, setHoursPerUnitMonthTenths] = useState(5); // = 0.5 h
+  // Stunden pro Objekt pro Quartal (Nebenkosten etc.)
+  const [hoursPerUnitQuarterTenths, setHoursPerUnitQuarterTenths] = useState(10); // = 1.0 h
   const [hourlyRate, setHourlyRate] = useState(45);
-  const [taxAdvisorYearly, setTaxAdvisorYearly] = useState(600);
+
+  const hoursPerUnitMonth = hoursPerUnitMonthTenths / 10;
+  const hoursPerUnitQuarter = hoursPerUnitQuarterTenths / 10;
 
   const result = useMemo(() => {
-    const monthlyAdminHours = (units * adminMinutes) / 60;
-    const quarterlyHoursPerUnit = 1;
-    const yearlyAdminHours = monthlyAdminHours * 12 + units * quarterlyHoursPerUnit * 4;
+    const yearlyAdminHours =
+      units * hoursPerUnitMonth * 12 + units * hoursPerUnitQuarter * 4;
     const yearlyAdminCost = yearlyAdminHours * hourlyRate;
-    const totalYearlyCost = yearlyAdminCost + taxAdvisorYearly;
 
     const savedAdminHours = yearlyAdminHours * 0.6;
-    const savedTaxAdvisor = taxAdvisorYearly * 0.5;
     const afterYearlyAdminHours = yearlyAdminHours - savedAdminHours;
-    const afterTaxAdvisorCost = taxAdvisorYearly - savedTaxAdvisor;
-    const afterTotalYearlyCost = afterYearlyAdminHours * hourlyRate + afterTaxAdvisorCost;
-    const totalSaved = totalYearlyCost - afterTotalYearlyCost;
+    const afterYearlyAdminCost = afterYearlyAdminHours * hourlyRate;
+    const totalSaved = yearlyAdminCost - afterYearlyAdminCost;
 
     return {
       yearlyAdminHours,
       afterYearlyAdminHours,
-      totalYearlyCost,
-      afterTotalYearlyCost,
+      yearlyAdminCost,
+      afterYearlyAdminCost,
       totalSaved,
     };
-  }, [units, adminMinutes, hourlyRate, taxAdvisorYearly]);
+  }, [units, hoursPerUnitMonth, hoursPerUnitQuarter, hourlyRate]);
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -105,7 +108,7 @@ export default function SavingsCalculator() {
             Was du mit ImmonIQ sparst
           </h3>
           <p className="mt-4 text-sm md:text-base text-muted-foreground max-w-xl mx-auto leading-relaxed">
-            Stelle deine eigene Situation ein. Der Rechner zeigt Zeitaufwand, Steuerberater-Kosten und die potenzielle Einsparung für deine Beispielwohnung.
+            Stelle Wohneinheiten, Stunden pro Objekt und Stunden pro Quartal ein — der Rechner aktualisiert deine Einsparung sofort.
           </p>
         </div>
 
@@ -113,7 +116,7 @@ export default function SavingsCalculator() {
           {/* Inputs */}
           <div className="space-y-6">
             <InputSlider
-              label="Wohnungen"
+              label="Wohneinheiten"
               value={units}
               min={1}
               max={50}
@@ -122,13 +125,24 @@ export default function SavingsCalculator() {
               onChange={setUnits}
             />
             <InputSlider
-              label="Verwaltung pro Objekt / Monat"
-              value={adminMinutes}
-              min={15}
-              max={120}
-              step={5}
-              unit="Min"
-              onChange={setAdminMinutes}
+              label="Stunden pro Objekt / Monat"
+              value={hoursPerUnitMonthTenths}
+              min={1}
+              max={40}
+              step={1}
+              unit="h"
+              display={fmt1.format(hoursPerUnitMonth)}
+              onChange={setHoursPerUnitMonthTenths}
+            />
+            <InputSlider
+              label="Stunden pro Objekt / Quartal"
+              value={hoursPerUnitQuarterTenths}
+              min={0}
+              max={80}
+              step={1}
+              unit="h"
+              display={fmt1.format(hoursPerUnitQuarter)}
+              onChange={setHoursPerUnitQuarterTenths}
             />
             <InputSlider
               label="Zeitwert oder Steuerberater-Satz"
@@ -138,15 +152,6 @@ export default function SavingsCalculator() {
               step={5}
               unit="€/h"
               onChange={setHourlyRate}
-            />
-            <InputSlider
-              label="Steuerberater-Honorar / Jahr"
-              value={taxAdvisorYearly}
-              min={0}
-              max={3000}
-              step={100}
-              unit="€/Jahr"
-              onChange={setTaxAdvisorYearly}
             />
           </div>
 
@@ -160,9 +165,9 @@ export default function SavingsCalculator() {
                 unit="h"
               />
               <ResultRow
-                label="Gesamtkosten / Jahr"
-                before={result.totalYearlyCost}
-                after={result.afterTotalYearlyCost}
+                label="Verwaltungskosten / Jahr"
+                before={result.yearlyAdminCost}
+                after={result.afterYearlyAdminCost}
                 unit="€"
               />
             </div>
@@ -175,7 +180,7 @@ export default function SavingsCalculator() {
                 ≈ {fmt.format(result.totalSaved)} €
               </div>
               <p className="mt-3 text-[11px] md:text-xs text-muted-foreground leading-relaxed">
-                Annahmen: 60% weniger Verwaltungszeit durch Automatisierung, 50% geringeres Steuerberater-Honorar durch DATEV-Export. ImmonIQ Founders ist aktuell 0 €/Jahr.
+                Annahme: 60% weniger Verwaltungszeit durch Automatisierung. Rechnung: (WE × h/Monat × 12 + WE × h/Quartal × 4) × Stundensatz. ImmonIQ Founders ist aktuell 0 €/Jahr.
               </p>
             </div>
           </div>
