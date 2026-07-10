@@ -18,8 +18,9 @@ function Building() {
     if (ref.current) ref.current.rotation.y = state.clock.elapsedTime * 0.2;
   });
   return (
-    <Float speed={1.2} rotationIntensity={0.15} floatIntensity={0.4}>
-      <group ref={ref} scale={0.9}>
+    <Float speed={1.2} rotationIntensity={0.15} floatIntensity={0.25}>
+      <group ref={ref} scale={0.72} position={[0, -0.4, 0]}>
+
         {/* Tower 1 */}
         <mesh position={[-0.9, 0.4, 0]}>
           <boxGeometry args={[0.7, 2.2, 0.7]} />
@@ -105,7 +106,8 @@ export default function PropertyShowcase() {
 
           <Suspense fallback={<div className="absolute inset-0 rounded-3xl bg-gradient-to-b from-primary/5 to-transparent" />}>
             <Canvas
-              camera={{ position: [3.5, 2, 5], fov: 40 }}
+              camera={{ position: [3.8, 2.6, 6.2], fov: 42 }}
+              onCreated={({ camera }) => camera.lookAt(0, 0.6, 0)}
               dpr={isMobile ? [1, 1.5] : [1, 2]}
               frameloop={canvasInView ? "always" : "never"}
               gl={{ alpha: true, antialias: !isMobile, powerPreference: "high-performance" }}
@@ -118,6 +120,7 @@ export default function PropertyShowcase() {
               <Environment preset="night" />
             </Canvas>
           </Suspense>
+
 
           {/* Floating data cards */}
           {cards.map((c, i) => (
