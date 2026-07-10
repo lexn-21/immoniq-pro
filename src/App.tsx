@@ -14,7 +14,9 @@ import { PWAInstallPrompt } from "./components/PWAInstallPrompt";
 // Eager: Erstkontakt-Seiten (Landing, Auth, 404).
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
+
 import OAuthConsent from "./pages/OAuthConsent";
 const TenantQrPoster = lazy(() => import("./pages/TenantQrPoster"));
 
@@ -121,6 +123,8 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+
               <Route path="/mieter-qr/:tenantId" element={<ProtectedRoute><TenantQrPoster /></ProtectedRoute>} />
               <Route path="/advisor/:token" element={<AdvisorView />} />
               <Route path="/berater/einladung/:token" element={<AdvisorAcceptInvite />} />
