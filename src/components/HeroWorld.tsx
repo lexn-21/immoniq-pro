@@ -210,7 +210,7 @@ function FloatingHouse({ reduced }: { reduced: boolean }) {
   });
   return (
     <Float speed={reduced ? 0 : 1.4} rotationIntensity={reduced ? 0 : 0.2} floatIntensity={reduced ? 0 : 0.6}>
-      <group ref={houseRef} position={[1.95, 1.0, 0.3]} scale={0.5}>
+      <group ref={houseRef} position={[1.35, 0.9, 0.4]} scale={0.42}>
         <mesh castShadow receiveShadow>
           <boxGeometry args={[1.2, 0.9, 0.9]} />
           <meshPhysicalMaterial color="#151517" metalness={0.7} roughness={0.22} clearcoat={0.4} />
