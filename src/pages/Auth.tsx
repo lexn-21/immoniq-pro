@@ -105,13 +105,31 @@ const Auth = () => {
     setLoading(false);
     if (error) {
       void trackFormSubmit("signin", { metadata: { ok: false, reason: error.message } });
-      return toast.error(error.message === "Invalid login credentials" ? "E-Mail oder Passwort falsch." : error.message);
+      const msg = error.message.toLowerCase();
+      if (msg.includes("email not confirmed") || msg.includes("not confirmed"))
+        return toast.error("Bitte bestätige zuerst deine E-Mail. Prüfe auch den Spam-Ordner.");
+      if (msg.includes("invalid login credentials"))
+        return toast.error("E-Mail oder Passwort falsch.");
+      return toast.error(error.message);
     }
     void trackFormSubmit("signin", { metadata: { ok: true } });
     await tryClaim();
     toast.success("Willkommen zurück.");
     navigate(redirect, { replace: true });
   };
+
+  const handleForgotPassword = async () => {
+    const ev = emailSchema.safeParse(email);
+    if (!ev.success) return toast.error("Bitte gib zuerst deine E-Mail-Adresse ein.");
+    setLoading(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(ev.data, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    setLoading(false);
+    if (error) return toast.error(error.message);
+    toast.success("Wir haben dir einen Link zum Zurücksetzen geschickt. Prüfe dein Postfach (auch Spam).");
+  };
+
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -188,7 +206,16 @@ const Auth = () => {
                   <Input id="si-email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
                 </div>
                 <div>
-                  <Label htmlFor="si-pw">Passwort</Label>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="si-pw">Passwort</Label>
+                    <button
+                      type="button"
+                      onClick={handleForgotPassword}
+                      className="text-[11px] text-muted-foreground hover:text-primary underline underline-offset-2"
+                    >
+                      Passwort vergessen?
+                    </button>
+                  </div>
                   <Input id="si-pw" type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} required />
                 </div>
                 <Button type="submit" disabled={loading} className="w-full bg-gradient-gold text-primary-foreground hover:opacity-90 shadow-gold">
@@ -196,6 +223,7 @@ const Auth = () => {
                 </Button>
               </form>
             </TabsContent>
+
 
             <TabsContent value="signup">
               <form onSubmit={handleSignUp} className="space-y-4">
