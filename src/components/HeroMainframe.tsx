@@ -332,9 +332,8 @@ export default function HeroMainframe() {
                       <Link
                         to="/auth"
                         onClick={() =>
-                          trackCta("hero_service_picker", {
+                          trackCta(`hero_service_picker:${services.join(",")}`, {
                             source: "index_hero",
-                            services: services.join(","),
                           })
                         }
                         className="inline-flex items-center gap-2 text-[#4D6D47] uppercase text-xs font-medium tracking-widest hover:text-[#1C2E1E] transition-colors"
