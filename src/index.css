@@ -192,3 +192,10 @@
   0%, 100% { filter: drop-shadow(0 0 8px hsl(38 51% 62% / 0.4)); }
   50% { filter: drop-shadow(0 0 20px hsl(38 51% 62% / 0.7)); }
 }
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+.animate-blink { animation: blink 1s step-end infinite; }
+
