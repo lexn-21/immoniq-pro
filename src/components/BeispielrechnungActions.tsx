@@ -72,28 +72,24 @@ export default function BeispielrechnungActions({ input }: Props) {
         files: [file],
       };
 
+      const nav: any = typeof navigator !== "undefined" ? navigator : null;
       const canShareFile =
-        typeof navigator !== "undefined" &&
-        "canShare" in navigator &&
-        // @ts-expect-error - files not in older lib.d.ts
-        navigator.canShare?.({ files: [file] });
+        nav && typeof nav.canShare === "function" && nav.canShare({ files: [file] });
 
-      if (canShareFile && "share" in navigator) {
-        await (navigator as Navigator).share(shareData);
+      if (canShareFile && typeof nav.share === "function") {
+        await nav.share(shareData);
         void trackCta("beispielrechnung_share_native", {
           source: "savings_calculator",
           metadata: { units: input.units },
         });
-      } else if ("share" in navigator) {
-        await (navigator as Navigator).share({
+      } else if (nav && typeof nav.share === "function") {
+        await nav.share({
           title: shareData.title,
           text: shareData.text,
           url: shareData.url,
         });
       } else {
-        await navigator.clipboard.writeText(
-          `${shareData.text} ${shareData.url}`
-        );
+        await nav.clipboard.writeText(`${shareData.text} ${shareData.url}`);
         toast.success("Link in Zwischenablage kopiert");
       }
     } catch (e: any) {
