@@ -3,6 +3,7 @@ import { Calculator, ArrowRight, Building2, Rocket } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
+import BeispielrechnungActions from "@/components/BeispielrechnungActions";
 
 const fmt = new Intl.NumberFormat("de-DE", { maximumFractionDigits: 0 });
 const fmt1 = new Intl.NumberFormat("de-DE", { maximumFractionDigits: 1 });
@@ -184,6 +185,20 @@ export default function SavingsCalculator() {
               <p className="mt-3 text-[11px] md:text-xs text-muted-foreground leading-relaxed">
                 Annahme: 60% weniger Verwaltungszeit durch Automatisierung. Rechnung: (WE × h/Monat × 12 + WE × h/Quartal × 4) × Stundensatz. ImmonIQ Founders ist aktuell 0 €/Jahr.
               </p>
+
+              <BeispielrechnungActions
+                input={{
+                  units,
+                  hoursPerUnitMonth,
+                  hoursPerUnitQuarter,
+                  hourlyRate,
+                  yearlyAdminHours: result.yearlyAdminHours,
+                  afterYearlyAdminHours: result.afterYearlyAdminHours,
+                  yearlyAdminCost: result.yearlyAdminCost,
+                  afterYearlyAdminCost: result.afterYearlyAdminCost,
+                  totalSaved: result.totalSaved,
+                }}
+              />
 
               {/* Kontext-CTA — passt sich Portfolio-Größe an */}
               {units < 10 ? (
