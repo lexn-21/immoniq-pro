@@ -17,6 +17,7 @@ import { template as adRejected } from './ad-rejected.tsx'
 import { template as invoice } from './invoice.tsx'
 import { template as wgInvite } from './wg-invite.tsx'
 import { template as rentReminder } from './rent-reminder.tsx'
+import { template as beispielrechnungShare } from './beispielrechnung-share.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'welcome': welcome,
@@ -27,4 +28,5 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'invoice': invoice,
   'wg-invite': wgInvite,
   'rent-reminder': rentReminder,
+  'beispielrechnung-share': beispielrechnungShare,
 }
