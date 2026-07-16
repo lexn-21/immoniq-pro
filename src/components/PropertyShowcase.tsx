@@ -106,8 +106,8 @@ export default function PropertyShowcase() {
 
           <Suspense fallback={<div className="absolute inset-0 rounded-3xl bg-gradient-to-b from-primary/5 to-transparent" />}>
             <Canvas
-              camera={{ position: [3.8, 2.6, 6.2], fov: 42 }}
-              onCreated={({ camera }) => camera.lookAt(0, 0.6, 0)}
+              camera={{ position: [4.6, 3.2, 7.6], fov: 38 }}
+              onCreated={({ camera }) => camera.lookAt(0, 0.8, 0)}
               dpr={isMobile ? [1, 1.5] : [1, 2]}
               frameloop={canvasInView ? "always" : "never"}
               gl={{ alpha: true, antialias: !isMobile, powerPreference: "high-performance" }}
