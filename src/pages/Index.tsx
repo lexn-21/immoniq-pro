@@ -96,8 +96,8 @@ export default function Index() {
       >
         Zum CTA springen
       </a>
-      {/* Hero — Mainframe-inspired interactive shell im ImmonIQ-Stil */}
-      <HeroMainframe />
+      {/* Hero — cinematic 3D globe + floating home (ImmonIQ WOW) */}
+      <HeroWorld />
 
 
 
