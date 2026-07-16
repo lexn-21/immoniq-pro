@@ -19,7 +19,7 @@ function Building() {
   });
   return (
     <Float speed={1.2} rotationIntensity={0.15} floatIntensity={0.25}>
-      <group ref={ref} scale={0.72} position={[0, -0.4, 0]}>
+      <group ref={ref} scale={0.62} position={[0, -0.2, 0]}>
 
         {/* Tower 1 */}
         <mesh position={[-0.9, 0.4, 0]}>
@@ -100,14 +100,14 @@ export default function PropertyShowcase() {
           </p>
         </div>
 
-        <motion.div ref={canvasRef} style={{ y, opacity }} className="relative aspect-[4/5] sm:aspect-[16/10] md:aspect-[16/9] max-w-5xl mx-auto">
+        <motion.div ref={canvasRef} style={{ y, opacity }} className="relative aspect-[4/5] sm:aspect-[16/10] md:aspect-[16/9] max-w-5xl mx-auto overflow-visible">
           {/* Glow */}
           <div className="absolute inset-0 rounded-3xl blur-3xl opacity-30" style={{ background: "radial-gradient(ellipse at center, hsl(38 55% 55% / 0.5), transparent 60%)" }} />
 
           <Suspense fallback={<div className="absolute inset-0 rounded-3xl bg-gradient-to-b from-primary/5 to-transparent" />}>
             <Canvas
-              camera={{ position: [3.8, 2.6, 6.2], fov: 42 }}
-              onCreated={({ camera }) => camera.lookAt(0, 0.6, 0)}
+              camera={{ position: [4.6, 3.2, 7.6], fov: 38 }}
+              onCreated={({ camera }) => camera.lookAt(0, 0.8, 0)}
               dpr={isMobile ? [1, 1.5] : [1, 2]}
               frameloop={canvasInView ? "always" : "never"}
               gl={{ alpha: true, antialias: !isMobile, powerPreference: "high-performance" }}
