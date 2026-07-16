@@ -19,7 +19,7 @@ function Building() {
   });
   return (
     <Float speed={1.2} rotationIntensity={0.15} floatIntensity={0.25}>
-      <group ref={ref} scale={0.72} position={[0, -0.4, 0]}>
+      <group ref={ref} scale={0.62} position={[0, -0.2, 0]}>
 
         {/* Tower 1 */}
         <mesh position={[-0.9, 0.4, 0]}>
