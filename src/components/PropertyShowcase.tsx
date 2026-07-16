@@ -100,7 +100,7 @@ export default function PropertyShowcase() {
           </p>
         </div>
 
-        <motion.div ref={canvasRef} style={{ y, opacity }} className="relative aspect-[4/5] sm:aspect-[16/10] md:aspect-[16/9] max-w-5xl mx-auto">
+        <motion.div ref={canvasRef} style={{ y, opacity }} className="relative aspect-[4/5] sm:aspect-[16/10] md:aspect-[16/9] max-w-5xl mx-auto overflow-visible">
           {/* Glow */}
           <div className="absolute inset-0 rounded-3xl blur-3xl opacity-30" style={{ background: "radial-gradient(ellipse at center, hsl(38 55% 55% / 0.5), transparent 60%)" }} />
 
