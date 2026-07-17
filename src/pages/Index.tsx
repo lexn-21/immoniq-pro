@@ -117,7 +117,7 @@ export default function Index() {
         <div className="container py-20 md:py-32 max-w-6xl">
           <div className="max-w-3xl mx-auto text-center mb-14 md:mb-20">
             <p className="text-[10px] md:text-[11px] tracking-[0.28em] uppercase text-muted-foreground mb-4">
-              All in One
+              Das Betriebssystem für Immobilien
             </p>
             <h2 className="font-display font-medium tracking-[-0.03em] leading-[0.95] text-[clamp(2rem,7vw,4.5rem)]">
               Jeder m² Deutschlands.
@@ -125,8 +125,8 @@ export default function Index() {
               <span className="text-gradient-gold">In einer App.</span>
             </h2>
             <p className="mt-6 text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              Kein Excel. Kein Zettel-Ordner. Kein Portal-Zoo.
-              Von der Grundstücksgrenze bis zur Anlage V — alles in einem Konto.
+              Grundstück, Gebäude, Mieter, Verwalter, Kurzzeit-Gäste, Handwerker, Steuer —
+              alles läuft über ein Konto. Kein Portal-Zoo. Kein Zettel-Chaos. Ein Ort für alle.
             </p>
           </div>
 
