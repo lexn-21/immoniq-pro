@@ -4,6 +4,7 @@ import { Logo } from "@/components/Logo";
 import { ArrowRight, Shield, Lock, MapPin, Check, Sparkles } from "lucide-react";
 import { usePageSeo } from "@/hooks/usePageSeo";
 import HeroWorld from "@/components/HeroWorld";
+import LandingNav from "@/components/LandingNav";
 import HeroMainframe from "@/components/HeroMainframe";
 import LiveActivityTicker from "@/components/LiveActivityTicker";
 import PropertyShowcase from "@/components/PropertyShowcase";
