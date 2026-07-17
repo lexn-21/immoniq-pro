@@ -98,6 +98,9 @@ export default function Index() {
         Zum CTA springen
       </a>
 
+      {/* Fixed marketing nav — Anmelden / Starten sichtbar */}
+      <LandingNav />
+
       {/* Hero — split layout: USP-Copy links, 3D-Globus rechts */}
       <section className="relative pt-24 md:pt-28 pb-16 md:pb-24 overflow-hidden">
         <div className="max-w-[1400px] mx-auto px-6 md:px-10 grid lg:grid-cols-[1.05fr_1fr] gap-10 lg:gap-14 items-center min-h-[calc(100vh-5rem)]">
