@@ -97,6 +97,10 @@ export default function Index() {
       >
         Zum CTA springen
       </a>
+
+      {/* Fixed marketing nav — Anmelden / Starten sichtbar */}
+      <LandingNav />
+
       {/* Hero — cinematic 3D globe + floating home (ImmonIQ WOW) */}
       <HeroWorld />
 
