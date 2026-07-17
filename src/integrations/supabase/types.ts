@@ -2436,9 +2436,11 @@ export type Database = {
           image_url: string | null
           last_renovation_year: number | null
           listed_building: boolean | null
+          mea_total: number | null
           name: string
           notes: string | null
           org_unit_id: string | null
+          property_type: Database["public"]["Enums"]["property_type"]
           purchase_date: string | null
           purchase_price: number | null
           rooms: number | null
@@ -2448,6 +2450,7 @@ export type Database = {
           updated_at: string
           user_id: string
           utilities: number | null
+          verwalter_managed: boolean
           zip: string | null
         }
         Insert: {
@@ -2468,9 +2471,11 @@ export type Database = {
           image_url?: string | null
           last_renovation_year?: number | null
           listed_building?: boolean | null
+          mea_total?: number | null
           name: string
           notes?: string | null
           org_unit_id?: string | null
+          property_type?: Database["public"]["Enums"]["property_type"]
           purchase_date?: string | null
           purchase_price?: number | null
           rooms?: number | null
@@ -2480,6 +2485,7 @@ export type Database = {
           updated_at?: string
           user_id: string
           utilities?: number | null
+          verwalter_managed?: boolean
           zip?: string | null
         }
         Update: {
@@ -2500,9 +2506,11 @@ export type Database = {
           image_url?: string | null
           last_renovation_year?: number | null
           listed_building?: boolean | null
+          mea_total?: number | null
           name?: string
           notes?: string | null
           org_unit_id?: string | null
+          property_type?: Database["public"]["Enums"]["property_type"]
           purchase_date?: string | null
           purchase_price?: number | null
           rooms?: number | null
@@ -2512,6 +2520,7 @@ export type Database = {
           updated_at?: string
           user_id?: string
           utilities?: number | null
+          verwalter_managed?: boolean
           zip?: string | null
         }
         Relationships: []
@@ -3501,6 +3510,65 @@ export type Database = {
           },
         ]
       }
+      unit_calendar: {
+        Row: {
+          booking_id: string | null
+          created_at: string
+          ends_at: string
+          external_feed_id: string | null
+          external_uid: string | null
+          id: string
+          notes: string | null
+          source: Database["public"]["Enums"]["calendar_source"]
+          starts_at: string
+          tenant_id: string | null
+          title: string | null
+          unit_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          booking_id?: string | null
+          created_at?: string
+          ends_at: string
+          external_feed_id?: string | null
+          external_uid?: string | null
+          id?: string
+          notes?: string | null
+          source: Database["public"]["Enums"]["calendar_source"]
+          starts_at: string
+          tenant_id?: string | null
+          title?: string | null
+          unit_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          booking_id?: string | null
+          created_at?: string
+          ends_at?: string
+          external_feed_id?: string | null
+          external_uid?: string | null
+          id?: string
+          notes?: string | null
+          source?: Database["public"]["Enums"]["calendar_source"]
+          starts_at?: string
+          tenant_id?: string | null
+          title?: string | null
+          unit_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "unit_calendar_unit_id_fkey"
+            columns: ["unit_id"]
+            isOneToOne: false
+            referencedRelation: "units"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       units: {
         Row: {
           created_at: string
@@ -3508,10 +3576,21 @@ export type Database = {
           id: string
           label: string
           living_space: number | null
+          mea: number | null
+          nutzungsart: Database["public"]["Enums"]["unit_usage"]
           persons_count: number | null
           property_id: string
           rent_cold: number | null
           rooms: number | null
+          str_active: boolean
+          str_base_price_night: number | null
+          str_checkin_from: string | null
+          str_checkout_until: string | null
+          str_cleaning_fee: number | null
+          str_deposit: number | null
+          str_house_rules: string | null
+          str_max_guests: number | null
+          str_min_nights: number | null
           updated_at: string
           user_id: string
           utilities: number | null
@@ -3522,10 +3601,21 @@ export type Database = {
           id?: string
           label: string
           living_space?: number | null
+          mea?: number | null
+          nutzungsart?: Database["public"]["Enums"]["unit_usage"]
           persons_count?: number | null
           property_id: string
           rent_cold?: number | null
           rooms?: number | null
+          str_active?: boolean
+          str_base_price_night?: number | null
+          str_checkin_from?: string | null
+          str_checkout_until?: string | null
+          str_cleaning_fee?: number | null
+          str_deposit?: number | null
+          str_house_rules?: string | null
+          str_max_guests?: number | null
+          str_min_nights?: number | null
           updated_at?: string
           user_id: string
           utilities?: number | null
@@ -3536,10 +3626,21 @@ export type Database = {
           id?: string
           label?: string
           living_space?: number | null
+          mea?: number | null
+          nutzungsart?: Database["public"]["Enums"]["unit_usage"]
           persons_count?: number | null
           property_id?: string
           rent_cold?: number | null
           rooms?: number | null
+          str_active?: boolean
+          str_base_price_night?: number | null
+          str_checkin_from?: string | null
+          str_checkout_until?: string | null
+          str_cleaning_fee?: number | null
+          str_deposit?: number | null
+          str_house_rules?: string | null
+          str_max_guests?: number | null
+          str_min_nights?: number | null
           updated_at?: string
           user_id?: string
           utilities?: number | null
@@ -3754,6 +3855,54 @@ export type Database = {
           user_id?: string
           verifier_ct?: string
           verifier_iv?: string
+        }
+        Relationships: []
+      }
+      verwalter_mandates: {
+        Row: {
+          can_write: boolean
+          created_at: string
+          id: string
+          last_accessed_at: string | null
+          monthly_fee_cents: number | null
+          owner_user_id: string
+          revoked_at: string | null
+          scope: string
+          status: string
+          updated_at: string
+          verwalter_email: string | null
+          verwalter_name: string | null
+          verwalter_user_id: string
+        }
+        Insert: {
+          can_write?: boolean
+          created_at?: string
+          id?: string
+          last_accessed_at?: string | null
+          monthly_fee_cents?: number | null
+          owner_user_id: string
+          revoked_at?: string | null
+          scope?: string
+          status?: string
+          updated_at?: string
+          verwalter_email?: string | null
+          verwalter_name?: string | null
+          verwalter_user_id: string
+        }
+        Update: {
+          can_write?: boolean
+          created_at?: string
+          id?: string
+          last_accessed_at?: string | null
+          monthly_fee_cents?: number | null
+          owner_user_id?: string
+          revoked_at?: string | null
+          scope?: string
+          status?: string
+          updated_at?: string
+          verwalter_email?: string | null
+          verwalter_name?: string | null
+          verwalter_user_id?: string
         }
         Relationships: []
       }
@@ -4002,6 +4151,10 @@ export type Database = {
         Args: { _conv: string; _user: string }
         Returns: boolean
       }
+      is_verwalter_for: {
+        Args: { _owner: string; _require_write?: boolean }
+        Returns: boolean
+      }
       listing_inc_view: { Args: { _listing_id: string }; Returns: undefined }
       listings_nearby: {
         Args: {
@@ -4176,6 +4329,10 @@ export type Database = {
         Returns: string
       }
       trial_days_left: { Args: { _user_id: string }; Returns: number }
+      unit_is_available: {
+        Args: { _from: string; _to: string; _unit: string }
+        Returns: boolean
+      }
       user_plan_tier: { Args: { _user_id: string }; Returns: string }
       wg_casting_resolve: { Args: { _token: string }; Returns: Json }
       wg_casting_vote: {
@@ -4190,7 +4347,7 @@ export type Database = {
       withdraw_score_consent: { Args: { _pass_id: string }; Returns: undefined }
     }
     Enums: {
-      app_role: "landlord" | "tenant" | "admin" | "advisor"
+      app_role: "landlord" | "tenant" | "admin" | "advisor" | "verwalter"
       application_status:
         | "sent"
         | "shortlisted"
@@ -4205,6 +4362,16 @@ export type Database = {
         | "completed"
         | "cancelled"
         | "disputed"
+      calendar_source:
+        | "longterm_lease"
+        | "str_booking"
+        | "ical_airbnb"
+        | "ical_booking"
+        | "ical_vrbo"
+        | "ical_other"
+        | "owner_block"
+        | "maintenance"
+        | "cleaning"
       component_kind:
         | "roof"
         | "facade"
@@ -4293,6 +4460,13 @@ export type Database = {
         | "nka_nachzahlung"
         | "nka_erstattung"
       payment_status_simple: "paid" | "open" | "late"
+      property_type:
+        | "wohnung"
+        | "haus"
+        | "gewerbe"
+        | "grundstueck"
+        | "ferienobjekt"
+        | "weg"
       provider_category:
         | "sanitaer"
         | "elektrik"
@@ -4314,6 +4488,7 @@ export type Database = {
         | "income"
         | "handover"
         | "other"
+      unit_usage: "langzeit" | "kurzzeit" | "gewerbe" | "eigennutz" | "leer"
       vault_category:
         | "kaufvertrag"
         | "mietvertrag"
@@ -4471,7 +4646,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["landlord", "tenant", "admin", "advisor"],
+      app_role: ["landlord", "tenant", "admin", "advisor", "verwalter"],
       application_status: [
         "sent",
         "shortlisted",
@@ -4487,6 +4662,17 @@ export const Constants = {
         "completed",
         "cancelled",
         "disputed",
+      ],
+      calendar_source: [
+        "longterm_lease",
+        "str_booking",
+        "ical_airbnb",
+        "ical_booking",
+        "ical_vrbo",
+        "ical_other",
+        "owner_block",
+        "maintenance",
+        "cleaning",
       ],
       component_kind: [
         "roof",
@@ -4584,6 +4770,14 @@ export const Constants = {
         "nka_erstattung",
       ],
       payment_status_simple: ["paid", "open", "late"],
+      property_type: [
+        "wohnung",
+        "haus",
+        "gewerbe",
+        "grundstueck",
+        "ferienobjekt",
+        "weg",
+      ],
       provider_category: [
         "sanitaer",
         "elektrik",
@@ -4607,6 +4801,7 @@ export const Constants = {
         "handover",
         "other",
       ],
+      unit_usage: ["langzeit", "kurzzeit", "gewerbe", "eigennutz", "leer"],
       vault_category: [
         "kaufvertrag",
         "mietvertrag",
