@@ -209,13 +209,14 @@ export default function Index() {
           {/* Scope-Grid: 8 Bereiche, kein Feature-Bingo, sondern Territorien */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-border/40 border border-border/40 rounded-2xl overflow-hidden">
             {[
-              { k: "Grundstück",    d: "Grenzen, Grundbuch, Flurstück, Bodenrichtwert." },
-              { k: "Gebäude",       d: "Wohnung, Haus, WEG, Mehrfamilien — beliebig viele." },
-              { k: "Mieter",        d: "Verträge, Kaution, Kommunikation, Bonität, Portal." },
-              { k: "Vermieter",     d: "Cockpit, Cashflow, Rendite, Übergaben, Termine." },
-              { k: "Bürokratie",    d: "Nebenkosten, Mieterhöhung, Kündigung, Formulare." },
-              { k: "Steuer",        d: "Anlage V, Belege, AfA, DATEV-ready Export." },
-              { k: "Zahlungen",     d: "Miete, SEPA, Mahnungen, Rücklastschriften — automatisch." },
+              { k: "Immobilien",    d: "Grundstück, Wohnung, Haus, WEG, Mehrfamilien. Rendite & Auslastung live." },
+              { k: "Mieter",        d: "Verträge, Kaution, Index-Erhöhung, Bonität, Portal & Chat." },
+              { k: "Zahlungen",     d: "Bankkonto anbinden, Mieten automatisch zuordnen, Mahnwesen." },
+              { k: "Nebenkosten",   d: "Schritt-für-Schritt Assistent, Umlageschlüssel, PDF-Versand." },
+              { k: "Buchhaltung",   d: "Anlage V, AfA, Restschuld, DATEV-Export auf Knopfdruck." },
+              { k: "Aufgaben",      d: "Wartung, Handwerker, Tickets — im Team koordinieren." },
+              { k: "Dokumente",     d: "Ende-zu-Ende verschlüsselter Tresor. Scanner, OCR, Signatur." },
+              { k: "Kurzzeit",      d: "Airbnb / Booking-Sync, Kalender, Gäste-Chat, iCal." },
               { k: "Markt",         d: "Live-Daten für 8.187 PLZ. Vergleich, Trend, Alerts." },
             ].map((f, i) => (
               <motion.div
@@ -231,6 +232,7 @@ export default function Index() {
                     0{i + 1}
                   </span>
                   <h3 className="font-display text-lg md:text-xl tracking-[-0.01em] font-medium">
+
                     {f.k}
                   </h3>
                 </div>
