@@ -101,75 +101,89 @@ export default function Index() {
       {/* Fixed marketing nav — Anmelden / Starten sichtbar */}
       <LandingNav />
 
-      {/* Hero — split layout: USP-Copy links, 3D-Globus rechts */}
-      <section className="relative pt-24 md:pt-28 pb-16 md:pb-24 overflow-hidden">
-        <div className="max-w-[1400px] mx-auto px-6 md:px-10 grid lg:grid-cols-[1.05fr_1fr] gap-10 lg:gap-14 items-center min-h-[calc(100vh-5rem)]">
-          {/* Copy */}
-          <motion.div
-            variants={heroContainer}
-            initial="hidden"
-            animate="show"
-            className="relative z-10 max-w-2xl"
-          >
-            <motion.div variants={heroItem} className="flex items-center gap-3 text-[10px] md:text-[11px] tracking-[0.28em] uppercase text-[#c8c2b3] mb-8">
-              <span className="h-px w-8 bg-[#c9a84c]/60" />
-              All in One · Made in Germany
-            </motion.div>
-            <motion.h1
-              variants={heroItem}
-              className="font-display font-medium tracking-[-0.035em] leading-[0.92] text-[clamp(2.75rem,7.5vw,6.25rem)] text-[#f5f2ea]"
-            >
-              Jeder m².
-              <br />
-              <span className="text-gradient-gold">Ein Ort.</span>
-              <br />
-              Ein Blick.
-            </motion.h1>
-            <motion.p
-              variants={heroItem}
-              className="mt-8 text-base md:text-lg text-[#c8c2b3] leading-relaxed max-w-lg"
-            >
-              Grundstück, Wohnung, Mieter, Vermieter, Verwalter, Kurzzeit-Gäste,
-              Handwerker, Bürokratie, Steuer — komplett in einer App.
-              Verschlüsselt in Deutschland.
-            </motion.p>
-            <motion.div variants={heroItemSoft} id="hero-cta" className="mt-10 flex flex-wrap items-center gap-4">
-              <Link
-                to="/auth?mode=signup"
-                onClick={() => trackCta("hero_start")}
-                className="inline-flex items-center gap-3 rounded-full bg-[#f5f2ea] text-[#0d0d0d] pl-7 pr-3 py-3 text-[13px] tracking-[0.06em] font-medium hover:bg-[#c9a84c] transition-colors group"
-              >
-                Kostenlos starten
-                <span className="inline-flex items-center justify-center h-9 w-9 rounded-full bg-[#0d0d0d] text-[#f5f2ea] group-hover:bg-[#0d0d0d]/90 transition-colors">
-                  <ArrowRight className="h-4 w-4" />
-                </span>
-              </Link>
-              <Link
-                to="/markt"
-                className="inline-flex items-center gap-2 text-[11px] tracking-[0.22em] uppercase text-[#c8c2b3] hover:text-[#f5f2ea] transition-colors"
-              >
-                Markt ansehen
-                <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
-            </motion.div>
-            <motion.div variants={heroItemSoft} className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-2 text-[10px] tracking-[0.26em] uppercase text-[#8a8578]">
-              <span>Privat 0 €</span>
-              <span className="h-px w-6 bg-[#c9a84c]/30" />
-              <span>Keine Kreditkarte</span>
-              <span className="h-px w-6 bg-[#c9a84c]/30" />
-              <span>60 Sekunden</span>
-            </motion.div>
-          </motion.div>
+      {/* NOIR SHELL — dunkler Hintergrund garantiert Lesbarkeit der Gold/Cream-Typo */}
+      <div className="relative bg-[#0d0d0d] text-[#f5f2ea]">
+        {/* subtile Gold-Aura im Hero-Hintergrund */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-70"
+          style={{
+            background:
+              "radial-gradient(ellipse 80% 55% at 50% 0%, rgba(201,168,76,0.14), transparent 65%), radial-gradient(ellipse 50% 40% at 85% 90%, rgba(201,168,76,0.08), transparent 70%)",
+          }}
+        />
 
-          {/* Globus */}
-          <div className="relative">
-            <HeroWorld />
+        {/* Hero — split layout: USP-Copy links, 3D-Globus rechts */}
+        <section className="relative pt-24 md:pt-28 pb-16 md:pb-24 overflow-hidden">
+          <div className="max-w-[1400px] mx-auto px-6 md:px-10 grid lg:grid-cols-[1.05fr_1fr] gap-10 lg:gap-14 items-center min-h-[calc(100vh-5rem)]">
+            {/* Copy */}
+            <motion.div
+              variants={heroContainer}
+              initial="hidden"
+              animate="show"
+              className="relative z-10 max-w-2xl"
+            >
+              <motion.div variants={heroItem} className="flex items-center gap-3 text-[10px] md:text-[11px] tracking-[0.28em] uppercase text-[#c8c2b3] mb-8">
+                <span className="h-px w-8 bg-[#c9a84c]/60" />
+                All in One · Made in Germany
+              </motion.div>
+              <motion.h1
+                variants={heroItem}
+                className="font-display font-medium tracking-[-0.035em] leading-[0.92] text-[clamp(2.75rem,7.5vw,6.25rem)] text-[#f5f2ea]"
+              >
+                Jeder m².
+                <br />
+                <span className="text-gradient-gold">Ein Ort.</span>
+                <br />
+                Ein Blick.
+              </motion.h1>
+              <motion.p
+                variants={heroItem}
+                className="mt-8 text-base md:text-lg text-[#d8d2c3] leading-relaxed max-w-lg"
+              >
+                Grundstück, Wohnung, Mieter, Vermieter, Verwalter, Kurzzeit-Gäste,
+                Handwerker, Bürokratie, Steuer — komplett in einer App.
+                Verschlüsselt in Deutschland.
+              </motion.p>
+              <motion.div variants={heroItemSoft} id="hero-cta" className="mt-10 flex flex-wrap items-center gap-4">
+                <Link
+                  to="/auth?mode=signup"
+                  onClick={() => trackCta("hero_start")}
+                  className="inline-flex items-center gap-3 rounded-full bg-[#f5f2ea] text-[#0d0d0d] pl-7 pr-3 py-3 text-[13px] tracking-[0.06em] font-medium hover:bg-[#c9a84c] transition-colors group"
+                >
+                  Kostenlos starten
+                  <span className="inline-flex items-center justify-center h-9 w-9 rounded-full bg-[#0d0d0d] text-[#f5f2ea] group-hover:bg-[#0d0d0d]/90 transition-colors">
+                    <ArrowRight className="h-4 w-4" />
+                  </span>
+                </Link>
+                <Link
+                  to="/markt"
+                  className="inline-flex items-center gap-2 text-[11px] tracking-[0.22em] uppercase text-[#c8c2b3] hover:text-[#f5f2ea] transition-colors"
+                >
+                  Markt ansehen
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </motion.div>
+              <motion.div variants={heroItemSoft} className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-2 text-[10px] tracking-[0.26em] uppercase text-[#8a8578]">
+                <span>Privat 0 €</span>
+                <span className="h-px w-6 bg-[#c9a84c]/30" />
+                <span>Keine Kreditkarte</span>
+                <span className="h-px w-6 bg-[#c9a84c]/30" />
+                <span>60 Sekunden</span>
+              </motion.div>
+            </motion.div>
+
+            {/* Globus */}
+            <div className="relative">
+              <HeroWorld />
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* FOMO Live-Ticker */}
-      <LiveActivityTicker />
+        {/* FOMO Live-Ticker — bleibt auf noir für Kontrast */}
+        <LiveActivityTicker />
+      </div>
+
 
       {/* Apple-Scroll: 3D Immobilie */}
       <PropertyShowcase />
@@ -195,13 +209,14 @@ export default function Index() {
           {/* Scope-Grid: 8 Bereiche, kein Feature-Bingo, sondern Territorien */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-border/40 border border-border/40 rounded-2xl overflow-hidden">
             {[
-              { k: "Grundstück",    d: "Grenzen, Grundbuch, Flurstück, Bodenrichtwert." },
-              { k: "Gebäude",       d: "Wohnung, Haus, WEG, Mehrfamilien — beliebig viele." },
-              { k: "Mieter",        d: "Verträge, Kaution, Kommunikation, Bonität, Portal." },
-              { k: "Vermieter",     d: "Cockpit, Cashflow, Rendite, Übergaben, Termine." },
-              { k: "Bürokratie",    d: "Nebenkosten, Mieterhöhung, Kündigung, Formulare." },
-              { k: "Steuer",        d: "Anlage V, Belege, AfA, DATEV-ready Export." },
-              { k: "Zahlungen",     d: "Miete, SEPA, Mahnungen, Rücklastschriften — automatisch." },
+              { k: "Immobilien",    d: "Grundstück, Wohnung, Haus, WEG, Mehrfamilien. Rendite & Auslastung live." },
+              { k: "Mieter",        d: "Verträge, Kaution, Index-Erhöhung, Bonität, Portal & Chat." },
+              { k: "Zahlungen",     d: "Bankkonto anbinden, Mieten automatisch zuordnen, Mahnwesen." },
+              { k: "Nebenkosten",   d: "Schritt-für-Schritt Assistent, Umlageschlüssel, PDF-Versand." },
+              { k: "Buchhaltung",   d: "Anlage V, AfA, Restschuld, DATEV-Export auf Knopfdruck." },
+              { k: "Aufgaben",      d: "Wartung, Handwerker, Tickets — im Team koordinieren." },
+              { k: "Dokumente",     d: "Ende-zu-Ende verschlüsselter Tresor. Scanner, OCR, Signatur." },
+              { k: "Kurzzeit",      d: "Airbnb / Booking-Sync, Kalender, Gäste-Chat, iCal." },
               { k: "Markt",         d: "Live-Daten für 8.187 PLZ. Vergleich, Trend, Alerts." },
             ].map((f, i) => (
               <motion.div
@@ -217,6 +232,7 @@ export default function Index() {
                     0{i + 1}
                   </span>
                   <h3 className="font-display text-lg md:text-xl tracking-[-0.01em] font-medium">
+
                     {f.k}
                   </h3>
                 </div>
