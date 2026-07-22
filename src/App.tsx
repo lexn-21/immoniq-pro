@@ -75,6 +75,10 @@ const Feed = lazy(() => import("./pages/app/Feed"));
 const LandParcels = lazy(() => import("./pages/app/LandParcels"));
 const OrgUnits = lazy(() => import("./pages/app/OrgUnits"));
 const Banking = lazy(() => import("./pages/app/Banking"));
+const Handwerker = lazy(() => import("./pages/app/Handwerker"));
+const SteuerModelle = lazy(() => import("./pages/app/SteuerModelle"));
+const Kaution = lazy(() => import("./pages/app/Kaution"));
+
 
 const SmartInbox = lazy(() => import("./pages/app/SmartInbox"));
 const Tickets = lazy(() => import("./pages/app/Tickets"));
