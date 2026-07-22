@@ -12,34 +12,39 @@ import { usePageSeo } from "@/hooks/usePageSeo";
 
 type Place = {
   id: string;
-  displayName?: { text: string };
-  formattedAddress?: string;
-  nationalPhoneNumber?: string;
-  websiteUri?: string;
-  rating?: number;
-  userRatingCount?: number;
-  location?: { latitude: number; longitude: number };
-  primaryTypeDisplayName?: { text: string };
+  name: string;
+  address: string;
+  phone: string | null;
+  website: string | null;
+  google_maps: string | null;
+  rating: number | null;
+  rating_count: number | null;
+  category: string | null;
+  lat: number;
+  lng: number;
+  distance_km: number | null;
 };
 
 const CATEGORIES = [
-  { key: "Klempner", q: "Klempner Sanitär Heizung" },
-  { key: "Elektriker", q: "Elektriker Elektroinstallation" },
-  { key: "Maler", q: "Maler Lackierer" },
-  { key: "Schlüsseldienst", q: "Schlüsseldienst Notdienst" },
-  { key: "Dachdecker", q: "Dachdecker" },
-  { key: "Schädlingsbekämpfung", q: "Schädlingsbekämpfer Kammerjäger" },
-  { key: "Reinigung", q: "Gebäudereinigung Treppenhausreinigung" },
-  { key: "Gärtner", q: "Gärtner Gartenpflege" },
-  { key: "Schornsteinfeger", q: "Schornsteinfeger" },
-  { key: "Umzug", q: "Umzugsunternehmen" },
+  { key: "plumber", label: "Klempner / Sanitär" },
+  { key: "electrician", label: "Elektriker" },
+  { key: "painter", label: "Maler" },
+  { key: "roofer", label: "Dachdecker" },
+  { key: "carpenter", label: "Schreiner / Tischler" },
+  { key: "handyman", label: "Hausmeister / Allround" },
+  { key: "locksmith", label: "Schlüsseldienst" },
+  { key: "cleaner", label: "Reinigung" },
+  { key: "gardener", label: "Gärtner" },
+  { key: "tax", label: "Steuerberater" },
+  { key: "lawyer", label: "Mietrechts-Anwalt" },
 ];
 
 export default function Handwerker() {
-  usePageSeo({ title: "Handwerker & Dienstleister — ImmonIQ", description: "Verifizierte Handwerker in der Nähe deiner Immobilie finden und verwalten." });
+  usePageSeo({ title: "Handwerker & Dienstleister — ImmonIQ", description: "Verifizierte Handwerker in der Nähe deiner Immobilie finden, speichern und ins Ticket übernehmen." });
   const { user } = useAuth();
   const [category, setCategory] = useState(CATEGORIES[0].key);
-  const [city, setCity] = useState("");
+  const [query, setQuery] = useState("");
+  const [radius, setRadius] = useState(15);
   const [properties, setProperties] = useState<Array<{ id: string; name: string; city: string; zip: string }>>([]);
   const [propertyId, setPropertyId] = useState<string>("");
   const [results, setResults] = useState<Place[]>([]);
@@ -55,24 +60,25 @@ export default function Handwerker() {
       ]);
       setProperties(props.data ?? []);
       setSaved(sv.data ?? []);
-      if (props.data?.[0]) { setPropertyId(props.data[0].id); setCity(props.data[0].city ?? ""); }
+      if (props.data?.[0]) { setPropertyId(props.data[0].id); setQuery(props.data[0].zip ?? props.data[0].city ?? ""); }
     })();
   }, [user]);
 
   const activeProperty = useMemo(() => properties.find(p => p.id === propertyId), [properties, propertyId]);
+  const catLabel = CATEGORIES.find(c => c.key === category)?.label ?? category;
 
   async function search() {
-    const q = CATEGORIES.find(c => c.key === category)?.q ?? category;
-    const location = activeProperty ? `${activeProperty.zip} ${activeProperty.city}` : city;
-    if (!location) { toast.error("Bitte Objekt wählen oder Ort eingeben."); return; }
+    const q = query.trim() || activeProperty?.zip || activeProperty?.city || "";
+    if (!q) { toast.error("Bitte PLZ oder Ort eingeben."); return; }
     setLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("places-search", {
-        body: { query: `${q} ${location}`, maxResults: 20 },
+        body: { category, query: q, radius },
       });
       if (error) throw error;
-      setResults((data?.places ?? []) as Place[]);
-      if (!data?.places?.length) toast.info("Keine Treffer — versuche eine andere Kategorie oder Stadt.");
+      const list: Place[] = data?.places ?? [];
+      setResults(list);
+      if (!list.length) toast.info("Keine Treffer — versuche eine andere Kategorie oder erhöhe den Radius.");
     } catch (e: any) {
       toast.error(e.message ?? "Suche fehlgeschlagen");
     } finally {
@@ -85,15 +91,15 @@ export default function Handwerker() {
     const row = {
       user_id: user.id,
       place_id: p.id,
-      name: p.displayName?.text ?? "Unbekannt",
-      category,
-      phone: p.nationalPhoneNumber ?? null,
-      website: p.websiteUri ?? null,
-      address: p.formattedAddress ?? null,
-      lat: p.location?.latitude ?? null,
-      lng: p.location?.longitude ?? null,
-      rating: p.rating ?? null,
-      rating_count: p.userRatingCount ?? null,
+      name: p.name,
+      category: catLabel,
+      phone: p.phone,
+      website: p.website,
+      address: p.address,
+      lat: p.lat,
+      lng: p.lng,
+      rating: p.rating,
+      rating_count: p.rating_count,
       property_id: propertyId || null,
     };
     const { data, error } = await (supabase as any).from("craftsmen_contacts").upsert(row, { onConflict: "user_id,place_id" }).select().single();
@@ -116,16 +122,19 @@ export default function Handwerker() {
 
       <Card>
         <CardHeader><CardTitle className="flex items-center gap-2"><Search className="h-4 w-4" /> Suche</CardTitle></CardHeader>
-        <CardContent className="grid md:grid-cols-4 gap-3">
+        <CardContent className="grid md:grid-cols-5 gap-3">
           <Select value={category} onValueChange={setCategory}>
             <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>{CATEGORIES.map(c => <SelectItem key={c.key} value={c.key}>{c.key}</SelectItem>)}</SelectContent>
+            <SelectContent>{CATEGORIES.map(c => <SelectItem key={c.key} value={c.key}>{c.label}</SelectItem>)}</SelectContent>
           </Select>
-          <Select value={propertyId} onValueChange={(v) => { setPropertyId(v); const p = properties.find(x => x.id === v); if (p) setCity(p.city ?? ""); }}>
-            <SelectTrigger><SelectValue placeholder="Objekt (optional)" /></SelectTrigger>
-            <SelectContent>{properties.map(p => <SelectItem key={p.id} value={p.id}>{p.name} — {p.city}</SelectItem>)}</SelectContent>
-          </Select>
-          <Input placeholder="Ort oder PLZ" value={city} onChange={e => setCity(e.target.value)} />
+          {properties.length > 0 && (
+            <Select value={propertyId} onValueChange={(v) => { setPropertyId(v); const p = properties.find(x => x.id === v); if (p) setQuery(p.zip ?? p.city ?? ""); }}>
+              <SelectTrigger><SelectValue placeholder="Objekt (optional)" /></SelectTrigger>
+              <SelectContent>{properties.map(p => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}</SelectContent>
+            </Select>
+          )}
+          <Input placeholder="PLZ oder Ort" value={query} onChange={e => setQuery(e.target.value)} />
+          <Input type="number" min={1} max={50} placeholder="Radius km" value={radius} onChange={e => setRadius(+e.target.value)} />
           <Button onClick={search} disabled={loading}>{loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Suchen"}</Button>
         </CardContent>
       </Card>
@@ -137,17 +146,18 @@ export default function Handwerker() {
               <CardContent className="pt-4 space-y-2">
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <p className="font-semibold">{p.displayName?.text}</p>
-                    <p className="text-xs text-muted-foreground">{p.primaryTypeDisplayName?.text ?? category}</p>
+                    <p className="font-semibold">{p.name}</p>
+                    <p className="text-xs text-muted-foreground">{p.category ?? catLabel}{p.distance_km != null && ` · ${p.distance_km.toFixed(1)} km`}</p>
                   </div>
                   {p.rating && (
-                    <Badge variant="secondary" className="gap-1"><Star className="h-3 w-3 fill-current" /> {p.rating.toFixed(1)} · {p.userRatingCount}</Badge>
+                    <Badge variant="secondary" className="gap-1"><Star className="h-3 w-3 fill-current" /> {p.rating.toFixed(1)} · {p.rating_count}</Badge>
                   )}
                 </div>
-                {p.formattedAddress && <p className="text-sm text-muted-foreground flex items-start gap-1"><MapPin className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" /> {p.formattedAddress}</p>}
+                {p.address && <p className="text-sm text-muted-foreground flex items-start gap-1"><MapPin className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" /> {p.address}</p>}
                 <div className="flex flex-wrap gap-2 pt-1">
-                  {p.nationalPhoneNumber && <a href={`tel:${p.nationalPhoneNumber}`} className="text-xs inline-flex items-center gap-1 px-2 py-1 rounded bg-muted hover:bg-muted/70"><Phone className="h-3 w-3" /> {p.nationalPhoneNumber}</a>}
-                  {p.websiteUri && <a href={p.websiteUri} target="_blank" rel="noreferrer" className="text-xs inline-flex items-center gap-1 px-2 py-1 rounded bg-muted hover:bg-muted/70"><Globe className="h-3 w-3" /> Website</a>}
+                  {p.phone && <a href={`tel:${p.phone}`} className="text-xs inline-flex items-center gap-1 px-2 py-1 rounded bg-muted hover:bg-muted/70"><Phone className="h-3 w-3" /> {p.phone}</a>}
+                  {p.website && <a href={p.website} target="_blank" rel="noreferrer" className="text-xs inline-flex items-center gap-1 px-2 py-1 rounded bg-muted hover:bg-muted/70"><Globe className="h-3 w-3" /> Website</a>}
+                  {p.google_maps && <a href={p.google_maps} target="_blank" rel="noreferrer" className="text-xs inline-flex items-center gap-1 px-2 py-1 rounded bg-muted hover:bg-muted/70"><MapPin className="h-3 w-3" /> Maps</a>}
                   <Button size="sm" variant="outline" onClick={() => saveCraftsman(p)} className="ml-auto"><Plus className="h-3 w-3 mr-1" /> Speichern</Button>
                 </div>
               </CardContent>
