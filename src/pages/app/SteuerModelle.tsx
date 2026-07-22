@@ -87,7 +87,7 @@ function ErhaltungHerstellung() {
         <ShieldAlert className="h-4 w-4" />
         <AlertTitle>{ueber ? "Falle: 15%-Grenze überschritten" : "Sicher unter der Grenze"}</AlertTitle>
         <AlertDescription>
-          § 6 Abs. 1 Nr. 1a EStG: Aufwendungen in den ersten 3 Jahren nach Anschaffung > 15% des Gebäudewerts (netto) werden zu Herstellungskosten und müssen über die AfA (2–3% p.a.) statt sofort abgesetzt werden. Tipp: Modernisierungen strecken oder klar von Erhaltung trennen.
+          § 6 Abs. 1 Nr. 1a EStG: Aufwendungen in den ersten 3 Jahren nach Anschaffung über 15% des Gebäudewerts (netto) werden zu Herstellungskosten und müssen über die AfA (2–3% p.a.) statt sofort abgesetzt werden. Tipp: Modernisierungen strecken oder klar von Erhaltung trennen.
         </AlertDescription>
       </Alert>
     </div>
