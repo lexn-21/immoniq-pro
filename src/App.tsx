@@ -75,6 +75,10 @@ const Feed = lazy(() => import("./pages/app/Feed"));
 const LandParcels = lazy(() => import("./pages/app/LandParcels"));
 const OrgUnits = lazy(() => import("./pages/app/OrgUnits"));
 const Banking = lazy(() => import("./pages/app/Banking"));
+const Handwerker = lazy(() => import("./pages/app/Handwerker"));
+const SteuerModelle = lazy(() => import("./pages/app/SteuerModelle"));
+const Kaution = lazy(() => import("./pages/app/Kaution"));
+
 
 const SmartInbox = lazy(() => import("./pages/app/SmartInbox"));
 const Tickets = lazy(() => import("./pages/app/Tickets"));
@@ -224,6 +228,9 @@ const App = () => (
                 <Route path="admin/ads" element={<AdminAds />} />
                 <Route path="settings" element={<Settings />} />
                 <Route path="banking" element={<Banking />} />
+                <Route path="handwerker" element={<Handwerker />} />
+                <Route path="steuer-modelle" element={<SteuerModelle />} />
+                <Route path="kaution" element={<Kaution />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>

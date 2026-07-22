@@ -12,7 +12,7 @@ import {
   Lock, Wrench, Bell, Search, Scale,
   TrendingUp, Megaphone, Inbox,
   FileText, Plus, Home, Menu, X, CalendarCheck, Search as SearchIcon, ScanLine, PartyPopper,
-  Trees, Landmark, IdCard, MessageSquare, Sparkles, Banknote,
+  Trees, Landmark, IdCard, MessageSquare, Sparkles, Banknote, HardHat, Percent, PiggyBank,
 } from "lucide-react";
 import { AskCopilot } from "@/components/AskCopilot";
 import { CommandPalette } from "@/components/CommandPalette";
@@ -56,18 +56,36 @@ const groups: NavGroup[] = [
     ],
   },
   {
-    title: "Verwalten",
+    title: "Portfolio",
     personas: ["privat", "vermieter", "pro"],
     items: [
-      { to: "/app/properties", label: "Objekte", icon: Building2 },
+      { to: "/app/properties", label: "Immobilien", icon: Building2 },
+      { to: "/app/parcels", label: "Grundstücke", icon: Trees },
       { to: "/app/tenants", label: "Mieter", icon: Users, personas: ["vermieter", "pro"] },
-      { to: "/app/tickets", label: "Tickets", icon: Wrench, personas: ["vermieter", "pro"] },
+      { to: "/app/bookings", label: "Kurzzeit-Buchungen", icon: CalendarCheck, personas: ["vermieter", "pro"] },
+      { to: "/app/org", label: "WEG / Organisation", icon: Landmark, personas: ["pro"] },
+    ],
+  },
+  {
+    title: "Finanzen",
+    personas: ["privat", "vermieter", "pro"],
+    items: [
       { to: "/app/payments", label: "Einnahmen", icon: Wallet },
       { to: "/app/expenses", label: "Ausgaben", icon: Receipt },
       { to: "/app/banking", label: "Banking", icon: Banknote },
+      { to: "/app/kaution", label: "Kautionen", icon: PiggyBank },
       { to: "/app/nebenkosten", label: "Nebenkosten", icon: Calculator, personas: ["vermieter", "pro"] },
-      { to: "/app/parcels", label: "Grundstücke", icon: Trees, personas: ["pro"] },
-      { to: "/app/org", label: "Organisation", icon: Landmark, personas: ["pro"] },
+      { to: "/app/dunning", label: "Mahnwesen", icon: Bell, personas: ["vermieter", "pro"] },
+    ],
+  },
+  {
+    title: "Recht & Steuer",
+    items: [
+      { to: "/app/steuer-modelle", label: "Steuer-Modelle", icon: Percent },
+      { to: "/app/tax", label: "Steuer-Export (DATEV)", icon: Calculator, personas: ["vermieter", "pro"] },
+      { to: "/app/advisor", label: "Steuerberater freigeben", icon: ShieldCheck, personas: ["vermieter", "pro"] },
+      { to: "/app/legal", label: "Legal-Zentrum", icon: ShieldCheck },
+      { to: "/app/law", label: "Rechts-Ecke", icon: Scale, personas: ["pro"] },
       { to: "/app/templates", label: "Vorlagen", icon: FileText, personas: ["vermieter", "pro"] },
     ],
   },
@@ -76,30 +94,28 @@ const groups: NavGroup[] = [
     items: [
       { to: "/app/vault", label: "Immo-Tresor", icon: Lock, personas: ["privat", "vermieter", "pro"] },
       { to: "/app/vault?scope=personal", label: "Lebensbürokratie", icon: Lock },
-      { to: "/app/law", label: "Rechts-Ecke", icon: Scale, personas: ["pro"] },
-      { to: "/app/legal", label: "Legal-Zentrum", icon: ShieldCheck },
-      { to: "/app/advisor", label: "Steuerberater", icon: ShieldCheck, personas: ["vermieter", "pro"] },
     ],
   },
   {
-    title: "Vermieten",
+    title: "Vermarktung",
     personas: ["vermieter", "suchender", "pro"],
     items: [
-      { to: "/markt", label: "Markt", icon: SearchIcon },
+      { to: "/markt", label: "Markt entdecken", icon: SearchIcon },
       { to: "/app/listings", label: "Meine Inserate", icon: Megaphone, personas: ["vermieter", "pro"] },
       { to: "/app/applications", label: "Bewerbungen", icon: Inbox, personas: ["vermieter", "pro"] },
-      { to: "/app/marketplace", label: "Experten", icon: Wrench, personas: ["pro"] },
       { to: "/app/ads", label: "Werben", icon: Megaphone, personas: ["pro"] },
     ],
   },
   {
-    title: "Mehr",
+    title: "Werkzeuge",
     items: [
-      { to: "/app/profile", label: "Mein Profil", icon: IdCard },
+      { to: "/app/handwerker", label: "Handwerker finden", icon: HardHat },
+      { to: "/app/tickets", label: "Tickets", icon: Wrench, personas: ["vermieter", "pro"] },
+      { to: "/app/marketplace", label: "Experten", icon: Wrench, personas: ["pro"] },
       { to: "/app/valuation", label: "Bewertung", icon: TrendingUp, personas: ["vermieter", "pro"] },
       { to: "/app/financing", label: "Finanzierung", icon: Landmark, personas: ["vermieter", "pro"] },
       { to: "/app/calculator", label: "Rechner", icon: Calculator, personas: ["pro"] },
-      { to: "/app/tax", label: "Steuer-Export", icon: Calculator, personas: ["vermieter", "pro"] },
+      { to: "/app/profile", label: "Mein Profil", icon: IdCard },
     ],
   },
 ];
