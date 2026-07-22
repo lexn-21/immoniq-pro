@@ -469,6 +469,45 @@ export type Database = {
         }
         Relationships: []
       }
+      api_keys: {
+        Row: {
+          created_at: string
+          id: string
+          key_hash: string
+          key_prefix: string
+          label: string
+          last_used_at: string | null
+          revoked_at: string | null
+          scopes: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          key_hash: string
+          key_prefix: string
+          label: string
+          last_used_at?: string | null
+          revoked_at?: string | null
+          scopes?: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          key_hash?: string
+          key_prefix?: string
+          label?: string
+          last_used_at?: string | null
+          revoked_at?: string | null
+          scopes?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       app_admins: {
         Row: {
           created_at: string
@@ -1181,6 +1220,152 @@ export type Database = {
           },
         ]
       }
+      craftsmen_contacts: {
+        Row: {
+          address: string | null
+          category: string | null
+          created_at: string
+          email: string | null
+          favorite: boolean
+          id: string
+          last_used_at: string | null
+          lat: number | null
+          lng: number | null
+          name: string
+          notes: string | null
+          phone: string | null
+          place_id: string | null
+          property_id: string | null
+          rating: number | null
+          rating_count: number | null
+          updated_at: string
+          user_id: string
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          category?: string | null
+          created_at?: string
+          email?: string | null
+          favorite?: boolean
+          id?: string
+          last_used_at?: string | null
+          lat?: number | null
+          lng?: number | null
+          name: string
+          notes?: string | null
+          phone?: string | null
+          place_id?: string | null
+          property_id?: string | null
+          rating?: number | null
+          rating_count?: number | null
+          updated_at?: string
+          user_id: string
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          category?: string | null
+          created_at?: string
+          email?: string | null
+          favorite?: boolean
+          id?: string
+          last_used_at?: string | null
+          lat?: number | null
+          lng?: number | null
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          place_id?: string | null
+          property_id?: string | null
+          rating?: number | null
+          rating_count?: number | null
+          updated_at?: string
+          user_id?: string
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "craftsmen_contacts_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      deposit_accounts: {
+        Row: {
+          account_kind: string
+          amount_cents: number
+          contract_pdf_path: string | null
+          created_at: string
+          custodian: string | null
+          iban_masked: string | null
+          id: string
+          interest_rate_bps: number | null
+          notes: string | null
+          received_on: string | null
+          released_on: string | null
+          status: string
+          tenant_id: string | null
+          unit_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_kind?: string
+          amount_cents: number
+          contract_pdf_path?: string | null
+          created_at?: string
+          custodian?: string | null
+          iban_masked?: string | null
+          id?: string
+          interest_rate_bps?: number | null
+          notes?: string | null
+          received_on?: string | null
+          released_on?: string | null
+          status?: string
+          tenant_id?: string | null
+          unit_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_kind?: string
+          amount_cents?: number
+          contract_pdf_path?: string | null
+          created_at?: string
+          custodian?: string | null
+          iban_masked?: string | null
+          id?: string
+          interest_rate_bps?: number | null
+          notes?: string | null
+          received_on?: string | null
+          released_on?: string | null
+          status?: string
+          tenant_id?: string | null
+          unit_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deposit_accounts_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deposit_accounts_unit_id_fkey"
+            columns: ["unit_id"]
+            isOneToOne: false
+            referencedRelation: "units"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       download_events: {
         Row: {
           created_at: string
@@ -1609,6 +1794,59 @@ export type Database = {
           zip?: string | null
         }
         Relationships: []
+      }
+      landlord_ratings_public: {
+        Row: {
+          category_communication: number | null
+          category_fairness: number | null
+          category_maintenance: number | null
+          comment: string | null
+          created_at: string
+          id: string
+          landlord_user_id: string
+          rated_by_user_id: string
+          stars: number
+          tenant_id: string | null
+          updated_at: string
+          verified: boolean
+        }
+        Insert: {
+          category_communication?: number | null
+          category_fairness?: number | null
+          category_maintenance?: number | null
+          comment?: string | null
+          created_at?: string
+          id?: string
+          landlord_user_id: string
+          rated_by_user_id: string
+          stars: number
+          tenant_id?: string | null
+          updated_at?: string
+          verified?: boolean
+        }
+        Update: {
+          category_communication?: number | null
+          category_fairness?: number | null
+          category_maintenance?: number | null
+          comment?: string | null
+          created_at?: string
+          id?: string
+          landlord_user_id?: string
+          rated_by_user_id?: string
+          stars?: number
+          tenant_id?: string | null
+          updated_at?: string
+          verified?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "landlord_ratings_public_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       legal_sources: {
         Row: {
