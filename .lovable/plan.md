@@ -1,72 +1,51 @@
+Großer Bau — deshalb erst Plan, dann durchziehen ohne Rückfragen. Ich baue in dieser Reihenfolge und stoppe nicht zwischendrin.
 
-# ImmonIQ All-in-One: Hausverwaltung + Kurzzeitvermietung
+## Reihenfolge & Umfang
 
-Du hast bei allen drei Fragen "was am besten ist" gesagt – hier ist die aus meiner Sicht ehrlichste Antwort. Das Ganze ist ein **6–8 Wochen Programm**, kein Wochenend-Feature. Ich schneide es so, dass nach jeder Stufe etwas Fertiges live ist und du keinen Big-Bang riskierst.
+### 1. Navigation & Onboarding sofort aufräumen (Sofort-Fix)
+- Sidebar/Command Palette komplett überarbeiten: **Grundstücke**, **Handwerker (Google Maps)**, **Kurzzeit/Bookings**, **Buchhaltung/Banking**, **Steuer-Modelle** sichtbar und logisch gruppiert.
+- Neue Gruppierung: *Portfolio · Mieter · Finanzen · Vermarktung · Recht & Steuer · Werkzeuge*.
+- Onboarding: nach Persona (Vermieter / Verwalter / Mieter / Suchender) nur den passenden Ast zeigen, Rest ausblenden. „Was willst du heute tun?" statt Formular-Wüste.
+- Neue Route `/app/handwerker` mit Google-Maps-Suche (nutzt bestehenden `google_maps` Connector, Places New API): Handwerker in Umgebung der Immobilie, direkt als Kontakt speichern + Ticket zuordnen.
 
-## Was "am besten" bedeutet – meine Empfehlung
+### 2. Öffentliches Mieter-Profil + Vermieter-Bewertungen (Netzwerk-Effekt)
+- Bestehenden `tenant_pass` erweitern: öffentliche Slug-URL `/pass/:code` existiert schon → um **Vermieter-Bewertungen** (Sterne + Kommentar) ergänzen, neue Tabelle `landlord_ratings_public`.
+- Vermieter kann nach Mietende Bewertung abgeben → wird am Pass verifiziert angezeigt.
+- Mieter nimmt seinen Pass zum nächsten Vermieter mit → LinkedIn-Effekt.
 
-**Verwalter-Rolle → Beide Modi** (externer Verwalter *und* Selbstverwaltung).
-Grund: Bestehende Hausverwaltungen sind eher Kunden/Partner als Feinde. Wir haben schon die Advisor-Mandat-Logik (Steuerberater) – die erweitern wir zur `verwalter`-Rolle. Selbstverwalter (WEG, kleine Eigentümer) bekommen dieselben Tools ohne Mandat.
+### 3. PLZ-SEO-Seiten mit Live-Daten (Traffic-Motor)
+- `MietspiegelPlz` existiert bereits → deutlich ausbauen: pro PLZ Mietpreis, Kaufpreis, Rendite, Nachfrage-Trend, Top-Handwerker, ähnliche PLZ. Sitemap für alle 8.187 PLZ generieren.
+- JSON-LD `Place` + `RealEstateListing` Schema.
+- Interne Verlinkung zwischen Nachbar-PLZ für SEO-Juice.
 
-**Airbnb/Booking → iCal-Sync jetzt, Channel-Manager-API später.**
-Grund: Airbnb Partner API + Booking Connectivity XML erfordern offizielle Zulassung (3–6 Monate Zertifizierung, Umsatzgrenzen, laufende Audits). iCal-Sync (rein/raus) läuft **heute** und deckt 90 % des Nutzens: keine Doppelbuchungen, ein zentraler Kalender. Parallel bauen wir die **eigene Direktbuchungs-Engine** – da verdienst du 15 % Airbnb-Provision selbst.
+### 4. Steuer-Modelle & Optimierungs-Rechner (Kunden-Wert)
+- Neue Route `/app/steuer-modelle`: interaktive Rechner für
+  - **AfA-Optimierung** (linear vs. Sonder-AfA §7b, Denkmal §7i/h)
+  - **Erhaltung vs. Herstellung** (15%-Grenze §6 Abs. 1 Nr. 1a EStG)
+  - **Vermögensübertragung / vorweggenommene Erbfolge** (Freibeträge, Nießbrauch)
+  - **GmbH vs. Privat** (Vermögensverwaltende GmbH ab X Objekten)
+- Ergebnisse als PDF (bestehende `beispielrechnungPdf` Struktur wiederverwenden).
+- Für WEG (Wohnungseigentümergemeinschaft): Sonderumlage-Rechner, Instandhaltungsrücklage-Optimierung.
 
-**Reihenfolge → Verschachtelt, nicht parallel.** Das gemeinsame Fundament (Rollen, Objekt-/Einheit-Struktur, Kalender) wird einmal gebaut und von beiden Modulen genutzt.
+### 5. Kautions-Konto (erstes Finanzprodukt)
+- Neue Tabelle `deposit_accounts` mit Status (offen, verwahrt, ausgezahlt), Zinssatz, Mieter- und Vermieter-Zustimmung.
+- UI: Kaution aus Mieter-Detail heraus in ImmonIQ-Verwahrung überführen (später BaFin-Partner-Anbindung — vorerst manuelle Bestätigung + Vertrag-PDF).
+- Rechtlich sauber: separates Treuhand-Konto §551 BGB, Verzinsung ausgewiesen.
 
-## Stufenplan
+### 6. Native App vorbereiten + Offene API (danach, ohne Rückfrage weiter)
+- **PWA schärfen**: Push, Offline-Cache, Install-Prompt — Basis ist da, feinjustieren.
+- **Offene API**: Edge Function `api/v1/*` mit API-Keys pro Nutzer (neue Tabelle `api_keys`), read-only für Properties/Tenants/Payments.
+- Docs-Seite `/api` mit Beispielen.
 
-### Stufe 1 – Fundament (Woche 1)
-- Rolle `verwalter` + `verwalter_mandate` (analog Advisor)
-- Objekt-Typen erweitern: `wohnung | haus | gewerbe | grundstück | ferienobjekt`
-- Einheiten-Modell um `nutzungsart: langzeit | kurzzeit | gewerbe | eigennutz | leer` erweitern
-- Zentrale Kalender-Tabelle `unit_calendar` (Blocker aus allen Quellen)
+## Technische Details
+- Alle neuen Tabellen mit RLS + GRANT-Block (public/authenticated/service_role je nach Bedarf).
+- Steuer-Rechner rein Client-seitig, keine Steuerberatung → Disclaimer-Sektion pro Modell.
+- Handwerker-Suche über bestehenden Google-Maps-Connector (Places API New via Gateway).
+- Kautions-Konto vorerst ohne echte Bank-Anbindung → als „Verwahrungs-Vertrag" mit PDF-Signatur, Upgrade-Pfad zu BaFin-Partner dokumentiert.
 
-### Stufe 2 – Hausverwaltung Kern (Woche 2–3)
-- **WEG-Modul**: Eigentümerliste, MEA-Anteile, Beschlusssammlung mit Volltextsuche
-- **Beiratsportal**: geteilter Zugriff analog Advisor-Links
-- **Hausgeld**: Wirtschaftsplan, Ist/Soll, Rücklagen-Konten
-- **Übergabeprotokolle**: Ein-/Auszug mit Foto-Anhang, PDF-Export, Unterschrift
-- **Handwerker-Vergabe**: Angebotsanfragen aus `tenant_issues` → Provider-Modul, Vergleich, Auftragserteilung, Freigabe-Workflow
-- **Verwalter-Dashboard**: Portfolio-Übersicht über alle Mandate, ToDos, Fristen
+## Nicht-Ziel dieser Runde
+- Echte Banklizenz / BaFin-Registrierung
+- iOS/Android Native Build (PWA reicht vorerst)
+- Institutional Deals & Presse
 
-### Stufe 3 – Kurzzeit Kern (Woche 3–4)
-- **Direktbuchungs-Engine**: Objekt als "Ferienobjekt" listen (Erweiterung von `listings`), Verfügbarkeitskalender, Nacht-/Wochen-/Wochenendpreise, Mindestaufenthalt, Rüstzeiten
-- **Booking-Flow für Gäste**: Objektseite → Datum → Preisberechnung → Anfrage oder Sofortbuchung → Stripe Zahlung + Kaution
-- **Gäste-Chat**: nutzt bestehendes Messenger-System
-- **Check-in-Automation**: E-Mail 3 Tage vorher mit Anfahrt, Türcode/Schlüssel-Übergabe, Hausordnung-PDF
-- **Reinigungs-Workflow**: Nach Auschecken Task an Reinigungskraft (Provider-Modul)
-
-### Stufe 4 – Portal-Sync (Woche 5)
-- **iCal-Import**: Airbnb/Booking/VRBO/FeWo-direkt Feeds pro Objekt eintragen → Cron-Job alle 15 Min → externe Buchungen als Blocker
-- **iCal-Export**: eigener Feed pro Objekt für Airbnb/Booking → verhindert Doppelbuchungen
-- **Unified Inbox**: Buchungen aller Kanäle in einer Liste, farbig markiert nach Quelle
-
-### Stufe 5 – Feinschliff (Woche 6)
-- Preisautomatik (Wochenend-Aufschlag, Saison-Faktoren, Auslastungs-basierte Dynamik)
-- Gästebewertungen + Rating (öffentliches Objekt-Profil)
-- Umsatz-Auswertung Kurzzeit (Auslastung, ADR, RevPAR)
-- Steuer: Kurzzeitumsätze automatisch in Anlage V + Meldung Beherbergungssteuer/Kurtaxe pro Stadt
-- Kanalprovision-Tracking
-
-### Stufe 6 – Später (nach Traction)
-- Channel-Manager-API (Airbnb Partner + Booking XML) – erst wenn du 50+ Ferienobjekte hast, sonst nicht wirtschaftlich
-- Smart-Lock-Integration (Nuki, TTLock) – automatische Codes pro Buchung
-- Dynamic Pricing via KI (analog PriceLabs/Beyond)
-
-## Technische Umsetzung
-
-**Neue Tabellen:** `verwalter_mandates`, `weg_owners`, `weg_resolutions`, `weg_financial_plans`, `handover_protocols`, `contractor_bids`, `unit_calendar`, `bookings` (bereits vorhanden – erweitern), `booking_pricing_rules`, `ical_feeds`, `ical_events`, `guest_reviews`, `cleaning_tasks`, `beherbergungssteuer_rates`.
-
-**Neue Edge-Functions:** `ical-sync` (Cron 15 Min), `ical-export` (public), `booking-quote`, `booking-confirm` (Stripe PaymentIntent), `checkin-email`, `cleaning-dispatch`, `pricing-suggest`.
-
-**Wiederverwendet:** Advisor-Mandat-Logik → Verwalter. Messenger → Gäste-Chat. `tenant_issues` → Handwerker-Bids. `listings` → Kurzzeit-Objekte. `payments` → Bookings/Kautionen. Bestehende PDF-Generierung → Übergabeprotokolle & Reservierungsbestätigungen.
-
-**Provider-Anbindungen:** Stripe (bereits da – für Buchungen + Kaution-Hold), iCalendar-Standard (RFC 5545, keine externen APIs), Nuki-API (später), OpenStreetMap Nominatim (Anfahrt-Karte).
-
-## Was ich von dir brauche, bevor ich starte
-
-1. **OK zum Stufenplan** – oder Verschiebung/Streichung einzelner Stufen.
-2. **Stripe live/sandbox** ist konfiguriert? (für Kurzzeit-Zahlungen essenziell)
-3. **Reihenfolge-Bestätigung**: Fange ich mit Stufe 1+2 (Hausverwaltung) an, oder willst du Stufe 3 (Kurzzeit) parallel/zuerst weil das umsatzrelevanter ist?
-
-Sag mir "los, Stufe 1+2" und ich fange sofort mit dem Rollen-Fundament und dem WEG-Modul an.
+Nach Freigabe ziehe ich 1→6 in einem Rutsch durch.
