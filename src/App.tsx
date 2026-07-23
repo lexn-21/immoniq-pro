@@ -78,6 +78,8 @@ const Banking = lazy(() => import("./pages/app/Banking"));
 const Handwerker = lazy(() => import("./pages/app/Handwerker"));
 const SteuerModelle = lazy(() => import("./pages/app/SteuerModelle"));
 const Kaution = lazy(() => import("./pages/app/Kaution"));
+const ApiKeys = lazy(() => import("./pages/app/ApiKeys"));
+const ApiDocs = lazy(() => import("./pages/ApiDocs"));
 
 
 const SmartInbox = lazy(() => import("./pages/app/SmartInbox"));
