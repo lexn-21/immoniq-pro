@@ -27,3 +27,5 @@ project_id = "ikgwsdviewtvaitlpijg"
     verify_jwt = false
   [functions.admin-set-tax-codes]
     verify_jwt = false
+  [functions.public-api]
+    verify_jwt = false
