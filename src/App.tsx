@@ -166,6 +166,7 @@ const App = () => (
               <Route path="/checkout/return" element={<CheckoutReturn />} />
               <Route path="/unsubscribe" element={<Unsubscribe />} />
               <Route path="/install" element={<Install />} />
+              <Route path="/api-docs" element={<ApiDocs />} />
               <Route
                 path="/app/onboarding"
                 element={
@@ -233,6 +234,7 @@ const App = () => (
                 <Route path="handwerker" element={<Handwerker />} />
                 <Route path="steuer-modelle" element={<SteuerModelle />} />
                 <Route path="kaution" element={<Kaution />} />
+                <Route path="api-keys" element={<ApiKeys />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
