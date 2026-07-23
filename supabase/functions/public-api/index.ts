@@ -87,7 +87,7 @@ Deno.serve(async (req) => {
       case "tenants": {
         const { data, error } = await admin
           .from("tenants")
-          .select("id,full_name,email,unit_id,lease_start,lease_end,rent_cold,rent_utilities,status,created_at")
+          .select("id,full_name,email,property_id,unit_id,lease_start,lease_end,deposit,since,created_at")
           .eq("user_id", userId)
           .limit(limit);
         if (error) throw error;
@@ -95,24 +95,24 @@ Deno.serve(async (req) => {
       }
       case "payments": {
         let q = admin.from("payments")
-          .select("id,tenant_id,amount,paid_at,method,status,note,created_at")
+          .select("id,tenant_id,property_id,unit_id,amount,paid_on,kind,status,note,created_at")
           .eq("user_id", userId)
-          .order("paid_at", { ascending: false })
+          .order("paid_on", { ascending: false })
           .limit(limit);
-        if (from) q = q.gte("paid_at", from);
-        if (to) q = q.lte("paid_at", to);
+        if (from) q = q.gte("paid_on", from);
+        if (to) q = q.lte("paid_on", to);
         const { data, error } = await q;
         if (error) throw error;
         return json({ data, count: data?.length ?? 0 });
       }
       case "expenses": {
         let q = admin.from("expenses")
-          .select("id,property_id,amount,vat,category,vendor,invoice_date,note,created_at")
+          .select("id,property_id,unit_id,amount,category,vendor,spent_on,description,created_at")
           .eq("user_id", userId)
-          .order("invoice_date", { ascending: false })
+          .order("spent_on", { ascending: false })
           .limit(limit);
-        if (from) q = q.gte("invoice_date", from);
-        if (to) q = q.lte("invoice_date", to);
+        if (from) q = q.gte("spent_on", from);
+        if (to) q = q.lte("spent_on", to);
         const { data, error } = await q;
         if (error) throw error;
         return json({ data, count: data?.length ?? 0 });
