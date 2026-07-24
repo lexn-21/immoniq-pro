@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { eur, date } from "@/lib/format";
 import { useAuth } from "@/hooks/useAuth";
 import type { TenantCtx } from "./TenantLayout";
+import { LandlordRatingCard } from "@/components/tenant/LandlordRatingCard";
 
 export default function TenantHome() {
   const ctx = useOutletContext<TenantCtx>();
@@ -126,6 +127,8 @@ export default function TenantHome() {
         <QuickCard to="/mein-immoniq/dokumente" icon={FileText} title="Dokumente" desc="Vertrag, NK-Abrechnung & Belege." />
         <QuickCard to="/mein-immoniq/tresor" icon={Lock} title="Mein Tresor" desc="Privat & verschlüsselt — nur du." />
       </div>
+
+      {tenant!.user_id && <LandlordRatingCard landlordUserId={tenant!.user_id} />}
 
       <Card className="p-5 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border-primary/20">
         <div className="flex items-start gap-3">
