@@ -85,6 +85,7 @@ const ApiDocs = lazy(() => import("./pages/ApiDocs"));
 const SmartInbox = lazy(() => import("./pages/app/SmartInbox"));
 const Tickets = lazy(() => import("./pages/app/Tickets"));
 const PassPublic = lazy(() => import("./pages/PassPublic"));
+const LandlordPublic = lazy(() => import("./pages/LandlordPublic"));
 const Connect = lazy(() => import("./pages/Connect"));
 const NebenkostenVorlage = lazy(() => import("./pages/NebenkostenVorlage"));
 const NebenkostenVorlageDownload = lazy(() => import("./pages/NebenkostenVorlageDownload"));
@@ -149,6 +150,7 @@ const App = () => (
               </Route>
               <Route path="/wg-casting/:token" element={<WgCasting />} />
               <Route path="/pass/:code" element={<PassPublic />} />
+              <Route path="/vermieter/:userId" element={<LandlordPublic />} />
               <Route path="/connect" element={<Connect />} />
               <Route path="/verbinden-ai" element={<Connect />} />
               <Route path="/nebenkostenabrechnung-vorlage" element={<NebenkostenVorlage />} />
